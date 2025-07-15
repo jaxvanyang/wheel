@@ -20,6 +20,7 @@ tests/%: tests/%.c src/libbasics.a
 src/libbasics.a: src/core/utils.o src/linear/list.o src/str.o
 	ar rs $@ $^
 
+src/%.o: src/%.c
 src/core/%.o: src/core/%.c
 src/linear/%.o: src/linear/%.c
 
