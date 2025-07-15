@@ -34,7 +34,7 @@ usize fib_recur(usize n) {
 }
 
 int main() {
-	usize n = 50;
+	usize n = 40;
 
 	for (usize i = 1; i <= n; ++i) {
 		struct timeval t0, t;
