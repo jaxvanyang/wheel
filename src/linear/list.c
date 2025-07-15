@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+const usize LIST_DEFAULT_SIZE = 128;
+const usize LIST_MAX_INCREASE = 1024;
+
 UsizeList usize_list_new() {
 	UsizeList list;
 

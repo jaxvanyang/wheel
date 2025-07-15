@@ -3,8 +3,8 @@
 #include "../core.h"
 #include <stdbool.h>
 
-const usize LIST_DEFAULT_SIZE = 128;
-const usize LIST_MAX_INCREASE = 1024;
+extern const usize LIST_DEFAULT_SIZE;
+extern const usize LIST_MAX_INCREASE;
 
 typedef struct {
 	usize size;
