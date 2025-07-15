@@ -16,6 +16,17 @@ UsizeList usize_list_new() {
 	return list;
 }
 
+UsizeList usize_list_new_with_size(usize size) {
+	UsizeList list;
+
+	list.length = size;
+	list.size = size;
+	list.start = malloc(list.size * sizeof(usize));
+	memset(list.start, 0x00, list.size * sizeof(usize));
+
+	return list;
+}
+
 usize usize_list_get(UsizeList *list, usize i) {
 	if (i >= list->length) {
 		error("expected i < length, found: %lu >= %lu\n", i, list->length);
@@ -96,8 +107,19 @@ IsizeList isize_list_new() {
 
 	list.length = 0;
 	list.size = LIST_DEFAULT_SIZE;
-	list.start = malloc(list.size * sizeof(usize));
-	memset(list.start, 0x00, list.size * sizeof(usize));
+	list.start = malloc(list.size * sizeof(isize));
+	memset(list.start, 0x00, list.size * sizeof(isize));
+
+	return list;
+}
+
+IsizeList isize_list_new_with_size(usize size) {
+	IsizeList list;
+
+	list.length = size;
+	list.size = size;
+	list.start = malloc(list.size * sizeof(isize));
+	memset(list.start, 0x00, list.size * sizeof(isize));
 
 	return list;
 }
