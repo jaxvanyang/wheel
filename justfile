@@ -1,3 +1,6 @@
+build:
+	make
+
 run bin:
 	make bin/{{bin}}
 	bin/{{bin}}
@@ -5,3 +8,5 @@ run bin:
 test test:
 	make tests/{{test}}
 	tests/{{test}}
+
+check: (test "fib")
