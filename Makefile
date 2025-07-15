@@ -9,7 +9,7 @@ all: bins tests
 bins: bin/uniq
 
 .PHONY: tests
-tests: tests/fib
+tests: tests/fib tests/kmp
 
 bin/%: bin/%.c src/libbasics.a
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
