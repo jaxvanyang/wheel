@@ -1,6 +1,6 @@
 CC := clang
 CFLAGS := -g -Isrc -O3 -Wall
-LDFLAGS := -Lsrc -lbasics
+LDFLAGS := -fuse-ld=mold -Lsrc -lbasics
 
 .PHONY: all
 all: bins tests
