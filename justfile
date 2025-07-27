@@ -9,4 +9,5 @@ test test:
 	make tests/{{test}}
 	tests/{{test}}
 
-check: (test "fib")
+# run all tests
+check: (test "fib") (test "kmp")
