@@ -1,5 +1,5 @@
 CC := clang
-LD := mold
+LD := $(shell [ $$(uname) = 'Darwin' ] && echo ld || echo mold)
 CFLAGS += -O3 -g -Isrc -Wall
 LDFLAGS += -fuse-ld=$(LD) -Lsrc -lbasics
 
