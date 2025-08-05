@@ -3,6 +3,10 @@ LD := $(shell [ $$(uname) = 'Darwin' ] && echo ld || echo mold)
 CFLAGS += -O3 -g -Isrc -Wall
 LDFLAGS += -fuse-ld=$(LD) -Lsrc -lbasics
 
+SRC := src
+CORE := $(SRC)/core
+DATA := $(SRC)/data
+
 .PHONY: all
 all: bins tests
 
@@ -12,18 +16,19 @@ bins: bin/uniq
 .PHONY: tests
 tests: tests/fib tests/kmp
 
-bin/%: bin/%.c src/libbasics.a
+bin/%: bin/%.c $(SRC)/libbasics.a
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
-tests/%: tests/%.c src/libbasics.a
+tests/%: tests/%.c $(SRC)/libbasics.a
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
-src/libbasics.a: src/core/utils.o src/linear/list.o src/str.o
+$(SRC)/libbasics.a: $(CORE)/utils.o $(DATA)/linear/list.o $(DATA)/str.o
 	ar rs $@ $^
 
-src/%.o: src/%.c
-src/core/%.o: src/core/%.c
-src/linear/%.o: src/linear/%.c
+$(SRC)/%.o: $(SRC)/%.c
+$(CORE)/%.o: $(CORE)/%.c
+$(DATA)/%.o: $(DATA)/%.c
+$(DATA)/linear/%.o: $(DATA)/linear/%.c
 
 .PHONY: clean
 clean:

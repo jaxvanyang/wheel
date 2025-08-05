@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <linear.h>
+#include <data/linear.h>
 
 void uniq(IsizeList *list) {
 	usize i = 0, j = 0;
