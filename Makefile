@@ -34,5 +34,5 @@ $(DATA)/linear/%.o: $(DATA)/linear/%.c
 clean:
 	find . -type f -name '*.a' -delete -print
 	find . -type f -name '*.o' -delete -print
-	find bin -type f -executable -delete -print
-	find tests -type f -executable -delete -print
+	find bin -type f -perm -111 -delete -print
+	find tests -type f -perm -111 -delete -print
