@@ -3,31 +3,40 @@ LD := $(shell [ $$(uname) = 'Darwin' ] && echo ld || echo mold)
 CFLAGS += -O3 -g -Isrc -Wall
 LDFLAGS += -fuse-ld=$(LD) -Lsrc -lbasics
 
+BASICS := src/basics
+CORE := $(BASICS)/core
+
+LIBA := src/libbasics.a
+LIBSO := src/libbasics.so
+
+CORES := $(patsubst %.c,%.o,$(wildcard $(CORE)/*.c))
+OBJS := $(patsubst %.c,%.o,$(wildcard $(BASICS)/*.c))
+OBJS += $(CORES)
+
+BINS := $(patsubst %.c,%,$(wildcard bin/*.c))
+BINS := $(patsubst %.c,%,$(wildcard tests/*.c))
+
 .PHONY: all
 all: bins tests
 
 .PHONY: bins
-bins: bin/uniq
+bins: $(BINS)
 
 .PHONY: tests
-tests: tests/fib tests/kmp
+tests: $(TESTS)
 
-bin/%: bin/%.c src/libbasics.a
+bin/%: bin/%.c $(LIBA)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
-tests/%: tests/%.c src/libbasics.a
+tests/%: tests/%.c $(LIBA)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
-src/libbasics.a: src/core/utils.o src/linear/list.o src/str.o
+$(LIBA): $(OBJS)
 	ar rs $@ $^
 
-src/%.o: src/%.c
-src/core/%.o: src/core/%.c
-src/linear/%.o: src/linear/%.c
+$(BASICS)/%.o: $(BASICS)/%.c
+$(CORE)/%.o: $(CORE)/%.c
 
 .PHONY: clean
 clean:
-	find . -type f -name '*.a' -delete -print
-	find . -type f -name '*.o' -delete -print
-	find bin -type f -perm -111 -delete -print
-	find tests -type f -perm -111 -delete -print
+	rm -f $(LIBA) $(LIBSO) $(BINS) $(TESTS) $(OBJS)

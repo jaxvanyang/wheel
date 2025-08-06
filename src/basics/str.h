@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core.h"
-#include "linear.h"
+#include "list.h"
 
 IsizeList build_next(char *t);
 IsizeList build_nextval(char *t);

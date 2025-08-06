@@ -1,8 +1,8 @@
 #include <assert.h>
-#include <linear.h>
-#include <core.h>
-#include <stdio.h>
+#include <basics/core.h>
+#include <basics/list.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <sys/time.h>
 
 usize fib(usize n) {

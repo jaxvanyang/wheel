@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../core.h"
+#include "core.h"
 #include <stdbool.h>
 
 extern const usize LIST_DEFAULT_SIZE;
