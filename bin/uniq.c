@@ -29,6 +29,6 @@ int main() {
 	uniq(&list);
 
 	for (usize i = 0; i < list.length; ++i) {
-		printf("%ld\n", isize_list_get(&list, i));
+		printf("%llu\n", isize_list_get(&list, i));
 	}
 }

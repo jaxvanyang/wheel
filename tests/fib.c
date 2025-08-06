@@ -51,6 +51,6 @@ int main() {
 
 		assert(fib_result == fib_recur_result);
 
-		printf("fib(%ld) = %ld, dt1 = %.3lf ms, dt2 = %.3lf ms\n", i, fib_result, dt1, dt2);
+		printf("fib(%llu) = %llu, dt1 = %.3lf ms, dt2 = %.3lf ms\n", i, fib_result, dt1, dt2);
 	}
 }

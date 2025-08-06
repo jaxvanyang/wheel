@@ -29,7 +29,7 @@ UsizeList usize_list_new_with_size(usize size) {
 
 usize usize_list_get(UsizeList *list, usize i) {
 	if (i >= list->length) {
-		error("expected i < length, found: %lu >= %lu\n", i, list->length);
+		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
 
 	return list->start[i];
@@ -37,7 +37,7 @@ usize usize_list_get(UsizeList *list, usize i) {
 
 void usize_list_set(UsizeList *list, usize i, usize val) {
 	if (i >= list->length) {
-		error("expected i < length, found: %lu >= %lu\n", i, list->length);
+		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
 
 	list->start[i] = val;
@@ -45,7 +45,7 @@ void usize_list_set(UsizeList *list, usize i, usize val) {
 
 void usize_list_insert(UsizeList *list, usize i, usize val) {
 	if (i > list->length) {
-		error("expected i <= length, found: %lu > %lu\n", i, list->length);
+		error("expected i <= length, found: %llu > %llu\n", i, list->length);
 	}
 
 	if (list->size < list->length + 1) {
@@ -68,7 +68,7 @@ void usize_list_insert(UsizeList *list, usize i, usize val) {
 
 usize usize_list_delete(UsizeList *list, usize i) {
 	if (i >= list->length) {
-		error("expected i < length, found: %lu >= %lu\n", i, list->length);
+		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
 
 	usize ret = usize_list_get(list, i);
@@ -126,21 +126,21 @@ IsizeList isize_list_new_with_size(usize size) {
 
 isize isize_list_get(IsizeList *list, usize i) {
 	if (i >= list->length) {
-		error("expected i < length, found: %lu >= %lu\n", i, list->length);
+		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
 	return list->start[i];
 }
 
 void isize_list_set(IsizeList *list, usize i, isize val) {
 	if (i >= list->length) {
-		error("expected i < length, found: %lu >= %lu\n", i, list->length);
+		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
 	list->start[i] = val;
 }
 
 void isize_list_insert(IsizeList *list, usize i, isize val) {
 	if (i > list->length) {
-		error("expected i <= length, found: %lu > %lu\n", i, list->length);
+		error("expected i <= length, found: %llu > %llu\n", i, list->length);
 	}
 
 	if (list->size < list->length + 1) {
@@ -163,7 +163,7 @@ void isize_list_insert(IsizeList *list, usize i, isize val) {
 
 isize isize_list_delete(IsizeList *list, usize i) {
 	if (i >= list->length) {
-		error("expected i < length, found: %lu >= %lu\n", i, list->length);
+		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
 
 	isize ret = isize_list_get(list, i);
