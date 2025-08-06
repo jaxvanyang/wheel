@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <data/linear.h>
+#include <linear.h>
 #include <core.h>
 #include <stdio.h>
 #include <stdbool.h>

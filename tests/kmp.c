@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <data/str.h>
+#include <str.h>
 
 int main() {
 	{

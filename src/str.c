@@ -1,6 +1,6 @@
-#include "linear.h"
-#include "str.h"
 #include <string.h>
+#include <str.h>
+#include <linear.h>
 
 IsizeList build_next(char *t) {
 	usize len = strlen(t);
