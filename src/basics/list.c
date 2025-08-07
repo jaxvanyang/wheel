@@ -66,6 +66,10 @@ void ulist_insert(Ulist *list, usize i, usize val) {
 	ulist_set(list, i, val);
 }
 
+void ulist_push(Ulist *list, usize val) {
+	ulist_insert(list, list->length, val);
+}
+
 usize ulist_delete(Ulist *list, usize i) {
 	if (i >= list->length) {
 		error("expected i < length, found: %llu >= %llu\n", i, list->length);
@@ -160,6 +164,10 @@ void ilist_insert(Ilist *list, usize i, isize val) {
 	}
 
 	ilist_set(list, i, val);
+}
+
+void ilist_push(Ilist *list, isize val) {
+	ilist_insert(list, list->length, val);
 }
 
 isize ilist_delete(Ilist *list, usize i) {
