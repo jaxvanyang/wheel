@@ -3,5 +3,9 @@
 #include "./types.h"
 #include <sys/time.h>
 
+typedef struct timeval TimeVal;
+
+TimeVal time_now();
+
 // elapsed time in micro seconds
-f64 elapsed(struct timeval t0, struct timeval t1);
+f64 elapsed(TimeVal t0);

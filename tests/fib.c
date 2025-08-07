@@ -3,7 +3,6 @@
 #include <basics/list.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <sys/time.h>
 
 usize fib(usize n) {
 	if (n <= 1) {
@@ -38,17 +37,13 @@ int main() {
 	usize n = 20;
 
 	for (usize i = 1; i <= n; ++i) {
-		struct timeval t0, t;
-
-		gettimeofday(&t0, NULL);
+		TimeVal t0 = time_now();
 		usize fib_result = fib(i);
-		gettimeofday(&t, NULL);
-		f64 dt1 = elapsed(t0, t);
+		f64 dt1 = elapsed(t0);
 
-		gettimeofday(&t0, NULL);
+		t0 = time_now();
 		usize fib_recur_result = fib_recur(i);
-		gettimeofday(&t, NULL);
-		f64 dt2 = elapsed(t0, t);
+		f64 dt2 = elapsed(t0);
 
 		assert(fib_result == fib_recur_result);
 
