@@ -5,24 +5,24 @@
 const usize LIST_DEFAULT_SIZE = 128;
 const usize LIST_MAX_INCREASE = 1024;
 
-Ulist ulist_new() {
-	Ulist list;
+Ulist *ulist_new() {
+	Ulist *list = malloc(sizeof(Ulist));
 
-	list.length = 0;
-	list.size = LIST_DEFAULT_SIZE;
-	list.start = malloc(list.size * sizeof(usize));
-	memset(list.start, 0x00, list.size * sizeof(usize));
+	list->length = 0;
+	list->size = LIST_DEFAULT_SIZE;
+	list->start = malloc(list->size * sizeof(usize));
+	memset(list->start, 0x00, list->size * sizeof(usize));
 
 	return list;
 }
 
-Ulist ulist_new_with_size(usize size) {
-	Ulist list;
+Ulist *ulist_new_with_size(usize size) {
+	Ulist *list = malloc(sizeof(Ulist));
 
-	list.length = size;
-	list.size = size;
-	list.start = malloc(list.size * sizeof(usize));
-	memset(list.start, 0x00, list.size * sizeof(usize));
+	list->length = size;
+	list->size = size;
+	list->start = malloc(list->size * sizeof(usize));
+	memset(list->start, 0x00, list->size * sizeof(usize));
 
 	return list;
 }
@@ -100,26 +100,27 @@ void ulist_free(Ulist *list) {
 	list->length = 0;
 	free(list->start);
 	list->start = NULL;
+	free(list);
 }
 
-Ilist ilist_new() {
-	Ilist list;
+Ilist *ilist_new() {
+	Ilist *list = malloc(sizeof(Ilist));
 
-	list.length = 0;
-	list.size = LIST_DEFAULT_SIZE;
-	list.start = malloc(list.size * sizeof(isize));
-	memset(list.start, 0x00, list.size * sizeof(isize));
+	list->length = 0;
+	list->size = LIST_DEFAULT_SIZE;
+	list->start = malloc(list->size * sizeof(isize));
+	memset(list->start, 0x00, list->size * sizeof(isize));
 
 	return list;
 }
 
-Ilist ilist_new_with_size(usize size) {
-	Ilist list;
+Ilist *ilist_new_with_size(usize size) {
+	Ilist *list = malloc(sizeof(Ilist));
 
-	list.length = size;
-	list.size = size;
-	list.start = malloc(list.size * sizeof(isize));
-	memset(list.start, 0x00, list.size * sizeof(isize));
+	list->length = size;
+	list->size = size;
+	list->start = malloc(list->size * sizeof(isize));
+	memset(list->start, 0x00, list->size * sizeof(isize));
 
 	return list;
 }
@@ -195,4 +196,5 @@ void ilist_free(Ilist *list) {
 	list->length = 0;
 	free(list->start);
 	list->start = NULL;
+	free(list);
 }

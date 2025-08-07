@@ -12,8 +12,8 @@ typedef struct {
 	usize *start;
 } Ulist;
 
-Ulist ulist_new();
-Ulist ulist_new_with_size(usize size);
+Ulist *ulist_new();
+Ulist *ulist_new_with_size(usize size);
 usize ulist_get(Ulist *list, usize i);
 void ulist_set(Ulist *list, usize i, usize val);
 void ulist_insert(Ulist *list, usize i, usize val);
@@ -27,8 +27,8 @@ typedef struct {
 	isize *start;
 } Ilist;
 
-Ilist ilist_new();
-Ilist ilist_new_with_size(usize size);
+Ilist *ilist_new();
+Ilist *ilist_new_with_size(usize size);
 isize ilist_get(Ilist *list, usize i);
 void ilist_set(Ilist *list, usize i, isize val);
 void ilist_insert(Ilist *list, usize i, isize val);

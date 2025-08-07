@@ -5,20 +5,20 @@ int main() {
 	{
 		char a[] = "aaabaaaab";
 		isize next[] = {-1, 0, 1, 2, 0, 1, 2, 3, 3};
-		Ilist list = build_next(a);
+		Ilist *list = build_next(a);
 
-		for (usize i = 0; i < list.length; ++i) {
-			assert(ilist_get(&list, i) == next[i]);
+		for (usize i = 0; i < list->length; ++i) {
+			assert(ilist_get(list, i) == next[i]);
 		}
 	}
 
 	{
 		char a[] = "aaaab";
 		isize nextval[] = {-1, -1, -1, -1, 3};
-		Ilist list = build_nextval(a);
+		Ilist *list = build_nextval(a);
 
-		for (usize i = 0; i < list.length; ++i) {
-			assert(ilist_get(&list, i) == nextval[i]);
+		for (usize i = 0; i < list->length; ++i) {
+			assert(ilist_get(list, i) == nextval[i]);
 		}
 	}
 
