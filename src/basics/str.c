@@ -1,31 +1,31 @@
 #include "str.h"
 #include <string.h>
 
-IsizeList build_next(char *t) {
+Ilist build_next(char *t) {
 	usize len = strlen(t);
-	IsizeList next = isize_list_new_with_size(len);
+	Ilist next = ilist_new_with_size(len);
 
-	isize_list_set(&next, 0, -1);
+	ilist_set(&next, 0, -1);
 
 	usize i = 1;
 	isize j = -1;
 	
 	while (i < len) {
 		if (j == -1 || t[j] == t[i - 1]) {
-			isize_list_set(&next, i++, ++j);
+			ilist_set(&next, i++, ++j);
 		} else {
-			j = isize_list_get(&next, j);
+			j = ilist_get(&next, j);
 		}
 	}
 
 	return next;
 }
 
-IsizeList build_nextval(char *t) {
+Ilist build_nextval(char *t) {
 	usize len = strlen(t);
-	IsizeList nextval = isize_list_new_with_size(len);
+	Ilist nextval = ilist_new_with_size(len);
 
-	isize_list_set(&nextval, 0, -1);
+	ilist_set(&nextval, 0, -1);
 
 	usize i = 1;
 	isize j = -1;
@@ -34,13 +34,13 @@ IsizeList build_nextval(char *t) {
 		if (j == -1 || t[j] == t[i - 1]) {
 			++j;
 			if (t[j] == t[i]) {
-				isize_list_set(&nextval, i, isize_list_get(&nextval, j));
+				ilist_set(&nextval, i, ilist_get(&nextval, j));
 			} else {
-				isize_list_set(&nextval, i, j);
+				ilist_set(&nextval, i, j);
 			}
 			++i;
 		} else {
-			j = isize_list_get(&nextval, j);
+			j = ilist_get(&nextval, j);
 		}
 	}
 
@@ -51,7 +51,7 @@ isize kmp(char *s, char *t) {
 	isize slen = strlen(s);
 	isize tlen = strlen(t);
 
-	IsizeList next = build_nextval(t);
+	Ilist next = build_nextval(t);
 
 	isize i = 0, j = 0;
 
@@ -63,7 +63,7 @@ isize kmp(char *s, char *t) {
 				return i - tlen;
 			}
 		} else {
-			j = isize_list_get(&next, j);
+			j = ilist_get(&next, j);
 		}
 	}
 

@@ -10,17 +10,17 @@ usize fib(usize n) {
 		return n;
 	}
 
-	UsizeList list = usize_list_new();
-	usize_list_insert(&list, 0, 0);
-	usize_list_insert(&list, 1, 1);
+	Ulist list = ulist_new();
+	ulist_insert(&list, 0, 0);
+	ulist_insert(&list, 1, 1);
 
 	for (usize i = 2; i <= n; ++i) {
-		usize_list_insert(&list, i, usize_list_get(&list, i - 1) + usize_list_get(&list, i - 2));
+		ulist_insert(&list, i, ulist_get(&list, i - 1) + ulist_get(&list, i - 2));
 	}
 
-	usize ret = usize_list_get(&list, n);
+	usize ret = ulist_get(&list, n);
 
-	usize_list_free(&list);
+	ulist_free(&list);
 
 	return ret;
 }

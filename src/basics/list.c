@@ -5,8 +5,8 @@
 const usize LIST_DEFAULT_SIZE = 128;
 const usize LIST_MAX_INCREASE = 1024;
 
-UsizeList usize_list_new() {
-	UsizeList list;
+Ulist ulist_new() {
+	Ulist list;
 
 	list.length = 0;
 	list.size = LIST_DEFAULT_SIZE;
@@ -16,8 +16,8 @@ UsizeList usize_list_new() {
 	return list;
 }
 
-UsizeList usize_list_new_with_size(usize size) {
-	UsizeList list;
+Ulist ulist_new_with_size(usize size) {
+	Ulist list;
 
 	list.length = size;
 	list.size = size;
@@ -27,7 +27,7 @@ UsizeList usize_list_new_with_size(usize size) {
 	return list;
 }
 
-usize usize_list_get(UsizeList *list, usize i) {
+usize ulist_get(Ulist *list, usize i) {
 	if (i >= list->length) {
 		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
@@ -35,7 +35,7 @@ usize usize_list_get(UsizeList *list, usize i) {
 	return list->start[i];
 }
 
-void usize_list_set(UsizeList *list, usize i, usize val) {
+void ulist_set(Ulist *list, usize i, usize val) {
 	if (i >= list->length) {
 		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
@@ -43,7 +43,7 @@ void usize_list_set(UsizeList *list, usize i, usize val) {
 	list->start[i] = val;
 }
 
-void usize_list_insert(UsizeList *list, usize i, usize val) {
+void ulist_insert(Ulist *list, usize i, usize val) {
 	if (i > list->length) {
 		error("expected i <= length, found: %llu > %llu\n", i, list->length);
 	}
@@ -60,21 +60,21 @@ void usize_list_insert(UsizeList *list, usize i, usize val) {
 	list->length += 1;
 
 	for (usize j = list->length - 1; j > i; --j) {
-		usize_list_set(list, j, usize_list_get(list, j - 1));
+		ulist_set(list, j, ulist_get(list, j - 1));
 	}
 
-	usize_list_set(list, i, val);
+	ulist_set(list, i, val);
 }
 
-usize usize_list_delete(UsizeList *list, usize i) {
+usize ulist_delete(Ulist *list, usize i) {
 	if (i >= list->length) {
 		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
 
-	usize ret = usize_list_get(list, i);
+	usize ret = ulist_get(list, i);
 
 	for (usize j = i; j < list->length - 1; ++j) {
-		usize_list_set(list, j, usize_list_get(list, j + 1));
+		ulist_set(list, j, ulist_get(list, j + 1));
 	}
 
 	list->length -= 1;
@@ -91,19 +91,19 @@ usize usize_list_delete(UsizeList *list, usize i) {
 	return ret;
 }
 
-bool usize_list_is_empty(UsizeList *list) {
+bool ulist_is_empty(Ulist *list) {
 	return list->length == 0;
 }
 
-void usize_list_free(UsizeList *list) {
+void ulist_free(Ulist *list) {
 	list->size = 0;
 	list->length = 0;
 	free(list->start);
 	list->start = NULL;
 }
 
-IsizeList isize_list_new() {
-	IsizeList list;
+Ilist ilist_new() {
+	Ilist list;
 
 	list.length = 0;
 	list.size = LIST_DEFAULT_SIZE;
@@ -113,8 +113,8 @@ IsizeList isize_list_new() {
 	return list;
 }
 
-IsizeList isize_list_new_with_size(usize size) {
-	IsizeList list;
+Ilist ilist_new_with_size(usize size) {
+	Ilist list;
 
 	list.length = size;
 	list.size = size;
@@ -124,21 +124,21 @@ IsizeList isize_list_new_with_size(usize size) {
 	return list;
 }
 
-isize isize_list_get(IsizeList *list, usize i) {
+isize ilist_get(Ilist *list, usize i) {
 	if (i >= list->length) {
 		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
 	return list->start[i];
 }
 
-void isize_list_set(IsizeList *list, usize i, isize val) {
+void ilist_set(Ilist *list, usize i, isize val) {
 	if (i >= list->length) {
 		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
 	list->start[i] = val;
 }
 
-void isize_list_insert(IsizeList *list, usize i, isize val) {
+void ilist_insert(Ilist *list, usize i, isize val) {
 	if (i > list->length) {
 		error("expected i <= length, found: %llu > %llu\n", i, list->length);
 	}
@@ -155,21 +155,21 @@ void isize_list_insert(IsizeList *list, usize i, isize val) {
 	list->length += 1;
 
 	for (usize j = list->length - 1; j > i; --j) {
-		isize_list_set(list, j, isize_list_get(list, j - 1));
+		ilist_set(list, j, ilist_get(list, j - 1));
 	}
 
-	isize_list_set(list, i, val);
+	ilist_set(list, i, val);
 }
 
-isize isize_list_delete(IsizeList *list, usize i) {
+isize ilist_delete(Ilist *list, usize i) {
 	if (i >= list->length) {
 		error("expected i < length, found: %llu >= %llu\n", i, list->length);
 	}
 
-	isize ret = isize_list_get(list, i);
+	isize ret = ilist_get(list, i);
 
 	for (usize j = i; j < list->length - 1; ++j) {
-		isize_list_set(list, j, isize_list_get(list, j + 1));
+		ilist_set(list, j, ilist_get(list, j + 1));
 	}
 
 	list->length -= 1;
@@ -186,11 +186,11 @@ isize isize_list_delete(IsizeList *list, usize i) {
 	return ret;
 }
 
-bool isize_list_is_empty(IsizeList *list) {
+bool ilist_is_empty(Ilist *list) {
 	return list->length == 0;
 }
 
-void isize_list_free(IsizeList *list) {
+void ilist_free(Ilist *list) {
 	list->size = 0;
 	list->length = 0;
 	free(list->start);

@@ -10,28 +10,28 @@ typedef struct {
 	usize size;
 	usize length;
 	usize *start;
-} UsizeList;
+} Ulist;
 
-UsizeList usize_list_new();
-UsizeList usize_list_new_with_size(usize size);
-usize usize_list_get(UsizeList *list, usize i);
-void usize_list_set(UsizeList *list, usize i, usize val);
-void usize_list_insert(UsizeList *list, usize i, usize val);
-usize usize_list_delete(UsizeList *list, usize i);
-bool usize_list_is_empty(UsizeList *list);
-void usize_list_free(UsizeList *list);
+Ulist ulist_new();
+Ulist ulist_new_with_size(usize size);
+usize ulist_get(Ulist *list, usize i);
+void ulist_set(Ulist *list, usize i, usize val);
+void ulist_insert(Ulist *list, usize i, usize val);
+usize ulist_delete(Ulist *list, usize i);
+bool ulist_is_empty(Ulist *list);
+void ulist_free(Ulist *list);
 
 typedef struct {
 	usize size;
 	usize length;
 	isize *start;
-} IsizeList;
+} Ilist;
 
-IsizeList isize_list_new();
-IsizeList isize_list_new_with_size(usize size);
-isize isize_list_get(IsizeList *list, usize i);
-void isize_list_set(IsizeList *list, usize i, isize val);
-void isize_list_insert(IsizeList *list, usize i, isize val);
-isize isize_list_delete(IsizeList *list, usize i);
-bool isize_list_is_empty(IsizeList *list);
-void isize_list_free(IsizeList *list);
+Ilist ilist_new();
+Ilist ilist_new_with_size(usize size);
+isize ilist_get(Ilist *list, usize i);
+void ilist_set(Ilist *list, usize i, isize val);
+void ilist_insert(Ilist *list, usize i, isize val);
+isize ilist_delete(Ilist *list, usize i);
+bool ilist_is_empty(Ilist *list);
+void ilist_free(Ilist *list);

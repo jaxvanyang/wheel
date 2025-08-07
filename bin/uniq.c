@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <basics/list.h>
 
-void uniq(IsizeList *list) {
+void uniq(Ilist *list) {
 	usize i = 0, j = 0;
 
 	while (j < list->length) {
-		while(j < list->length && isize_list_get(list, i) == isize_list_get(list, j)) {
+		while(j < list->length && ilist_get(list, i) == ilist_get(list, j)) {
 			++j;
 		}
 		if (j < list->length) {
-			isize_list_set(list, ++i, isize_list_get(list, j));
+			ilist_set(list, ++i, ilist_get(list, j));
 		}
 	}
 
@@ -18,17 +18,17 @@ void uniq(IsizeList *list) {
 
 int main() {
 	isize n = 100;
-	IsizeList list = isize_list_new();
+	Ilist list = ilist_new();
 
 	for (isize i = 0; i <= n; ++i) {
 		for (isize j = 0; j < i; ++j) {
-			isize_list_insert(&list, list.length, i);
+			ilist_insert(&list, list.length, i);
 		}
 	}
 
 	uniq(&list);
 
 	for (usize i = 0; i < list.length; ++i) {
-		printf("%llu\n", isize_list_get(&list, i));
+		printf("%llu\n", ilist_get(&list, i));
 	}
 }
