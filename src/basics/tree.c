@@ -100,15 +100,17 @@ usize tree_size(Tree *tree) {
 void tree_insert(Tree *parent, Tree *node, bool is_left) {
 	if (parent == NULL) return;
 
-	if (node->parent) {
-		if (node->parent->left == node) {
-			node->parent->left = NULL;
+	if (node) {
+		if (node->parent) {
+			if (node->parent->left == node) {
+				node->parent->left = NULL;
+			}
+			if (node->parent->right == node) {
+				node->parent->right = NULL;
+			}
 		}
-		if (node->parent->right == node) {
-			node->parent->right = NULL;
-		}
+		node->parent = parent;
 	}
-	node->parent = parent;
 
 	if (is_left) {
 		tree_free(parent->left);
