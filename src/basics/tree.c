@@ -175,6 +175,14 @@ Tree *tree_build(Ilist *preorder, Ilist *inorder) {
 	return tree;
 }
 
+usize tree_height(Tree *tree) {
+	if (tree == NULL) return 0;
+
+	usize h = 1 + max(tree_height(tree->left), tree_height(tree->right));
+
+	return h;
+}
+
 BST *bst_new() {
 	BST *tree = malloc(sizeof(BST));
 	tree->size = 0;

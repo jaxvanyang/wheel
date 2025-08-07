@@ -49,6 +49,7 @@ int main() {
 		assert(ilist_equal(preorder, tree_preorder(tree)));
 		assert(ilist_equal(inorder, tree_inorder(tree)));
 		assert(ilist_equal(postorder, tree_postorder(tree)));
+		assert(tree_height(tree) == 3);
 
 		// TODO:
 		// assert(tree_equal(n1, tree));
@@ -76,6 +77,8 @@ int main() {
 
 		assert(ilist_equal(preorder, tree_preorder(tree->root)));
 		assert(ilist_equal(inorder, tree_inorder(tree->root)));
+
+		assert(tree_height(tree->root) == 3);
 
 		bst_free(tree);
 	}

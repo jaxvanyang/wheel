@@ -25,6 +25,8 @@ void tree_insert(Tree *parent, Tree *node, bool is_left);
 /// Build tree from preorder and inorder
 Tree *tree_build(Ilist *preorder, Ilist *inorder);
 
+usize tree_height(Tree *tree);
+
 typedef struct {
 	usize size;
 	Tree *root;
