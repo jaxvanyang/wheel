@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core.h"
-#include <stdbool.h>
 
 extern const usize LIST_DEFAULT_SIZE;
 extern const usize LIST_MAX_INCREASE;

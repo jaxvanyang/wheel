@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <sys/types.h>
 
 typedef u_int64_t u64;
