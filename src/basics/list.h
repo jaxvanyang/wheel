@@ -21,6 +21,7 @@ usize ulist_delete(Ulist *list, usize i);
 bool ulist_is_empty(Ulist *list);
 void ulist_free(Ulist *list);
 Ulist *ulist_from(usize *array, usize size);
+bool ulist_equal(Ulist *a, Ulist *b);
 
 typedef struct {
 	usize size;
@@ -38,3 +39,4 @@ isize ilist_delete(Ilist *list, usize i);
 bool ilist_is_empty(Ilist *list);
 void ilist_free(Ilist *list);
 Ilist *ilist_from(isize *array, usize size);
+bool ilist_equal(Ilist *a, Ilist *b);

@@ -117,6 +117,20 @@ Ulist *ulist_from(usize *array, usize size) {
 	return list;
 }
 
+bool ulist_equal(Ulist *a, Ulist *b) {
+	if (a->length != b->length) {
+		return false;
+	}
+
+	for (usize i = 0; i < a->length; ++i) {
+		if (ulist_get(a, i) != ulist_get(b, i)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 Ilist *ilist_new() {
 	Ilist *list = malloc(sizeof(Ilist));
 
@@ -225,4 +239,18 @@ Ilist *ilist_from(isize *array, usize size) {
 	}
 
 	return list;
+}
+
+bool ilist_equal(Ilist *a, Ilist *b) {
+	if (a->length != b->length) {
+		return false;
+	}
+
+	for (usize i = 0; i < a->length; ++i) {
+		if (ilist_get(a, i) != ilist_get(b, i)) {
+			return false;
+		}
+	}
+
+	return true;
 }
