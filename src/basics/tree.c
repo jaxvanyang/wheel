@@ -120,3 +120,57 @@ void tree_insert(Tree *parent, Tree *node, bool is_left) {
 		parent->right = node;
 	}
 }
+
+Tree *tree_build(Ilist *preorder, Ilist *inorder) {
+	if (preorder->length != inorder->length) {
+		error("expected equaled lengths: %llu != %llu\n", preorder->length, inorder->length);
+	}
+
+	// TODO: check if each element is unique
+
+	if (preorder->length == 0) {
+		return NULL;
+	}
+
+	Tree *tree = tree_new(ilist_get(preorder, 0));
+	usize p = 0;
+
+	while (p < inorder->length && ilist_get(inorder, p) != tree->value) {
+		++p;
+	}
+
+	Ilist *left_inorder = ilist_new_with_size(p);
+	Ilist *right_inorder = ilist_new_with_size(inorder->length - p - 1);
+	for (usize i = 0; i < p; ++i) {
+		ilist_push(left_inorder, ilist_get(inorder, i));
+	}
+	for (usize i = p + 1; i < inorder->length; ++i) {
+		ilist_push(right_inorder, ilist_get(inorder, i));
+	}
+
+	Ilist *left_preorder = ilist_new_with_size(left_inorder->length);
+	Ilist *right_preorder = ilist_new_with_size(right_inorder->length);
+	for (usize i = 1; i < preorder->length; ++i) {
+		isize val = ilist_get(preorder, i);
+		bool is_left = false;
+
+		// TODO: add find functions to list
+		for (usize j = 0; j < left_inorder->length; ++j) {
+			if (val == ilist_get(left_inorder, j)) {
+				is_left = true;
+				break;
+			}
+		}
+
+		if (is_left) {
+			ilist_push(left_preorder, val);
+		} else {
+			ilist_push(right_preorder, val);
+		}
+	}
+
+	tree_insert(tree, tree_build(left_preorder, left_inorder), true);
+	tree_insert(tree, tree_build(right_preorder, right_inorder), false);
+
+	return tree;
+}

@@ -33,6 +33,8 @@ int main() {
 		Ilist *inorder = ilist_from((isize[]){4, 2, 5, 1, 3}, 5);
 		Ilist *postorder = ilist_from((isize[]){4, 5, 2, 3, 1}, 5);
 
+		Tree *tree = tree_build(preorder, inorder);
+
 		Tree *n1 = tree_new(1);
 		Tree *n2 = tree_new(2);
 		Tree *n3 = tree_new(3);
@@ -44,10 +46,17 @@ int main() {
 		tree_insert(n2, n4, true);
 		tree_insert(n2, n5, false);
 
+		assert(ilist_equal(preorder, tree_preorder(tree)));
+		assert(ilist_equal(inorder, tree_inorder(tree)));
+		assert(ilist_equal(postorder, tree_postorder(tree)));
+
+		// TODO:
+		// assert(tree_equal(n1, tree));
 		assert(ilist_equal(preorder, tree_preorder(n1)));
 		assert(ilist_equal(inorder, tree_inorder(n1)));
 		assert(ilist_equal(postorder, tree_postorder(n1)));
 
+		tree_free(tree);
 		tree_free(n1);
 	}
 }

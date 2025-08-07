@@ -21,3 +21,6 @@ Ilist *tree_postorder(Tree *tree);
 
 usize tree_size(Tree *tree);
 void tree_insert(Tree *parent, Tree *node, bool is_left);
+
+/// Build tree from preorder and inorder
+Tree *tree_build(Ilist *preorder, Ilist *inorder);
