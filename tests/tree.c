@@ -59,4 +59,24 @@ int main() {
 		tree_free(tree);
 		tree_free(n1);
 	}
+
+	{
+		//     _4_
+		//    /   \
+		//   2     6
+		//  / \   / \
+		// 1   3 5   7
+		Ilist *preorder = ilist_from((isize[]){4, 2, 1, 3, 6, 5, 7}, 7);
+		Ilist *inorder = ilist_from((isize[]){1, 2, 3, 4, 5, 6, 7}, 7);
+
+		BST *tree = bst_new();
+		for (usize i = 0; i < preorder->length; ++i) {
+			bst_insert(tree, ilist_get(preorder, i));
+		}
+
+		assert(ilist_equal(preorder, tree_preorder(tree->root)));
+		assert(ilist_equal(inorder, tree_inorder(tree->root)));
+
+		bst_free(tree);
+	}
 }

@@ -174,3 +174,50 @@ Tree *tree_build(Ilist *preorder, Ilist *inorder) {
 
 	return tree;
 }
+
+BST *bst_new() {
+	BST *tree = malloc(sizeof(BST));
+	tree->size = 0;
+	tree->root = NULL;
+
+	return tree;
+}
+
+void bst_free(BST *tree) {
+	tree_free(tree->root);
+	tree->size = 0;
+	tree->root = NULL;
+
+	free(tree);
+}
+
+void bst_insert(BST *tree, isize value) {
+	Tree *node = tree_new(value);
+
+	if (tree->root == NULL) {
+		tree->root = node;
+		return;
+	}
+
+	Tree *p = tree->root;
+
+	while (true) {
+		if (value < p->value) {
+			if (p->left) {
+				p = p->left;
+				continue;
+			} else {
+				tree_insert(p, node, true);
+				return;
+			}
+		} else {
+			if (p->right) {
+				p = p->right;
+				continue;
+			} else {
+				tree_insert(p, node, false);
+				return;
+			}
+		}
+	}
+}

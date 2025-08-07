@@ -24,3 +24,12 @@ void tree_insert(Tree *parent, Tree *node, bool is_left);
 
 /// Build tree from preorder and inorder
 Tree *tree_build(Ilist *preorder, Ilist *inorder);
+
+typedef struct {
+	usize size;
+	Tree *root;
+} BST;
+
+BST *bst_new();
+void bst_free(BST *tree);
+void bst_insert(BST *tree, isize value);
