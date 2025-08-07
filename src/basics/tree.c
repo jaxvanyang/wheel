@@ -1,0 +1,120 @@
+#include "tree.h"
+#include "basics/list.h"
+#include <stdlib.h>
+
+Tree *tree_new(isize value) {
+	Tree *tree = (Tree *)malloc(sizeof(Tree));
+	tree->value = value;
+	tree->parent = tree->left = tree->right =  NULL;
+
+	return tree;
+}
+
+void tree_free(Tree *tree) {
+	if (tree == NULL) return;
+
+	if (tree->parent) {
+		if (tree->parent->left == tree) {
+			tree->parent->left = NULL;
+		}
+		if (tree->parent->right == tree) {
+			tree->parent->right = NULL;
+		}
+		tree->parent = NULL;
+	}
+
+	if (tree->left && tree->left->parent == tree) {
+		tree_free(tree->left);
+	}
+	tree->left = NULL;
+	if (tree->right && tree->right->parent == tree) {
+		tree_free(tree->right);
+	}
+	tree->right = NULL;
+
+	tree->value = 0;
+	free(tree);
+}
+
+Tree *tree_root(Tree *tree) {
+	if (tree == NULL) return NULL;
+
+	while (tree->parent) {
+		tree = tree->parent;
+	}
+
+	return tree;
+}
+
+void _tree_preorder(Ilist *list, Tree *node) {
+	if (node) {
+		ilist_push(list, node->value);
+		_tree_preorder(list, node->left);
+		_tree_preorder(list, node->right);
+	}
+}
+
+Ilist *tree_preorder(Tree *tree) {
+	Ilist *list = ilist_new();
+	_tree_preorder(list, tree);
+
+	return list;
+}
+
+void _tree_inorder(Ilist *list, Tree *node) {
+	if (node) {
+		_tree_inorder(list, node->left);
+		ilist_push(list, node->value);
+		_tree_inorder(list, node->right);
+	}
+}
+
+Ilist *tree_inorder(Tree *tree) {
+	Ilist *list = ilist_new();
+	_tree_inorder(list, tree);
+
+	return list;
+}
+
+void _tree_postorder(Ilist *list, Tree *node) {
+	if (node) {
+		_tree_postorder(list, node->left);
+		_tree_postorder(list, node->right);
+		ilist_push(list, node->value);
+	}
+}
+
+Ilist *tree_postorder(Tree *tree) {
+	Ilist *list = ilist_new();
+	_tree_postorder(list, tree);
+
+	return list;
+}
+
+usize tree_size(Tree *tree) {
+	if (tree == NULL) return 0;
+
+	return 1 + tree_size(tree->left) + tree_size(tree->right);
+}
+
+void tree_insert(Tree *parent, Tree *node, bool is_left) {
+	if (parent == NULL) return;
+
+	if (node->parent) {
+		if (node->parent->left == node) {
+			node->parent->left = NULL;
+		}
+		if (node->parent->right == node) {
+			node->parent->right = NULL;
+		}
+	}
+	node->parent = parent;
+
+	if (is_left) {
+		tree_free(parent->left);
+		parent->left = node;
+	} else {
+		tree_free(parent->right);
+		parent->right = node;
+	}
+}
