@@ -10,4 +10,4 @@ test test:
 	tests/{{test}}
 
 # run all tests
-check: (test "fib") (test "kmp")
+check: (test "hello") (test "fib") (test "kmp")
