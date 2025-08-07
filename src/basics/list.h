@@ -20,6 +20,7 @@ void ulist_push(Ulist *list, usize val);
 usize ulist_delete(Ulist *list, usize i);
 bool ulist_is_empty(Ulist *list);
 void ulist_free(Ulist *list);
+Ulist *ulist_from(usize *array, usize size);
 
 typedef struct {
 	usize size;
@@ -36,3 +37,4 @@ void ilist_push(Ilist *list, isize val);
 isize ilist_delete(Ilist *list, usize i);
 bool ilist_is_empty(Ilist *list);
 void ilist_free(Ilist *list);
+Ilist *ilist_from(isize *array, usize size);

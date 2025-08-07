@@ -107,6 +107,16 @@ void ulist_free(Ulist *list) {
 	free(list);
 }
 
+Ulist *ulist_from(usize *array, usize size) {
+	Ulist *list = ulist_new_with_size(size);
+
+	for (usize i = 0; i < size; ++i) {
+		ulist_push(list, array[i]);
+	}
+
+	return list;
+}
+
 Ilist *ilist_new() {
 	Ilist *list = malloc(sizeof(Ilist));
 
@@ -205,4 +215,14 @@ void ilist_free(Ilist *list) {
 	free(list->start);
 	list->start = NULL;
 	free(list);
+}
+
+Ilist *ilist_from(isize *array, usize size) {
+	Ilist *list = ilist_new_with_size(size);
+
+	for (usize i = 0; i < size; ++i) {
+		ilist_push(list, array[i]);
+	}
+
+	return list;
 }
