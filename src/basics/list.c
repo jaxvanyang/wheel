@@ -1,4 +1,5 @@
 #include "list.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -48,7 +49,7 @@ void ulist_insert(Ulist *list, usize i, usize val) {
 		error("expected i <= length, found: %llu > %llu\n", i, list->length);
 	}
 
-	if (list->size < list->length + 1) {
+	if (list->size <= list->length) {
 		usize new_size = list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
 		usize *new_start = malloc(new_size * sizeof(usize));
 		memcpy(new_start, list->start, list->length * sizeof(usize));
@@ -129,6 +130,17 @@ bool ulist_equal(Ulist *a, Ulist *b) {
 	}
 
 	return true;
+}
+
+void ulist_print(Ulist *list) {
+	printf("{");
+	if (list->length > 0) {
+		printf("%llu", ulist_get(list, 0));
+	}
+	for (usize i = 1; i < list->length; ++i) {
+		printf(", %llu", ulist_get(list, i));
+	}
+	printf("}\n");
 }
 
 Ilist *ilist_new() {
@@ -253,4 +265,15 @@ bool ilist_equal(Ilist *a, Ilist *b) {
 	}
 
 	return true;
+}
+
+void ilist_print(Ilist *list) {
+	printf("{");
+	if (list->length > 0) {
+		printf("%lld", ilist_get(list, 0));
+	}
+	for (usize i = 1; i < list->length; ++i) {
+		printf(", %lld", ilist_get(list, i));
+	}
+	printf("}");
 }
