@@ -19,7 +19,7 @@ Ulist *ulist_new() {
 Ulist *ulist_new_with_size(usize size) {
 	Ulist *list = malloc(sizeof(Ulist));
 
-	list->length = size;
+	list->length = 0;
 	list->size = size;
 	list->start = malloc(list->size * sizeof(usize));
 	memset(list->start, 0x00, list->size * sizeof(usize));
@@ -121,7 +121,7 @@ Ilist *ilist_new() {
 Ilist *ilist_new_with_size(usize size) {
 	Ilist *list = malloc(sizeof(Ilist));
 
-	list->length = size;
+	list->length = 0;
 	list->size = size;
 	list->start = malloc(list->size * sizeof(isize));
 	memset(list->start, 0x00, list->size * sizeof(isize));
