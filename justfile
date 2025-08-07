@@ -10,4 +10,7 @@ test test:
 	tests/{{test}}
 
 # run all tests
-check: (test "hello") (test "fib") (test "kmp")
+check:
+	for test in $(ls tests/*.c); do \
+		just test $(basename "$test" .c); \
+	done
