@@ -11,3 +11,5 @@ typedef u64 usize;
 typedef i64 isize;
 typedef float f32;
 typedef double f64;
+
+extern const usize USIZE_MAX;
