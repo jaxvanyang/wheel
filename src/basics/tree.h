@@ -28,6 +28,10 @@ Tree *tree_build(Ilist *preorder, Ilist *inorder);
 
 usize tree_height(Tree *tree);
 bool tree_equal(Tree *a, Tree *b);
+/// Print an ASCII art of the tree
+///
+/// Numbers are converted to chars
+void tree_print(Tree *tree);
 
 typedef struct {
 	usize size;

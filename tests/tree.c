@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <basics/dequeue.h>
 #include <basics/list.h>
 #include <basics/random.h>
 #include <basics/tree.h>
@@ -49,6 +50,8 @@ int main() {
 		tree_insert(n2, n4, true);
 		tree_insert(n2, n5, false);
 
+		tree_print(tree);
+
 		assert(tree_equal(n1, tree));
 		assert(tree_height(tree) == 3);
 		assert(ilist_equal(preorder, tree_preorder(tree)));
@@ -76,8 +79,9 @@ int main() {
 
 		assert(ilist_equal(preorder, tree_preorder(tree->root)));
 		assert(ilist_equal(inorder, tree_inorder(tree->root)));
-
 		assert(tree_height(tree->root) == 3);
+
+		tree_print(tree->root);
 
 		bst_free(tree);
 	}
@@ -95,5 +99,34 @@ int main() {
 		for (usize i = 1; i < inorder->length; ++i) {
 			assert(ilist_get(inorder, i - 1) <= ilist_get(inorder, i));
 		}
+	}
+
+	{
+		Tree *tree = tree_new(1);
+		Dequeue *queue = dequeue_new();
+
+		dequeue_push_back(queue, (isize)tree);
+
+		while (!dequeue_empty(queue)) {
+			Tree *node = (Tree *)dequeue_pop_front(queue);
+			usize l = node->value << 1;
+			usize r = l | 1;
+
+			if (l < 62) {
+				Tree *left = tree_new(l);
+				tree_insert(node, left, true);
+				dequeue_push_back(queue, (isize)left);
+			}
+			if (r < 62) {
+				Tree *right = tree_new(r);
+				tree_insert(node, right, false);
+				dequeue_push_back(queue, (isize)right);
+			}
+		}
+
+		tree_print(tree);
+
+		dequeue_free(queue);
+		tree_free(tree);
 	}
 }

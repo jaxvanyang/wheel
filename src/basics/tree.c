@@ -1,8 +1,9 @@
 #include "basics/dequeue.h"
 #include "basics/list.h"
+#include "basics/math.h"
 #include "tree.h"
-#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 Tree *tree_new(isize value) {
 	Tree *tree = (Tree *)malloc(sizeof(Tree));
@@ -222,6 +223,142 @@ bool tree_equal(Tree *a, Tree *b) {
 	ilist_free(b_inorder);
 
 	return ret;
+}
+
+char _tree_char(isize n) {
+	if (n < 0 || n > 62) {
+		error("expected 0 <= n <= 62, but found: n = %lld\n", n);
+	} else if (n < 10) {
+		return '0' + n;
+	} else if (n < 36) {
+		return 'a' + n - 10;
+	} else {
+		return 'A' + n - 36;
+	}
+}
+
+//      1          h = 1, w
+//
+//      1
+//     / \
+//    2   3        h = 2, w = 5
+//
+//     _1_         h = 3, w = 11
+//    /   \
+//   2     3
+//  / \   / \
+// 4   5 6   7
+//
+//        ____1____      h = 4, w = 23
+//       /         \
+//     _2_         _3_
+//    /   \       /   \
+//   4     5     6     7
+//  / \   / \   / \   / \
+// 8   9 a   b c   d e   f
+void tree_print(Tree *tree) {
+	usize h = tree_height(tree);
+
+	if (h == 0) {
+		return;
+	}
+
+	if (h == 1) {
+		printf("%lld\n", tree->value);
+		return;
+	}
+
+	usize H = 2 * h - 1;
+	usize c = 1 << (h - 1);
+	usize w = 3 * c - 1;
+	usize W = w + 1;
+	usize len = 1 << h;
+
+	usize *cols = malloc(sizeof(usize) * len);
+
+	for (usize i = c; i < len; ++i) {
+		usize j = i - c;
+
+		if (j & 1) {
+			cols[i] = 4 + 6 * (j / 2);
+		} else {
+			cols[i] = 3 * j;
+		}
+	}
+
+	for (usize i = c - 1; i > 0; --i) {
+		usize l = i << 1;
+		usize r = i << 1 | 1;
+		cols[i] = (cols[l] + cols[r]) / 2;
+	}
+
+	Dequeue *nodes = dequeue_new();
+	Dequeue *number_queue = dequeue_new();
+	Ilist *values = ilist_new();
+	Ulist *numbers = ulist_new();
+
+	dequeue_push_back(nodes, (isize)tree);
+	dequeue_push_back(number_queue, 1);
+
+	while (!dequeue_empty(nodes)) {
+		Tree *node = (Tree *)dequeue_pop_front(nodes);
+		isize number = dequeue_pop_front(number_queue);
+
+		ilist_push(values, node->value);
+		ulist_push(numbers, number);
+
+		if (node->left) {
+			dequeue_push_back(nodes, (isize)node->left);
+			dequeue_push_back(number_queue, number << 1);
+		}
+		if (node->right){
+			dequeue_push_back(nodes, (isize)node->right);
+			dequeue_push_back(number_queue, number << 1 | 1);
+		}
+	}
+
+	char *matrix = malloc(sizeof(char) * H * W);
+
+	memset(matrix, ' ', sizeof(char) * H * W);
+	for (usize i = 0; i < H - 1; ++i) {
+		matrix[i * W + w] = '\n';
+	}
+	matrix[W * H - 1] = '\0';
+
+	for (isize i = numbers->length - 1; i >= 0; --i) {
+		usize number = ulist_get(numbers, i);
+		isize value = ilist_get(values, i);
+
+		usize layer = usize_log2(number);
+		usize row = layer << 1;
+		usize col = cols[number];
+
+		if (layer != 0) {
+			if (number & 1) {
+				matrix[(row - 1) * W + col - 1] = '\\';
+				for (usize k = cols[number >> 1] + 1; k < col - 1; k++) {
+					matrix[(row - 2) * W + k] = '_';
+				}
+			} else {
+				matrix[(row - 1) * W + col + 1] = '/';
+				for (usize k = col + 2; k < cols[number >> 1]; k++) {
+					matrix[(row - 2) * W + k] = '_';
+				}
+			}
+		}
+
+		matrix[row * W + col] = _tree_char(value);
+	}
+
+	printf("%s\n", matrix);
+
+	dequeue_free(nodes);
+	dequeue_free(number_queue);
+	ilist_free(values);
+	ulist_free(numbers);
+
+	free(matrix);
+	free(cols);
 }
 
 BST *bst_new() {
