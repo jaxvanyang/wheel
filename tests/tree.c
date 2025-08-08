@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <basics/tree.h>
+#include <basics/random.h>
 #include <stdio.h>
 
 int main() {
@@ -81,5 +82,20 @@ int main() {
 		assert(tree_height(tree->root) == 3);
 
 		bst_free(tree);
+	}
+
+	{
+		usize n = 1000;
+		BST *tree = bst_new();
+
+		for (usize i = 0; i < n; ++i) {
+			bst_insert(tree, random_isize());
+		}
+
+		Ilist *inorder = tree_inorder(tree->root);
+
+		for (usize i = 1; i < inorder->length; ++i) {
+			assert(ilist_get(inorder, i - 1) <= ilist_get(inorder, i));
+		}
 	}
 }
