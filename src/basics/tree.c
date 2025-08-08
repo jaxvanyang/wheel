@@ -229,3 +229,19 @@ void bst_insert(BST *tree, isize value) {
 		}
 	}
 }
+
+Tree *bst_search(BST *tree, isize value) {
+	if (tree == NULL) return NULL;
+
+	Tree *p = tree->root;
+
+	while (p && p->value != value) {
+		if (value < p->value) {
+			p = p->left;
+		} else {
+			p = p->right;
+		}
+	}
+
+	return p;
+}

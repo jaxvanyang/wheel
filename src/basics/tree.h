@@ -35,3 +35,4 @@ typedef struct {
 BST *bst_new();
 void bst_free(BST *tree);
 void bst_insert(BST *tree, isize value);
+Tree *bst_search(BST *tree, isize value);
