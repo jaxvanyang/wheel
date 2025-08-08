@@ -1,6 +1,7 @@
 #include <assert.h>
-#include <basics/tree.h>
+#include <basics/list.h>
 #include <basics/random.h>
+#include <basics/tree.h>
 #include <stdio.h>
 
 int main() {
@@ -33,6 +34,7 @@ int main() {
 		Ilist *preorder = ilist_from((isize[]){1, 2, 4, 5, 3}, 5);
 		Ilist *inorder = ilist_from((isize[]){4, 2, 5, 1, 3}, 5);
 		Ilist *postorder = ilist_from((isize[]){4, 5, 2, 3, 1}, 5);
+		Ilist *levelorder = ilist_from((isize[]){1, 2, 3, 4, 5}, 5);
 
 		Tree *tree = tree_build(preorder, inorder);
 

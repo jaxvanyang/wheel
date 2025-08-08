@@ -18,6 +18,7 @@ Tree *tree_root(Tree *tree);
 Ilist *tree_preorder(Tree *tree);
 Ilist *tree_inorder(Tree *tree);
 Ilist *tree_postorder(Tree *tree);
+Ilist *tree_levelorder(Tree *tree);
 
 usize tree_size(Tree *tree);
 void tree_insert(Tree *parent, Tree *node, bool is_left);

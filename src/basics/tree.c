@@ -1,5 +1,7 @@
-#include "tree.h"
+#include "basics/dequeue.h"
 #include "basics/list.h"
+#include "tree.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 Tree *tree_new(isize value) {
@@ -87,6 +89,29 @@ void _tree_postorder(Ilist *list, Tree *node) {
 Ilist *tree_postorder(Tree *tree) {
 	Ilist *list = ilist_new();
 	_tree_postorder(list, tree);
+
+	return list;
+}
+
+Ilist *tree_levelorder(Tree *tree) {
+	Ilist *list = ilist_new();
+	Dequeue *queue = dequeue_new();
+
+	if (tree) {
+		dequeue_push_back(queue, (isize)tree);
+	}
+
+	while (!dequeue_empty(queue)) {
+		Tree *node = (Tree *)dequeue_pop_front(queue);
+		ilist_push(list, node->value);
+
+		if (node->left) {
+			dequeue_push_back(queue, (isize)node->left);
+		}
+		if (node->right) {
+			dequeue_push_back(queue, (isize)node->right);
+		}
+	}
 
 	return list;
 }
