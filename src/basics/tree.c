@@ -208,6 +208,22 @@ usize tree_height(Tree *tree) {
 	return h;
 }
 
+bool tree_equal(Tree *a, Tree *b) {
+	Ilist *a_preorder = tree_preorder(a);
+	Ilist *a_inorder = tree_inorder(a);
+	Ilist *b_preorder = tree_preorder(b);
+	Ilist *b_inorder = tree_inorder(b);
+
+	bool ret = ilist_equal(a_preorder, b_preorder) && ilist_equal(a_inorder, b_inorder);
+
+	ilist_free(a_preorder);
+	ilist_free(a_inorder);
+	ilist_free(b_preorder);
+	ilist_free(b_inorder);
+
+	return ret;
+}
+
 BST *bst_new() {
 	BST *tree = malloc(sizeof(BST));
 	tree->size = 0;

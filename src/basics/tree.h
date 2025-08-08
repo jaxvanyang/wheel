@@ -27,6 +27,7 @@ void tree_insert(Tree *parent, Tree *node, bool is_left);
 Tree *tree_build(Ilist *preorder, Ilist *inorder);
 
 usize tree_height(Tree *tree);
+bool tree_equal(Tree *a, Tree *b);
 
 typedef struct {
 	usize size;

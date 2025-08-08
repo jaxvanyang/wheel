@@ -49,16 +49,12 @@ int main() {
 		tree_insert(n2, n4, true);
 		tree_insert(n2, n5, false);
 
+		assert(tree_equal(n1, tree));
+		assert(tree_height(tree) == 3);
 		assert(ilist_equal(preorder, tree_preorder(tree)));
 		assert(ilist_equal(inorder, tree_inorder(tree)));
 		assert(ilist_equal(postorder, tree_postorder(tree)));
-		assert(tree_height(tree) == 3);
-
-		// TODO:
-		// assert(tree_equal(n1, tree));
-		assert(ilist_equal(preorder, tree_preorder(n1)));
-		assert(ilist_equal(inorder, tree_inorder(n1)));
-		assert(ilist_equal(postorder, tree_postorder(n1)));
+		assert(ilist_equal(levelorder, tree_levelorder(tree)));
 
 		tree_free(tree);
 		tree_free(n1);
