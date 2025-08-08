@@ -1,6 +1,7 @@
 #pragma once
 
 #include "basics/core.h"
+#include "basics/dequeue.h"
 #include "basics/list.h"
 #include "basics/random.h"
 #include "basics/str.h"
