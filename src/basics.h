@@ -5,6 +5,7 @@
 #include "basics/list.h"
 #include "basics/math.h"
 #include "basics/random.h"
+#include "basics/sort.h"
 #include "basics/str.h"
 #include "basics/tree.h"
 
