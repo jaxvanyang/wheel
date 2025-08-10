@@ -23,6 +23,7 @@ void ulist_free(Ulist *list);
 Ulist *ulist_from(usize *array, usize size);
 bool ulist_equal(Ulist *a, Ulist *b);
 void ulist_print(Ulist *list);
+void ulist_shuffle(Ulist *list);
 
 typedef struct {
 	usize size;
@@ -42,3 +43,4 @@ void ilist_free(Ilist *list);
 Ilist *ilist_from(isize *array, usize size);
 bool ilist_equal(Ilist *a, Ilist *b);
 void ilist_print(Ilist *list);
+void ilist_shuffle(Ilist *list);

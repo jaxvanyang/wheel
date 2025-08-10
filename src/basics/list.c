@@ -1,4 +1,5 @@
 #include "list.h"
+#include "random.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -143,6 +144,15 @@ void ulist_print(Ulist *list) {
 	printf("}\n");
 }
 
+void ulist_shuffle(Ulist *list) {
+	for (usize i = 1; i < list->length; ++i) {
+		usize j = random_range(i, list->length);
+		usize tmp = ulist_get(list, i - 1);
+		ulist_set(list, i - 1, ulist_get(list, j));
+		ulist_set(list, j, tmp);
+	}
+}
+
 Ilist *ilist_new() {
 	Ilist *list = malloc(sizeof(Ilist));
 
@@ -276,4 +286,13 @@ void ilist_print(Ilist *list) {
 		printf(", %lld", ilist_get(list, i));
 	}
 	printf("}");
+}
+
+void ilist_shuffle(Ilist *list) {
+	for (usize i = 1; i < list->length; ++i) {
+		usize j = random_range(i, list->length);
+		isize tmp = ilist_get(list, i - 1);
+		ilist_set(list, i - 1, ilist_get(list, j));
+		ilist_set(list, j, tmp);
+	}
 }
