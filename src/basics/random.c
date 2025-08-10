@@ -17,10 +17,10 @@ f64 random_f64() {
 	return (f64)random_usize() / (f64)USIZE_MAX;
 }
 
-usize random_range(usize min, usize max) {
-	assert(min <= max);
+usize random_range(usize start, usize end) {
+	assert(start <= end);
 
-	usize diff = max - min;
+	usize w = end - start;
 
-	return random_usize() % diff + min;
+	return random_usize() % w + start;
 }
