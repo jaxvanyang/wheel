@@ -1,3 +1,5 @@
+#pragma once
+
 #include "core.h"
 
 usize random_usize();

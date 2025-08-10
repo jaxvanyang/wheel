@@ -1,5 +1,7 @@
 //! Binary Tree
 
+#pragma once
+
 #include "core.h"
 #include "list.h"
 
