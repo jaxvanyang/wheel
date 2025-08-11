@@ -231,10 +231,10 @@ isize ilist_delete(Ilist *list, usize i) {
 
 	if (list->size > list->length * 2) {
 		usize new_size = list->size / 2;
-		usize *new_data = malloc(new_size * sizeof(usize));
+		isize *new_data = malloc(new_size * sizeof(usize));
 		memcpy(list->data, new_data, list->length * sizeof(usize));
 		free(list->data);
-		list->data = (isize *)new_data;
+		list->data = new_data;
 		list->size = new_size;
 	}
 
