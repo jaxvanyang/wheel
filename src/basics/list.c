@@ -12,8 +12,8 @@ Ulist *ulist_new() {
 
 	list->length = 0;
 	list->size = LIST_DEFAULT_SIZE;
-	list->start = malloc(list->size * sizeof(usize));
-	memset(list->start, 0x00, list->size * sizeof(usize));
+	list->data = malloc(list->size * sizeof(usize));
+	memset(list->data, 0x00, list->size * sizeof(usize));
 
 	return list;
 }
@@ -23,8 +23,8 @@ Ulist *ulist_new_with_size(usize size) {
 
 	list->length = 0;
 	list->size = size;
-	list->start = malloc(list->size * sizeof(usize));
-	memset(list->start, 0x00, list->size * sizeof(usize));
+	list->data = malloc(list->size * sizeof(usize));
+	memset(list->data, 0x00, list->size * sizeof(usize));
 
 	return list;
 }
@@ -34,7 +34,7 @@ usize ulist_get(Ulist *list, usize i) {
 		error("expected i < length, found: %zu >= %zu\n", i, list->length);
 	}
 
-	return list->start[i];
+	return list->data[i];
 }
 
 void ulist_set(Ulist *list, usize i, usize val) {
@@ -42,7 +42,7 @@ void ulist_set(Ulist *list, usize i, usize val) {
 		error("expected i < length, found: %zu >= %zu\n", i, list->length);
 	}
 
-	list->start[i] = val;
+	list->data[i] = val;
 }
 
 void ulist_insert(Ulist *list, usize i, usize val) {
@@ -52,10 +52,10 @@ void ulist_insert(Ulist *list, usize i, usize val) {
 
 	if (list->size <= list->length) {
 		usize new_size = list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
-		usize *new_start = malloc(new_size * sizeof(usize));
-		memcpy(new_start, list->start, list->length * sizeof(usize));
-		free(list->start);
-		list->start = new_start;
+		usize *new_data = malloc(new_size * sizeof(usize));
+		memcpy(new_data, list->data, list->size * sizeof(usize));
+		free(list->data);
+		list->data = new_data;
 		list->size = new_size;
 	}
 
@@ -87,10 +87,10 @@ usize ulist_delete(Ulist *list, usize i) {
 
 	if (list->size > list->length * 2) {
 		usize new_size = list->size / 2;
-		usize *new_start = malloc(new_size * sizeof(usize));
-		memcpy(list->start, new_start, list->length * sizeof(usize));
-		free(list->start);
-		list->start = new_start;
+		usize *new_data = malloc(new_size * sizeof(usize));
+		memcpy(list->data, new_data, list->length * sizeof(usize));
+		free(list->data);
+		list->data = new_data;
 		list->size = new_size;
 	}
 
@@ -104,8 +104,8 @@ bool ulist_is_empty(Ulist *list) {
 void ulist_free(Ulist *list) {
 	list->size = 0;
 	list->length = 0;
-	free(list->start);
-	list->start = NULL;
+	free(list->data);
+	list->data = NULL;
 	free(list);
 }
 
@@ -158,8 +158,8 @@ Ilist *ilist_new() {
 
 	list->length = 0;
 	list->size = LIST_DEFAULT_SIZE;
-	list->start = malloc(list->size * sizeof(isize));
-	memset(list->start, 0x00, list->size * sizeof(isize));
+	list->data = malloc(list->size * sizeof(isize));
+	memset(list->data, 0x00, list->size * sizeof(isize));
 
 	return list;
 }
@@ -169,8 +169,8 @@ Ilist *ilist_new_with_size(usize size) {
 
 	list->length = 0;
 	list->size = size;
-	list->start = malloc(list->size * sizeof(isize));
-	memset(list->start, 0x00, list->size * sizeof(isize));
+	list->data = malloc(list->size * sizeof(isize));
+	memset(list->data, 0x00, list->size * sizeof(isize));
 
 	return list;
 }
@@ -179,14 +179,14 @@ isize ilist_get(Ilist *list, usize i) {
 	if (i >= list->length) {
 		error("expected i < length, found: %zu >= %zu\n", i, list->length);
 	}
-	return list->start[i];
+	return list->data[i];
 }
 
 void ilist_set(Ilist *list, usize i, isize val) {
 	if (i >= list->length) {
 		error("expected i < length, found: %zu >= %zu\n", i, list->length);
 	}
-	list->start[i] = val;
+	list->data[i] = val;
 }
 
 void ilist_insert(Ilist *list, usize i, isize val) {
@@ -196,10 +196,10 @@ void ilist_insert(Ilist *list, usize i, isize val) {
 
 	if (list->size < list->length + 1) {
 		usize new_size = list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
-		usize *new_start = malloc(new_size * sizeof(usize));
-		memcpy(new_start, list->start, list->length * sizeof(usize));
-		free(list->start);
-		list->start = (isize *)new_start;
+		usize *new_data = malloc(new_size * sizeof(usize));
+		memcpy(new_data, list->data, list->size * sizeof(usize));
+		free(list->data);
+		list->data = (isize *)new_data;
 		list->size = new_size;
 	}
 
@@ -231,10 +231,10 @@ isize ilist_delete(Ilist *list, usize i) {
 
 	if (list->size > list->length * 2) {
 		usize new_size = list->size / 2;
-		usize *new_start = malloc(new_size * sizeof(usize));
-		memcpy(list->start, new_start, list->length * sizeof(usize));
-		free(list->start);
-		list->start = (isize *)new_start;
+		usize *new_data = malloc(new_size * sizeof(usize));
+		memcpy(list->data, new_data, list->length * sizeof(usize));
+		free(list->data);
+		list->data = (isize *)new_data;
 		list->size = new_size;
 	}
 
@@ -248,8 +248,8 @@ bool ilist_is_empty(Ilist *list) {
 void ilist_free(Ilist *list) {
 	list->size = 0;
 	list->length = 0;
-	free(list->start);
-	list->start = NULL;
+	free(list->data);
+	list->data = NULL;
 	free(list);
 }
 

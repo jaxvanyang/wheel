@@ -8,7 +8,7 @@ extern const usize LIST_MAX_INCREASE;
 typedef struct {
 	usize size;
 	usize length;
-	usize *start;
+	usize *data;
 } Ulist;
 
 Ulist *ulist_new();
@@ -28,7 +28,7 @@ void ulist_shuffle(Ulist *list);
 typedef struct {
 	usize size;
 	usize length;
-	isize *start;
+	isize *data;
 } Ilist;
 
 Ilist *ilist_new();
