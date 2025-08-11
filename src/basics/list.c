@@ -31,7 +31,7 @@ Ulist *ulist_new_with_size(usize size) {
 
 usize ulist_get(Ulist *list, usize i) {
 	if (i >= list->length) {
-		error("expected i < length, found: %llu >= %llu\n", i, list->length);
+		error("expected i < length, found: %zu >= %zu\n", i, list->length);
 	}
 
 	return list->start[i];
@@ -39,7 +39,7 @@ usize ulist_get(Ulist *list, usize i) {
 
 void ulist_set(Ulist *list, usize i, usize val) {
 	if (i >= list->length) {
-		error("expected i < length, found: %llu >= %llu\n", i, list->length);
+		error("expected i < length, found: %zu >= %zu\n", i, list->length);
 	}
 
 	list->start[i] = val;
@@ -47,7 +47,7 @@ void ulist_set(Ulist *list, usize i, usize val) {
 
 void ulist_insert(Ulist *list, usize i, usize val) {
 	if (i > list->length) {
-		error("expected i <= length, found: %llu > %llu\n", i, list->length);
+		error("expected i <= length, found: %zu > %zu\n", i, list->length);
 	}
 
 	if (list->size <= list->length) {
@@ -74,7 +74,7 @@ void ulist_push(Ulist *list, usize val) {
 
 usize ulist_delete(Ulist *list, usize i) {
 	if (i >= list->length) {
-		error("expected i < length, found: %llu >= %llu\n", i, list->length);
+		error("expected i < length, found: %zu >= %zu\n", i, list->length);
 	}
 
 	usize ret = ulist_get(list, i);
@@ -136,10 +136,10 @@ bool ulist_equal(Ulist *a, Ulist *b) {
 void ulist_print(Ulist *list) {
 	printf("{");
 	if (list->length > 0) {
-		printf("%llu", ulist_get(list, 0));
+		printf("%zu", ulist_get(list, 0));
 	}
 	for (usize i = 1; i < list->length; ++i) {
-		printf(", %llu", ulist_get(list, i));
+		printf(", %zu", ulist_get(list, i));
 	}
 	printf("}\n");
 }
@@ -177,21 +177,21 @@ Ilist *ilist_new_with_size(usize size) {
 
 isize ilist_get(Ilist *list, usize i) {
 	if (i >= list->length) {
-		error("expected i < length, found: %llu >= %llu\n", i, list->length);
+		error("expected i < length, found: %zu >= %zu\n", i, list->length);
 	}
 	return list->start[i];
 }
 
 void ilist_set(Ilist *list, usize i, isize val) {
 	if (i >= list->length) {
-		error("expected i < length, found: %llu >= %llu\n", i, list->length);
+		error("expected i < length, found: %zu >= %zu\n", i, list->length);
 	}
 	list->start[i] = val;
 }
 
 void ilist_insert(Ilist *list, usize i, isize val) {
 	if (i > list->length) {
-		error("expected i <= length, found: %llu > %llu\n", i, list->length);
+		error("expected i <= length, found: %zu > %zu\n", i, list->length);
 	}
 
 	if (list->size < list->length + 1) {
@@ -218,7 +218,7 @@ void ilist_push(Ilist *list, isize val) {
 
 isize ilist_delete(Ilist *list, usize i) {
 	if (i >= list->length) {
-		error("expected i < length, found: %llu >= %llu\n", i, list->length);
+		error("expected i < length, found: %zu >= %zu\n", i, list->length);
 	}
 
 	isize ret = ilist_get(list, i);
@@ -280,10 +280,10 @@ bool ilist_equal(Ilist *a, Ilist *b) {
 void ilist_print(Ilist *list) {
 	printf("{");
 	if (list->length > 0) {
-		printf("%lld", ilist_get(list, 0));
+		printf("%ld", ilist_get(list, 0));
 	}
 	for (usize i = 1; i < list->length; ++i) {
-		printf(", %lld", ilist_get(list, i));
+		printf(", %ld", ilist_get(list, i));
 	}
 	printf("}");
 }
