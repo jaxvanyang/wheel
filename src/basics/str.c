@@ -1,3 +1,4 @@
+#include "list.h"
 #include "str.h"
 #include <string.h>
 #include <sys/errno.h>

@@ -296,3 +296,106 @@ void ilist_shuffle(Ilist *list) {
 		ilist_set(list, j, tmp);
 	}
 }
+
+Slist *slist_new() {
+	Slist *list = (Slist *)malloc(sizeof(Slist));
+
+	list->length = 0;
+	list->size = LIST_DEFAULT_SIZE;
+	list->data = malloc(list->size * sizeof(Str *));
+	memset(list->data, 0x00, list->size * sizeof(Str *));
+
+	return list;
+}
+
+Str *slist_get(Slist *list, usize i) {
+	if (i >= list->length) {
+		error("expected i < length, found: %zu >= %zu\n", i, list->length);
+	}
+	return list->data[i];
+}
+
+void slist_set(Slist *list, usize i, Str *s) {
+	if (i >= list->length) {
+		error("expected i < length, found: %zu >= %zu\n", i, list->length);
+	}
+	list->data[i] = s;
+}
+
+void slist_insert(Slist *list, usize i, Str *s) {
+	if (i > list->length) {
+		error("expected i <= length, found: %zu > %zu\n", i, list->length);
+	}
+
+	if (list->size < list->length + 1) {
+		usize new_size = list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
+		Str **new_data = malloc(new_size * sizeof(Str *));
+		memcpy(new_data, list->data, list->size * sizeof(Str *));
+		free(list->data);
+		list->data = (Str **)new_data;
+		list->size = new_size;
+	}
+
+	list->length += 1;
+
+	for (usize j = list->length - 1; j > i; --j) {
+		slist_set(list, j, slist_get(list, j - 1));
+	}
+
+	slist_set(list, i, s);
+}
+
+void slist_push(Slist *list, Str *s) {
+	slist_insert(list, list->length, s);
+}
+
+void slist_delete(Slist *list, usize i) {
+	if (i >= list->length) {
+		error("expected i < length, found: %zu >= %zu\n", i, list->length);
+	}
+
+	str_free(slist_get(list, i));
+
+	for (usize j = i; j < list->length - 1; ++j) {
+		slist_set(list, j, slist_get(list, j + 1));
+	}
+
+	list->length -= 1;
+
+	if (list->size > list->length * 2) {
+		usize new_size = list->size / 2;
+		Str **new_data = malloc(new_size * sizeof(Str *));
+		memcpy(list->data, new_data, list->length * sizeof(Str *));
+		free(list->data);
+		list->data = new_data;
+		list->size = new_size;
+	}
+}
+
+bool slist_is_empty(Slist *list) {
+	return list->length == 0;
+}
+
+void slist_free(Slist *list) {
+	for (usize i = 0; i < list->length; ++i) {
+		str_free(slist_get(list, i));
+		slist_set(list, i, NULL);
+	}
+
+	list->size = 0;
+	list->length = 0;
+
+	free(list->data);
+	list->data = NULL;
+
+	free(list);
+}
+
+void slist_shuffle(Slist *list) {
+	for (usize i = 1; i < list->length; ++i) {
+		usize j = random_range(i, list->length);
+		Str *tmp = slist_get(list, i - 1);
+		slist_set(list, i - 1, slist_get(list, j));
+		slist_set(list, j, tmp);
+	}
+}

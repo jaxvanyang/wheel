@@ -1,17 +1,12 @@
 #pragma once
 
 #include "core.h"
-#include "list.h"
+#include "list/types.h"
+#include "str/types.h"
 
 Ilist *build_next(char *t);
 Ilist *build_nextval(char *t);
 isize kmp(char *s, char *t);
-
-typedef struct {
-	usize size;
-	usize length;
-	char *data;
-} Str;
 
 Str *str_new();
 Str *str_from(char *s);

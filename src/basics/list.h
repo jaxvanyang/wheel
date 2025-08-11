@@ -1,15 +1,12 @@
 #pragma once
 
 #include "core.h"
+#include "list/types.h"
+#include "str.h"
 
 extern const usize LIST_DEFAULT_SIZE;
 extern const usize LIST_MAX_INCREASE;
 
-typedef struct {
-	usize size;
-	usize length;
-	usize *data;
-} Ulist;
 
 Ulist *ulist_new();
 Ulist *ulist_new_with_size(usize size);
@@ -25,12 +22,6 @@ bool ulist_equal(Ulist *a, Ulist *b);
 void ulist_print(Ulist *list);
 void ulist_shuffle(Ulist *list);
 
-typedef struct {
-	usize size;
-	usize length;
-	isize *data;
-} Ilist;
-
 Ilist *ilist_new();
 Ilist *ilist_new_with_size(usize size);
 isize ilist_get(Ilist *list, usize i);
@@ -44,3 +35,13 @@ Ilist *ilist_from(isize *array, usize size);
 bool ilist_equal(Ilist *a, Ilist *b);
 void ilist_print(Ilist *list);
 void ilist_shuffle(Ilist *list);
+
+Slist *slist_new();
+Str *slist_get(Slist *list, usize i);
+void slist_set(Slist *list, usize i, Str *s);
+void slist_insert(Slist *list, usize i, Str *s);
+void slist_push(Slist *list, Str *s);
+void slist_delete(Slist *list, usize i);
+bool slist_is_empty(Slist *list);
+void slist_free(Slist *list);
+void slist_shuffle(Slist *list);

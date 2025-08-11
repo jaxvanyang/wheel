@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <basics/list.h>
 #include <basics/str.h>
 
 int main() {
