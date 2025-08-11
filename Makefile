@@ -14,7 +14,7 @@ OBJS := $(patsubst %.c,%.o,$(wildcard $(BASICS)/*.c))
 OBJS += $(CORES)
 
 BINS := $(patsubst %.c,%,$(wildcard bin/*.c))
-BINS := $(patsubst %.c,%,$(wildcard tests/*.c))
+TESTS := $(patsubst %.c,%,$(wildcard tests/*.c))
 
 .PHONY: all
 all: bins tests
