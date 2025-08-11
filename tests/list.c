@@ -15,6 +15,9 @@ int main() {
 		}
 
 		assert(ulist_equal(a, b));
+
+		ulist_free(a);
+		ulist_free(b);
 	}
 
 	{
@@ -29,6 +32,9 @@ int main() {
 		}
 
 		assert(ilist_equal(a, b));
+
+		ilist_free(a);
+		ilist_free(b);
 	}
 
 	{
@@ -40,5 +46,11 @@ int main() {
 		for (usize i = 0; i < list->length; ++i) {
 			assert(ulist_get(list, i) == i);
 		}
+
+		for (usize len = list->length, i = 0; i < len; ++i) {
+			assert(ulist_delete(list, 0) == i);
+		}
+
+		ulist_free(list);
 	}
 }

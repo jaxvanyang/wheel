@@ -88,7 +88,7 @@ usize ulist_delete(Ulist *list, usize i) {
 	if (list->size > list->length * 2) {
 		usize new_size = list->size / 2;
 		usize *new_data = malloc(new_size * sizeof(usize));
-		memcpy(list->data, new_data, list->length * sizeof(usize));
+		memcpy(new_data, list->data, list->length * sizeof(usize));
 		free(list->data);
 		list->data = new_data;
 		list->size = new_size;
@@ -232,7 +232,7 @@ isize ilist_delete(Ilist *list, usize i) {
 	if (list->size > list->length * 2) {
 		usize new_size = list->size / 2;
 		isize *new_data = malloc(new_size * sizeof(usize));
-		memcpy(list->data, new_data, list->length * sizeof(usize));
+		memcpy(new_data, list->data, list->length * sizeof(usize));
 		free(list->data);
 		list->data = new_data;
 		list->size = new_size;
@@ -365,7 +365,7 @@ void slist_delete(Slist *list, usize i) {
 	if (list->size > list->length * 2) {
 		usize new_size = list->size / 2;
 		Str **new_data = malloc(new_size * sizeof(Str *));
-		memcpy(list->data, new_data, list->length * sizeof(Str *));
+		memcpy(new_data, list->data, list->length * sizeof(Str *));
 		free(list->data);
 		list->data = new_data;
 		list->size = new_size;
