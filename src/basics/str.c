@@ -147,24 +147,23 @@ void str_push_str(Str *s, char *t) {
 	}
 }
 
-usize str_delete(Str *s, usize i) {
+char str_delete(Str *s, usize i) {
 	if (i >= s->length) {
 		error("expected i < length, found: %zu >= %zu\n", i, s->length);
 	}
 
 	char ret = s->data[i];
 
-	for (usize j = i; j < s->length; ++j) {
+	for (usize j = i; j <= s->length; ++j) {
 		s->data[j] = s->data[j + 1];
 	}
 
 	s->length -= 1;
 
-	if (s->size > (s->length) * 2) {
+	if (s->size > (s->length + 1) * 2) {
 		usize new_size = s->size / 2;
 		char *new_data = malloc(new_size * sizeof(char));
-		memcpy(s->data, new_data, s->length * sizeof(char));
-		s->data[s->length] = '\0';
+		memcpy(new_data, s->data, (s->length + 1) * sizeof(char));
 		free(s->data);
 		s->data = new_data;
 		s->size = new_size;

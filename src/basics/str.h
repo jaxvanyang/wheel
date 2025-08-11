@@ -16,7 +16,7 @@ void str_insert(Str *s, usize i, char c);
 void str_insert_str(Str *s, usize i, char *t);
 void str_push(Str *s, char c);
 void str_push_str(Str *s, char *t);
-usize str_delete(Str *s, usize i);
+char str_delete(Str *s, usize i);
 
 /// Read a line from the file to the string.
 void str_readline(Str *s, FILE *f);
