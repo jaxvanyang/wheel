@@ -30,4 +30,15 @@ int main() {
 
 		assert(ilist_equal(a, b));
 	}
+
+	{
+		usize array[] = {1, 2, 3, 4, 5};
+		usize size = sizeof(array) / sizeof(usize);
+		Ulist *list = ulist_from(array, size);
+
+		ulist_insert(list, 0, 0);
+		for (usize i = 0; i < list->length; ++i) {
+			assert(ulist_get(list, i) == i);
+		}
+	}
 }
