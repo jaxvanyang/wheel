@@ -1,5 +1,6 @@
 #include "str.h"
 #include <string.h>
+#include <sys/errno.h>
 
 Ilist *build_next(char *t) {
 	usize len = strlen(t);
@@ -169,4 +170,24 @@ usize str_delete(Str *s, usize i) {
 	}
 
 	return ret;
+}
+
+void str_readline(Str *s, FILE *f) {
+	s->length = 0;
+	s->data[0] = '\0';
+
+	char c;
+
+	while ((c = fgetc(f)) != EOF) {
+		str_push(s, c);
+
+		if (c == '\n') {
+			break;
+		}
+	}
+
+	if (c == EOF && ferror(f)) {
+		perror(NULL);
+		exit(errno);
+	}
 }
