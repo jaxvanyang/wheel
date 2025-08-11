@@ -1,4 +1,5 @@
 #include "sort.h"
+#include <string.h>
 
 void _qsort_u(Ulist *list, usize begin, usize end) {
 	if (end <= begin + 1) return;
@@ -48,4 +49,29 @@ void _qsort_i(Ilist *list, usize begin, usize end) {
 void qsort_i(Ilist *list) {
 	ilist_shuffle(list);
 	_qsort_i(list, 0, list->length);
+}
+
+void _qsort_s(Slist *list, usize begin, usize end) {
+	if (end <= begin + 1) return;
+
+	usize i = begin, j = end - 1;
+	Str *pivot = slist_get(list, i);
+	
+	while (i < j) {
+		while (i < j && strcmp(slist_get(list, j)->data, pivot->data) >= 0) --j;
+		slist_set(list, i, slist_get(list, j));
+
+		while (i < j && strcmp(slist_get(list, i)->data, pivot->data) <= 0) ++i;
+		slist_set(list, j, slist_get(list, i));
+	}
+
+	slist_set(list, i, pivot);
+
+	_qsort_s(list, begin, i);
+	_qsort_s(list, i + 1, end);
+}
+
+void qsort_s(Slist *list) {
+	slist_shuffle(list);
+	_qsort_s(list, 0, list->length);
 }
