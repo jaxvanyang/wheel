@@ -11,6 +11,8 @@ int main() {
 			break;
 		}
 
+		str_delete(s, s->length - 1);
+
 		slist_push(list, s);
 	}
 
@@ -18,6 +20,6 @@ int main() {
 
 	for (usize i = 0; i < list->length; ++i) {
 		Str *s = slist_get(list, i);
-		printf("%s", s->data);
+		printf("%s\n", s->data);
 	}
 }
