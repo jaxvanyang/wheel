@@ -1,34 +1,23 @@
-#include <stdio.h>
-#include <basics/list.h>
-
-void uniq(Ilist *list) {
-	usize i = 0, j = 0;
-
-	while (j < list->length) {
-		while(j < list->length && ilist_get(list, i) == ilist_get(list, j)) {
-			++j;
-		}
-		if (j < list->length) {
-			ilist_set(list, ++i, ilist_get(list, j));
-		}
-	}
-
-	list->length = i + 1;
-}
+#include <basics.h>
+#include <string.h>
 
 int main() {
-	isize n = 100;
-	Ilist list = ilist_new();
+	Str *last = str_new();
 
-	for (isize i = 0; i <= n; ++i) {
-		for (isize j = 0; j < i; ++j) {
-			ilist_insert(&list, list.length, i);
+	while (true) {
+		Str *s = str_new();
+		str_readline(s, stdin);
+
+		if (s->length == 0) {
+			break;
+		}
+
+		if (strcmp(last->data, s->data) != 0) {
+			printf("%s", s->data);
+			str_free(last);
+			last = s;
 		}
 	}
 
-	uniq(&list);
-
-	for (usize i = 0; i < list.length; ++i) {
-		printf("%llu\n", ilist_get(&list, i));
-	}
+	str_free(last);
 }
