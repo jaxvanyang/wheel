@@ -1,7 +1,7 @@
 CC := clang
 LD := $(shell [ $$(uname) = 'Darwin' ] && echo ld || echo mold)
-CFLAGS += -O2 -g -Isrc -Wall
-LDFLAGS += -fuse-ld=$(LD) -Lsrc -lbasics
+CFLAGS := -O2 -g -Isrc -Wall $(CFLAGS)
+LDFLAGS := -fuse-ld=$(LD) -Lsrc -lbasics $(LDLAGS)
 
 BASICS := src/basics
 CORE := $(BASICS)/core
