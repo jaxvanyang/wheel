@@ -1,4 +1,5 @@
 #include "dequeue.h"
+
 #include "basics/core/error.h"
 
 DequeueNode *dequeue_node_new(isize value) {
@@ -146,6 +147,4 @@ isize dequeue_last(Dequeue *queue) {
 	return queue->tail->value;
 }
 
-bool dequeue_empty(Dequeue *queue) {
-	return queue->size == 0;
-}
+bool dequeue_empty(Dequeue *queue) { return queue->size == 0; }

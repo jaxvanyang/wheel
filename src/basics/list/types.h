@@ -20,4 +20,3 @@ typedef struct {
 	usize length;
 	Str **data;
 } Slist;
-

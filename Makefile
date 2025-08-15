@@ -37,6 +37,10 @@ $(LIBA): $(OBJS)
 $(BASICS)/%.o: $(BASICS)/%.c
 $(CORE)/%.o: $(CORE)/%.c
 
+.PHONY: format
+format:
+	clang-format -i **/*.c **/*.h
+
 .PHONY: clean
 clean:
 	rm -f $(LIBA) $(LIBSO) $(BINS) $(TESTS) $(OBJS)

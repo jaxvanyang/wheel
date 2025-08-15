@@ -1,8 +1,10 @@
 #include "list.h"
-#include "random.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "random.h"
 
 const usize LIST_DEFAULT_SIZE = 128;
 const usize LIST_MAX_INCREASE = 1024;
@@ -51,7 +53,8 @@ void ulist_insert(Ulist *list, usize i, usize val) {
 	}
 
 	if (list->size <= list->length) {
-		usize new_size = list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
+		usize new_size =
+				list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
 		usize *new_data = malloc(new_size * sizeof(usize));
 		memcpy(new_data, list->data, list->size * sizeof(usize));
 		free(list->data);
@@ -68,9 +71,7 @@ void ulist_insert(Ulist *list, usize i, usize val) {
 	ulist_set(list, i, val);
 }
 
-void ulist_push(Ulist *list, usize val) {
-	ulist_insert(list, list->length, val);
-}
+void ulist_push(Ulist *list, usize val) { ulist_insert(list, list->length, val); }
 
 usize ulist_delete(Ulist *list, usize i) {
 	if (i >= list->length) {
@@ -97,9 +98,7 @@ usize ulist_delete(Ulist *list, usize i) {
 	return ret;
 }
 
-bool ulist_is_empty(Ulist *list) {
-	return list->length == 0;
-}
+bool ulist_is_empty(Ulist *list) { return list->length == 0; }
 
 void ulist_free(Ulist *list) {
 	list->size = 0;
@@ -195,7 +194,8 @@ void ilist_insert(Ilist *list, usize i, isize val) {
 	}
 
 	if (list->size < list->length + 1) {
-		usize new_size = list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
+		usize new_size =
+				list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
 		usize *new_data = malloc(new_size * sizeof(usize));
 		memcpy(new_data, list->data, list->size * sizeof(usize));
 		free(list->data);
@@ -212,9 +212,7 @@ void ilist_insert(Ilist *list, usize i, isize val) {
 	ilist_set(list, i, val);
 }
 
-void ilist_push(Ilist *list, isize val) {
-	ilist_insert(list, list->length, val);
-}
+void ilist_push(Ilist *list, isize val) { ilist_insert(list, list->length, val); }
 
 isize ilist_delete(Ilist *list, usize i) {
 	if (i >= list->length) {
@@ -241,9 +239,7 @@ isize ilist_delete(Ilist *list, usize i) {
 	return ret;
 }
 
-bool ilist_is_empty(Ilist *list) {
-	return list->length == 0;
-}
+bool ilist_is_empty(Ilist *list) { return list->length == 0; }
 
 void ilist_free(Ilist *list) {
 	list->size = 0;
@@ -328,7 +324,8 @@ void slist_insert(Slist *list, usize i, Str *s) {
 	}
 
 	if (list->size < list->length + 1) {
-		usize new_size = list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
+		usize new_size =
+				list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
 		Str **new_data = malloc(new_size * sizeof(Str *));
 		memcpy(new_data, list->data, list->size * sizeof(Str *));
 		free(list->data);
@@ -345,9 +342,7 @@ void slist_insert(Slist *list, usize i, Str *s) {
 	slist_set(list, i, s);
 }
 
-void slist_push(Slist *list, Str *s) {
-	slist_insert(list, list->length, s);
-}
+void slist_push(Slist *list, Str *s) { slist_insert(list, list->length, s); }
 
 void slist_delete(Slist *list, usize i) {
 	if (i >= list->length) {
@@ -372,9 +367,7 @@ void slist_delete(Slist *list, usize i) {
 	}
 }
 
-bool slist_is_empty(Slist *list) {
-	return list->length == 0;
-}
+bool slist_is_empty(Slist *list) { return list->length == 0; }
 
 void slist_free(Slist *list) {
 	for (usize i = 0; i < list->length; ++i) {

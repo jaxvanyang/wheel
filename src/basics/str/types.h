@@ -7,4 +7,3 @@ typedef struct {
 	usize length;
 	char *data;
 } Str;
-

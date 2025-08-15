@@ -1,7 +1,9 @@
-#include "list.h"
 #include "str.h"
+
 #include <string.h>
 #include <sys/errno.h>
+
+#include "list.h"
 
 Ilist *build_next(char *t) {
 	usize len = strlen(t);
@@ -11,7 +13,7 @@ Ilist *build_next(char *t) {
 
 	usize i = 1;
 	isize j = -1;
-	
+
 	while (i < len) {
 		if (j == -1 || t[j] == t[i - 1]) {
 			ilist_push(next, ++j);
@@ -32,7 +34,7 @@ Ilist *build_nextval(char *t) {
 
 	usize i = 1;
 	isize j = -1;
-	
+
 	while (i < len) {
 		if (j == -1 || t[j] == t[i - 1]) {
 			++j;
@@ -110,7 +112,8 @@ void str_insert(Str *s, usize i, char c) {
 	}
 
 	if (s->size <= s->length + 1) {
-		usize new_size = s->size + (s->size < LIST_MAX_INCREASE ? s->size : LIST_MAX_INCREASE);
+		usize new_size =
+				s->size + (s->size < LIST_MAX_INCREASE ? s->size : LIST_MAX_INCREASE);
 		char *new_data = malloc(new_size * sizeof(char));
 		memcpy(new_data, s->data, s->size * sizeof(char));
 		free(s->data);
@@ -135,9 +138,7 @@ void str_insert_str(Str *s, usize i, char *t) {
 	}
 }
 
-void str_push(Str *s, char c) {
-	str_insert(s, s->length, c);
-}
+void str_push(Str *s, char c) { str_insert(s, s->length, c); }
 
 void str_push_str(Str *s, char *t) {
 	usize len = strlen(t);

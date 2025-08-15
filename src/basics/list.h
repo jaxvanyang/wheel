@@ -7,7 +7,6 @@
 extern const usize LIST_DEFAULT_SIZE;
 extern const usize LIST_MAX_INCREASE;
 
-
 Ulist *ulist_new();
 Ulist *ulist_new_with_size(usize size);
 usize ulist_get(Ulist *list, usize i);

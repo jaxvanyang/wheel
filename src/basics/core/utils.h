@@ -1,7 +1,8 @@
 #pragma once
 
-#include "./types.h"
 #include <sys/time.h>
+
+#include "./types.h"
 
 typedef struct timeval TimeVal;
 

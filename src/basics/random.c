@@ -1,6 +1,7 @@
 #include "random.h"
-#include <stdlib.h>
+
 #include <assert.h>
+#include <stdlib.h>
 
 usize random_usize() {
 	usize a = random();
@@ -9,13 +10,9 @@ usize random_usize() {
 	return a << 32 | b;
 }
 
-isize random_isize() {
-	return random_usize();
-}
+isize random_isize() { return random_usize(); }
 
-f64 random_f64() {
-	return (f64)random_usize() / (f64)USIZE_MAX;
-}
+f64 random_f64() { return (f64)random_usize() / (f64)USIZE_MAX; }
 
 usize random_range(usize start, usize end) {
 	assert(start <= end);

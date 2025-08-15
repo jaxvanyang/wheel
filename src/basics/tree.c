@@ -1,20 +1,23 @@
+#include "tree.h"
+
+#include <stdlib.h>
+#include <string.h>
+
 #include "basics/dequeue.h"
 #include "basics/list.h"
 #include "basics/math.h"
-#include "tree.h"
-#include <stdlib.h>
-#include <string.h>
 
 Tree *tree_new(isize value) {
 	Tree *tree = (Tree *)malloc(sizeof(Tree));
 	tree->value = value;
-	tree->parent = tree->left = tree->right =  NULL;
+	tree->parent = tree->left = tree->right = NULL;
 
 	return tree;
 }
 
 void tree_free(Tree *tree) {
-	if (tree == NULL) return;
+	if (tree == NULL)
+		return;
 
 	if (tree->parent) {
 		if (tree->parent->left == tree) {
@@ -40,7 +43,8 @@ void tree_free(Tree *tree) {
 }
 
 Tree *tree_root(Tree *tree) {
-	if (tree == NULL) return NULL;
+	if (tree == NULL)
+		return NULL;
 
 	while (tree->parent) {
 		tree = tree->parent;
@@ -118,13 +122,15 @@ Ilist *tree_levelorder(Tree *tree) {
 }
 
 usize tree_size(Tree *tree) {
-	if (tree == NULL) return 0;
+	if (tree == NULL)
+		return 0;
 
 	return 1 + tree_size(tree->left) + tree_size(tree->right);
 }
 
 void tree_insert(Tree *parent, Tree *node, bool is_left) {
-	if (parent == NULL) return;
+	if (parent == NULL)
+		return;
 
 	if (node) {
 		if (node->parent) {
@@ -202,7 +208,8 @@ Tree *tree_build(Ilist *preorder, Ilist *inorder) {
 }
 
 usize tree_height(Tree *tree) {
-	if (tree == NULL) return 0;
+	if (tree == NULL)
+		return 0;
 
 	usize h = 1 + max(tree_height(tree->left), tree_height(tree->right));
 
@@ -311,7 +318,7 @@ void tree_print(Tree *tree) {
 			dequeue_push_back(nodes, (isize)node->left);
 			dequeue_push_back(number_queue, number << 1);
 		}
-		if (node->right){
+		if (node->right) {
 			dequeue_push_back(nodes, (isize)node->right);
 			dequeue_push_back(number_queue, number << 1 | 1);
 		}
@@ -409,7 +416,8 @@ void bst_insert(BST *tree, isize value) {
 }
 
 Tree *bst_search(BST *tree, isize value) {
-	if (tree == NULL) return NULL;
+	if (tree == NULL)
+		return NULL;
 
 	Tree *p = tree->root;
 
