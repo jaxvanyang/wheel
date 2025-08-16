@@ -2,6 +2,7 @@
 
 #include "basics/core.h"
 #include "basics/dequeue.h"
+#include "basics/float.h"
 #include "basics/list.h"
 #include "basics/math.h"
 #include "basics/random.h"
