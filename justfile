@@ -1,9 +1,9 @@
 build:
 	make
 
-run bin:
+run bin *args:
 	make bin/{{bin}}
-	bin/{{bin}}
+	bin/{{bin}} {{args}}
 
 test test:
 	make tests/{{test}}
