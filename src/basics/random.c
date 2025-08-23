@@ -3,6 +3,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
+void tsrandom() {
+	srandom(time(NULL));
+}
+
 usize random_usize() {
 	usize a = random();
 	usize b = random();
