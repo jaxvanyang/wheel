@@ -315,6 +315,8 @@ int main() {
 	SetTargetFPS(10);
 	HideCursor();
 
+	tsrandom();
+
 	Game *game = new_game();
 
 	while (!WindowShouldClose()) {
