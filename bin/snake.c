@@ -154,12 +154,18 @@ Position random_fruit(Snake *snake) {
 
 void draw_fruit(Position fruit) { DrawRectangle(fruit.x, fruit.y, UNIT, UNIT, PINK); }
 
-void draw_fps() { DrawText(TextFormat("FPS: %2i", GetFPS()), 0, 0, 20, LIME); }
+void draw_fps() {
+	Color c = LIME;
+	c.a = 150;
+	DrawText(TextFormat("FPS: %2i", GetFPS()), 0, 0, 20, c);
+}
 
 void draw_score(usize score) {
 	char *text;
 	asprintf(&text, "Score: %lu", score);
-	DrawText(text, 0, 20, 20, ORANGE);
+	Color c = ORANGE;
+	c.a = 150;
+	DrawText(text, 0, 20, 20, c);
 }
 
 Game *new_game() {
@@ -188,7 +194,9 @@ void draw(Game *game) {
 	draw_score(game->snake->xs->size - 2);
 	draw_fps();
 	if (game->automatic) {
-		DrawText("Auto", 0, 40, 20, WHITE);
+		Color c = WHITE;
+		c.a = 150;
+		DrawText("Auto", 0, 40, 20, c);
 	}
 	if (game->is_over) {
 		DrawText("Game Over", WIDTH / 2 - 80, HEIGHT / 2 - 20, 40, RED);
