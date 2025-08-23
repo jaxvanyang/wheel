@@ -1,4 +1,3 @@
-#include "basics/core/error.h"
 #include <basics.h>
 #include <raylib.h>
 
@@ -58,8 +57,7 @@ void free_snake(Snake *snake) {
 }
 
 void draw_snake(Snake *snake) {
-	DrawRectangle(
-		dequeue_first(snake->xs), dequeue_first(snake->ys), UNIT, UNIT, RAYWHITE);
+	DrawRectangle(dequeue_first(snake->xs), dequeue_first(snake->ys), UNIT, UNIT, GREEN);
 
 	DequeueNode *xp = snake->xs->head->next;
 	DequeueNode *yp = snake->ys->head->next;
@@ -152,7 +150,9 @@ Position random_fruit(Snake *snake) {
 	}
 }
 
-void draw_fruit(Position fruit) { DrawRectangle(fruit.x, fruit.y, UNIT, UNIT, PINK); }
+void draw_fruit(Position fruit) {
+	DrawRectangle(fruit.x, fruit.y, UNIT, UNIT, RAYWHITE);
+}
 
 void draw_fps() {
 	Color c = LIME;
@@ -163,7 +163,7 @@ void draw_fps() {
 void draw_score(usize score) {
 	char *text;
 	asprintf(&text, "Score: %lu", score);
-	Color c = ORANGE;
+	Color c = BLUE;
 	c.a = 150;
 	DrawText(text, 0, 20, 20, c);
 }
