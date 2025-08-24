@@ -1,15 +1,16 @@
 #include <basics.h>
 #include <raylib.h>
+#include <string.h>
 
 const i32 WIDTH = 800, HEIGHT = 450;
 const i32 UNIT = 10;
 const i32 N_WIDTH = WIDTH / UNIT, N_HEIGHT = HEIGHT / UNIT;
 
 typedef enum {
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT,
+	UP = 0,
+	DOWN = 1,
+	LEFT = 2,
+	RIGHT = 3,
 } Direction;
 
 typedef struct {
@@ -155,7 +156,7 @@ void draw_fruit(Position fruit) {
 }
 
 void draw_fps() {
-	Color c = LIME;
+	Color c = DARKGREEN;
 	c.a = 150;
 	DrawText(TextFormat("FPS: %2i", GetFPS()), 0, 0, 20, c);
 }
@@ -199,7 +200,7 @@ void draw(Game *game) {
 		DrawText("Auto", 0, 40, 20, c);
 	}
 	if (game->is_over) {
-		DrawText("Game Over", WIDTH / 2 - 80, HEIGHT / 2 - 20, 40, RED);
+		DrawText("GAME OVER", WIDTH / 2 - 80, HEIGHT / 2 - 20, 40, RED);
 	}
 
 	EndDrawing();
@@ -212,11 +213,99 @@ void reset(Game *game) {
 	game->fruit = random_fruit(game->snake);
 }
 
-void auto_update(Game *game) {
-	if (N_WIDTH & 1) {
-		error("auto mode expects even WIDTH, but found: %i\n", WIDTH);
+Direction search_path(Game *game) {
+	Snake *snake = game->snake;
+	i8 *map = malloc(sizeof(i8) * N_WIDTH * N_HEIGHT);
+	memset(map, 0, sizeof(i8) * N_WIDTH * N_HEIGHT);
+
+	map[game->fruit.x / UNIT * N_HEIGHT + game->fruit.y / UNIT] = -1;
+
+	DequeueNode *xp = snake->xs->head, *yp = snake->ys->head;
+	map[xp->value / UNIT * N_HEIGHT + yp->value / UNIT] = 1;
+	xp = xp->next, yp = yp->next;
+	for (; xp && yp; xp = xp->next, yp = yp->next) {
+		map[xp->value / UNIT * N_HEIGHT + yp->value / UNIT] = -1;
 	}
 
+	Dequeue *xq = dequeue_new(), *yq = dequeue_new();
+	dequeue_push_back(xq, game->fruit.x / UNIT);
+	dequeue_push_back(yq, game->fruit.y / UNIT);
+
+	i8 ret = -1;
+
+	while (!dequeue_empty(xq) && !dequeue_empty(yq)) {
+		i32 x = dequeue_pop_front(xq), y = dequeue_pop_front(yq);
+
+		if (x > 0) {
+			if (map[(x - 1) * N_HEIGHT + y] == 1) {
+				ret = RIGHT;
+				break;
+			} else if (map[(x - 1) * N_HEIGHT + y] == 0) {
+				map[(x - 1) * N_HEIGHT + y] = 2;
+				dequeue_push_back(xq, x - 1);
+				dequeue_push_back(yq, y);
+			}
+		}
+		if (x + 1 < N_WIDTH) {
+			if (map[(x + 1) * N_HEIGHT + y] == 1) {
+				ret = LEFT;
+				break;
+			} else if (map[(x + 1) * N_HEIGHT + y] == 0) {
+				map[(x + 1) * N_HEIGHT + y] = 2;
+				dequeue_push_back(xq, x + 1);
+				dequeue_push_back(yq, y);
+			}
+		}
+		if (y > 0) {
+			if (map[x * N_HEIGHT + y - 1] == 1) {
+				ret = DOWN;
+				break;
+			} else if (map[x * N_HEIGHT + y - 1] == 0) {
+				map[x * N_HEIGHT + y - 1] = 2;
+				dequeue_push_back(xq, x);
+				dequeue_push_back(yq, y - 1);
+			}
+		}
+		if (y + 1 < N_HEIGHT) {
+			if (map[x * N_HEIGHT + y + 1] == 1) {
+				ret = UP;
+				break;
+			} else if (map[x * N_HEIGHT + y + 1] == 0) {
+				map[x * N_HEIGHT + y + 1] = 2;
+				dequeue_push_back(xq, x);
+				dequeue_push_back(yq, y + 1);
+			}
+		}
+	}
+
+	dequeue_free(xq);
+	dequeue_free(yq);
+
+	if (ret != -1) {
+		free(map);
+		return ret;
+	}
+
+	i32 x = dequeue_first(snake->xs) / UNIT;
+	i32 y = dequeue_first(snake->ys) / UNIT;
+
+	if (x > 0 && map[(x - 1) * N_HEIGHT + y] == 0) {
+		ret = LEFT;
+	} else if (x + 1 < N_WIDTH && map[(x + 1) * N_HEIGHT + y] == 0) {
+		ret = RIGHT;
+	} else if (y > 0 && map[x * N_HEIGHT + y - 1] == 0) {
+		ret = UP;
+	} else if (y + 1 < N_HEIGHT && map[x * N_HEIGHT + y + 1] == 0) {
+		ret = DOWN;
+	} else {
+		ret = snake->direction;
+	}
+
+	free(map);
+	return ret;
+}
+
+void auto_update(Game *game) {
 	switch (GetKeyPressed()) {
 	case KEY_M:
 		game->automatic = false;
@@ -226,28 +315,10 @@ void auto_update(Game *game) {
 		break;
 	}
 
-	Snake *snake = game->snake;
-	i32 x = dequeue_first(snake->xs);
-	i32 y = dequeue_first(snake->ys);
-	i32 nx = x / UNIT, ny = y / UNIT;
+	if (game->is_over)
+		return;
 
-	if (ny == 0 && nx == 0) {
-		turn_down(snake);
-	} else if (ny == 0) {
-		turn_left(snake);
-	} else if ((nx & 1) == 0 && ny + 1 == N_HEIGHT) {
-		turn_right(snake);
-	} else if ((nx & 1) == 0) {
-		turn_down(snake);
-	} else if (nx + 1 == N_WIDTH) {
-		turn_up(snake);
-	} else if (nx & 1 && ny == 1) {
-		turn_right(snake);
-	} else if (nx & 1) {
-		turn_up(snake);
-	} else {
-		error("unexpected situation");
-	}
+	game->snake->direction = search_path(game);
 }
 
 void manual_update(Game *game) {
