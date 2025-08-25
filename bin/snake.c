@@ -167,7 +167,7 @@ void draw_fruit(Position fruit) {
 void draw_fps() {
 	Color c = DARKGREEN;
 	c.a = 150;
-	DrawText(TextFormat("FPS: %2i", GetFPS()), 0, 0, 20, c);
+	DrawText(TextFormat("FPS: %2i", GetFPS()), 4, 4, 20, c);
 }
 
 void draw_score(usize score) {
@@ -175,7 +175,7 @@ void draw_score(usize score) {
 	asprintf(&text, "Score: %lu", score);
 	Color c = BLUE;
 	c.a = 150;
-	DrawText(text, 0, 20, 20, c);
+	DrawText(text, 4, 24, 20, c);
 }
 
 Game *new_game() {
@@ -210,16 +210,20 @@ void draw_hud(Game *game) {
 	if (game->automatic) {
 		Color c = WHITE;
 		c.a = 150;
-		DrawText("Auto", 0, 40, 20, c);
+		DrawText("Auto", 4, 44, 20, c);
 	}
 
 	if (game->is_over) {
-		DrawText("GAME OVER", WIDTH / 2 - 80, HEIGHT / 2 - 20, 40, RED);
+		const char *text = "GAME OVER";
+		Vector2 size = MeasureTextEx(GetFontDefault(), text, 40, 2);
+		DrawText(text, (WIDTH - size.x) / 2, (HEIGHT - size.y) / 2, 40, RED);
 		return;
 	}
 
 	if (game->paused) {
-		DrawText("Paused", WIDTH / 2 - 80, HEIGHT / 2 - 20, 40, RAYWHITE);
+		const char *text = "Paused";
+		Vector2 size = MeasureTextEx(GetFontDefault(), text, 40, 2);
+		DrawText(text, (WIDTH - size.x) / 2, (HEIGHT - size.y) / 2, 40, WHITE);
 	}
 }
 
