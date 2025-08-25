@@ -384,6 +384,8 @@ void auto_update(Game *game) {
 		break;
 	case KEY_F:
 		game->fastforward = !game->fastforward;
+		SetTargetFPS(game->fastforward ? 0 : 10);
+		break;
 	case KEY_B:
 		toggle_music(game->bgm);
 		break;
@@ -428,6 +430,8 @@ void manual_update(Game *game) {
 		break;
 	case KEY_F:
 		game->fastforward = !game->fastforward;
+		SetTargetFPS(game->fastforward ? 0 : 10);
+		break;
 	case KEY_B:
 		toggle_music(game->bgm);
 		break;
@@ -439,12 +443,6 @@ void update(Game *game) {
 		auto_update(game);
 	} else {
 		manual_update(game);
-	}
-
-	if (game->fastforward) {
-		SetTargetFPS(0);
-	} else {
-		SetTargetFPS(10);
 	}
 
 	if (game->is_over || game->paused)
