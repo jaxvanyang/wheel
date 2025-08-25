@@ -33,6 +33,7 @@ typedef struct {
 	Snake *snake;
 	Position fruit;
 	Sounds sounds;
+	Music bgm;
 
 	bool is_over;
 	bool automatic;
@@ -68,7 +69,8 @@ void free_snake(Snake *snake) {
 
 void draw_snake(Snake *snake) {
 	DrawRectangle(dequeue_first(snake->xs), dequeue_first(snake->ys), UNIT, UNIT, GREEN);
-	DrawRectangleLines(dequeue_first(snake->xs), dequeue_first(snake->ys), UNIT, UNIT, BLACK);
+	DrawRectangleLines(
+		dequeue_first(snake->xs), dequeue_first(snake->ys), UNIT, UNIT, BLACK);
 
 	DequeueNode *xp = snake->xs->head->next;
 	DequeueNode *yp = snake->ys->head->next;
@@ -204,6 +206,8 @@ Game *new_game() {
 	game->sounds.die =
 		LoadSound("assets/brackeys_platformer_assets/sounds/explosion.wav");
 	game->sounds.eat = LoadSound("assets/brackeys_platformer_assets/sounds/coin.wav");
+	game->bgm =
+		LoadMusicStream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
 
 	return game;
 }
@@ -214,6 +218,7 @@ void free_game(Game *game) {
 
 	UnloadSound(game->sounds.die);
 	UnloadSound(game->sounds.eat);
+	UnloadMusicStream(game->bgm);
 
 	free(game);
 }
@@ -359,6 +364,13 @@ Direction search_path(Game *game) {
 	return ret;
 }
 
+void toggle_music(Music music) {
+	if (IsMusicStreamPlaying(music))
+		PauseMusicStream(music);
+	else
+		PlayMusicStream(music);
+}
+
 void auto_update(Game *game) {
 	switch (GetKeyPressed()) {
 	case KEY_M:
@@ -372,6 +384,8 @@ void auto_update(Game *game) {
 		break;
 	case KEY_F:
 		game->fastforward = !game->fastforward;
+	case KEY_B:
+		toggle_music(game->bgm);
 		break;
 	}
 
@@ -414,6 +428,8 @@ void manual_update(Game *game) {
 		break;
 	case KEY_F:
 		game->fastforward = !game->fastforward;
+	case KEY_B:
+		toggle_music(game->bgm);
 		break;
 	}
 }
@@ -462,14 +478,11 @@ int main() {
 
 	tsrandom();
 
-	Music bgm =
-		LoadMusicStream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
-	PlayMusicStream(bgm);
-
 	Game *game = new_game();
+	PlayMusicStream(game->bgm);
 
 	while (!WindowShouldClose()) {
-		UpdateMusicStream(bgm);
+		UpdateMusicStream(game->bgm);
 
 		draw(game);
 		update(game);
@@ -478,7 +491,6 @@ int main() {
 	free_game(game);
 	game = NULL;
 
-	UnloadMusicStream(bgm);
 	CloseAudioDevice();
 	CloseWindow();
 }
