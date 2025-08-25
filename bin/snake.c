@@ -37,6 +37,7 @@ typedef struct {
 	bool is_over;
 	bool automatic;
 	bool paused;
+	bool fastforward;
 } Game;
 
 Snake *new_snake() {
@@ -198,6 +199,7 @@ Game *new_game() {
 	game->is_over = false;
 	game->automatic = false;
 	game->paused = false;
+	game->fastforward = false;
 
 	game->sounds.die =
 		LoadSound("assets/brackeys_platformer_assets/sounds/explosion.wav");
@@ -224,6 +226,12 @@ void draw_hud(Game *game) {
 		Color c = WHITE;
 		c.a = 150;
 		DrawText("Auto", 4, 44, 20, c);
+	}
+
+	if (game->fastforward) {
+		Color c = WHITE;
+		c.a = 150;
+		DrawText("Fastforward", 4, game->automatic ? 64 : 44, 20, c);
 	}
 
 	if (game->is_over) {
@@ -362,6 +370,9 @@ void auto_update(Game *game) {
 	case KEY_P:
 		game->paused = !game->paused;
 		break;
+	case KEY_F:
+		game->fastforward = !game->fastforward;
+		break;
 	}
 
 	if (game->is_over || game->paused)
@@ -401,6 +412,9 @@ void manual_update(Game *game) {
 	case KEY_P:
 		game->paused = !game->paused;
 		break;
+	case KEY_F:
+		game->fastforward = !game->fastforward;
+		break;
 	}
 }
 
@@ -409,6 +423,12 @@ void update(Game *game) {
 		auto_update(game);
 	} else {
 		manual_update(game);
+	}
+
+	if (game->fastforward) {
+		SetTargetFPS(0);
+	} else {
+		SetTargetFPS(10);
 	}
 
 	if (game->is_over || game->paused)
@@ -458,7 +478,6 @@ int main() {
 	free_game(game);
 	game = NULL;
 
-	StopMusicStream(bgm);
 	UnloadMusicStream(bgm);
 	CloseAudioDevice();
 	CloseWindow();
