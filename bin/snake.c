@@ -29,6 +29,7 @@ typedef struct {
 	Position fruit;
 	bool is_over;
 	bool automatic;
+	bool paused;
 } Game;
 
 Snake *new_snake() {
@@ -175,6 +176,7 @@ Game *new_game() {
 	game->fruit = random_fruit(game->snake);
 	game->is_over = false;
 	game->automatic = false;
+	game->paused = false;
 
 	return game;
 }
@@ -186,22 +188,33 @@ void free_game(Game *game) {
 	free(game);
 }
 
+void draw_hud(Game *game) {
+	draw_score(game->snake->xs->size - 2);
+	draw_fps();
+
+	if (game->automatic) {
+		Color c = WHITE;
+		c.a = 150;
+		DrawText("Auto", 0, 40, 20, c);
+	}
+
+	if (game->is_over) {
+		DrawText("GAME OVER", WIDTH / 2 - 80, HEIGHT / 2 - 20, 40, RED);
+		return;
+	}
+
+	if (game->paused) {
+		DrawText("Paused", WIDTH / 2 - 80, HEIGHT / 2 - 20, 40, RAYWHITE);
+	}
+}
+
 void draw(Game *game) {
 	BeginDrawing();
 	ClearBackground(BLACK);
 
 	draw_fruit(game->fruit);
 	draw_snake(game->snake);
-	draw_score(game->snake->xs->size - 2);
-	draw_fps();
-	if (game->automatic) {
-		Color c = WHITE;
-		c.a = 150;
-		DrawText("Auto", 0, 40, 20, c);
-	}
-	if (game->is_over) {
-		DrawText("GAME OVER", WIDTH / 2 - 80, HEIGHT / 2 - 20, 40, RED);
-	}
+	draw_hud(game);
 
 	EndDrawing();
 }
@@ -211,6 +224,7 @@ void reset(Game *game) {
 	free_snake(game->snake);
 	game->snake = new_snake();
 	game->fruit = random_fruit(game->snake);
+	game->paused = false;
 }
 
 Direction search_path(Game *game) {
@@ -313,9 +327,12 @@ void auto_update(Game *game) {
 	case KEY_R:
 		reset(game);
 		break;
+	case KEY_P:
+		game->paused = !game->paused;
+		break;
 	}
 
-	if (game->is_over)
+	if (game->is_over || game->paused)
 		return;
 
 	game->snake->direction = search_path(game);
@@ -349,6 +366,9 @@ void manual_update(Game *game) {
 	case KEY_M:
 		game->automatic = true;
 		break;
+	case KEY_P:
+		game->paused = !game->paused;
+		break;
 	}
 }
 
@@ -359,7 +379,7 @@ void update(Game *game) {
 		manual_update(game);
 	}
 
-	if (game->is_over)
+	if (game->is_over || game->paused)
 		return;
 
 	Position next = snake_next(game->snake);
