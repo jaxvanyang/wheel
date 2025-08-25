@@ -25,8 +25,15 @@ typedef struct {
 } Snake;
 
 typedef struct {
+	Sound die;
+	Sound eat;
+} Sounds;
+
+typedef struct {
 	Snake *snake;
 	Position fruit;
+	Sounds sounds;
+
 	bool is_over;
 	bool automatic;
 	bool paused;
@@ -120,9 +127,10 @@ void turn_right(Snake *snake) {
 	}
 }
 
-void snake_eat(Snake *snake, Position fruit) {
-	dequeue_push_front(snake->xs, fruit.x);
-	dequeue_push_front(snake->ys, fruit.y);
+void snake_eat(Game *game, Position fruit) {
+	PlaySound(game->sounds.eat);
+	dequeue_push_front(game->snake->xs, fruit.x);
+	dequeue_push_front(game->snake->ys, fruit.y);
 }
 
 bool snake_contains(Snake *snake, Position position) {
@@ -178,12 +186,19 @@ Game *new_game() {
 	game->automatic = false;
 	game->paused = false;
 
+	game->sounds.die =
+		LoadSound("assets/brackeys_platformer_assets/sounds/explosion.wav");
+	game->sounds.eat = LoadSound("assets/brackeys_platformer_assets/sounds/coin.wav");
+
 	return game;
 }
 
 void free_game(Game *game) {
 	free_snake(game->snake);
 	game->snake = NULL;
+
+	UnloadSound(game->sounds.die);
+	UnloadSound(game->sounds.eat);
 
 	free(game);
 }
@@ -385,12 +400,13 @@ void update(Game *game) {
 	Position next = snake_next(game->snake);
 
 	if (snake_contains(game->snake, next) || position_out_of_screen(next)) {
+		PlaySound(game->sounds.die);
 		game->is_over = true;
 		return;
 	}
 
 	if (next.x == game->fruit.x && next.y == game->fruit.y) {
-		snake_eat(game->snake, next);
+		snake_eat(game, next);
 		if (game->snake->xs->size == N_WIDTH * N_HEIGHT) {
 			game->is_over = true;
 		} else {
@@ -403,20 +419,30 @@ void update(Game *game) {
 
 int main() {
 	InitWindow(WIDTH, HEIGHT, "Snake");
+	InitAudioDevice();
 	SetTargetFPS(10);
 	HideCursor();
 
 	tsrandom();
 
+	Music bgm =
+		LoadMusicStream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
+	PlayMusicStream(bgm);
+
 	Game *game = new_game();
 
 	while (!WindowShouldClose()) {
+		UpdateMusicStream(bgm);
+
 		draw(game);
 		update(game);
 	}
 
-	CloseWindow();
-
 	free_game(game);
 	game = NULL;
+
+	StopMusicStream(bgm);
+	UnloadMusicStream(bgm);
+	CloseAudioDevice();
+	CloseWindow();
 }
