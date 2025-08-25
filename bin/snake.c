@@ -67,12 +67,25 @@ void free_snake(Snake *snake) {
 
 void draw_snake(Snake *snake) {
 	DrawRectangle(dequeue_first(snake->xs), dequeue_first(snake->ys), UNIT, UNIT, GREEN);
+	DrawRectangleLines(dequeue_first(snake->xs), dequeue_first(snake->ys), UNIT, UNIT, BLACK);
 
 	DequeueNode *xp = snake->xs->head->next;
 	DequeueNode *yp = snake->ys->head->next;
 
 	while (xp && yp) {
 		DrawRectangle(xp->value, yp->value, UNIT, UNIT, LIME);
+		DrawRectangleLines(xp->value, yp->value, UNIT, UNIT, BLACK);
+
+		if (xp->prev->value < xp->value) {
+			DrawLine(xp->value, yp->value, xp->value, yp->value + UNIT, LIME);
+		} else if (xp->prev->value > xp->value) {
+			DrawLine(xp->value + UNIT, yp->value, xp->value + UNIT, yp->value + UNIT, LIME);
+		} else if (yp->prev->value < yp->value) {
+			DrawLine(xp->value, yp->value, xp->value + UNIT, yp->value, LIME);
+		} else {
+			DrawLine(xp->value, yp->value + UNIT, xp->value + UNIT, yp->value + UNIT, LIME);
+		}
+
 		xp = xp->next;
 		yp = yp->next;
 	}
