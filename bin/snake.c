@@ -67,30 +67,53 @@ void free_snake(Snake *snake) {
 	free(snake);
 }
 
-void draw_snake(Snake *snake) {
-	DrawRectangle(dequeue_first(snake->xs), dequeue_first(snake->ys), UNIT, UNIT, GREEN);
-	DrawRectangleLines(
-		dequeue_first(snake->xs), dequeue_first(snake->ys), UNIT, UNIT, BLACK);
+void draw_block(DequeueNode *xp, DequeueNode *yp) {
+	Color color = xp->prev ? LIME : GREEN;
+	DrawRectangle(xp->value, yp->value, UNIT, UNIT, color);
 
-	DequeueNode *xp = snake->xs->head->next;
-	DequeueNode *yp = snake->ys->head->next;
+	bool left = true, right = true, up = true, down = true;
 
-	while (xp && yp) {
-		DrawRectangle(xp->value, yp->value, UNIT, UNIT, LIME);
-		DrawRectangleLines(xp->value, yp->value, UNIT, UNIT, BLACK);
-
+	if (xp->prev) {
 		if (xp->prev->value < xp->value) {
-			DrawLine(xp->value, yp->value, xp->value, yp->value + UNIT, LIME);
+			left = false;
 		} else if (xp->prev->value > xp->value) {
-			DrawLine(xp->value + UNIT, yp->value, xp->value + UNIT, yp->value + UNIT, LIME);
+			right = false;
 		} else if (yp->prev->value < yp->value) {
-			DrawLine(xp->value, yp->value, xp->value + UNIT, yp->value, LIME);
+			up = false;
 		} else {
-			DrawLine(xp->value, yp->value + UNIT, xp->value + UNIT, yp->value + UNIT, LIME);
+			down = false;
 		}
+	}
+	if (xp->next) {
+		if (xp->next->value < xp->value) {
+			left = false;
+		} else if (xp->next->value > xp->value) {
+			right = false;
+		} else if (yp->next->value < yp->value) {
+			up = false;
+		} else {
+			down = false;
+		}
+	}
 
-		xp = xp->next;
-		yp = yp->next;
+	if (left) {
+		DrawLine(xp->value, yp->value, xp->value, yp->value + UNIT, BLACK);
+	}
+	if (right) {
+		DrawLine(xp->value + UNIT, yp->value, xp->value + UNIT, yp->value + UNIT, BLACK);
+	}
+	if (up) {
+		DrawLine(xp->value, yp->value, xp->value + UNIT, yp->value, BLACK);
+	}
+	if (down) {
+		DrawLine(xp->value, yp->value + UNIT, xp->value + UNIT, yp->value + UNIT, BLACK);
+	}
+}
+
+void draw_snake(Snake *snake) {
+	for (DequeueNode *xp = snake->xs->head, *yp = snake->ys->head; xp && yp;
+		xp = xp->next, yp = yp->next) {
+		draw_block(xp, yp);
 	}
 }
 
