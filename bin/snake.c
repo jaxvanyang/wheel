@@ -112,7 +112,7 @@ void draw_block(DequeueNode *xp, DequeueNode *yp) {
 
 void draw_snake(Snake *snake) {
 	for (DequeueNode *xp = snake->xs->head, *yp = snake->ys->head; xp && yp;
-		xp = xp->next, yp = yp->next) {
+			 xp = xp->next, yp = yp->next) {
 		draw_block(xp, yp);
 	}
 }
@@ -174,7 +174,7 @@ void snake_eat(Game *game, Position fruit) {
 
 bool snake_contains(Snake *snake, Position position) {
 	for (DequeueNode *xp = snake->xs->head, *yp = snake->ys->head; xp && yp;
-		xp = xp->next, yp = yp->next) {
+			 xp = xp->next, yp = yp->next) {
 		if (position.x == xp->value && position.y == yp->value)
 			return true;
 	}
@@ -190,7 +190,8 @@ bool position_out_of_screen(Position position) {
 Position random_fruit(Snake *snake) {
 	while (true) {
 		Position fruit = {
-			UNIT * random_range(0, N_WIDTH), UNIT * random_range(0, N_HEIGHT)};
+			UNIT * random_range(0, N_WIDTH), UNIT * random_range(0, N_HEIGHT)
+		};
 
 		if (snake_contains(snake, fruit))
 			continue;

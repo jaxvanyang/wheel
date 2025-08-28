@@ -4,4 +4,5 @@ IndentWidth: 2
 TabWidth: 2
 ColumnLimit: 88
 ContinuationIndentWidth: 2
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: BlockIndent
+BinPackArguments: false

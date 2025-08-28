@@ -8,30 +8,14 @@ typedef struct {
 
 int main() {
 	NamedColor colors[] = {
-		{LIGHTGRAY, "LIGHTGRAY"},
-		{GRAY, "GRAY"},
-		{DARKGRAY, "DARKGRAY"},
-		{YELLOW, "YELLOW"},
-		{GOLD, "GOLD"},
-		{ORANGE, "ORANGE"},
-		{PINK, "PINK"},
-		{RED, "RED"},
-		{MAROON, "MAROON"},
-		{GREEN, "GREEN"},
-		{LIME, "LIME"},
-		{DARKGREEN, "DARKGREEN"},
-		{SKYBLUE, "SKYBLUE"},
-		{BLUE, "BLUE"},
-		{DARKBLUE, "DARKBLUE"},
-		{PURPLE, "PURPLE"},
-		{VIOLET, "VIOLET"},
-		{DARKPURPLE, "DARKPURPLE"},
-		{BEIGE, "BEIGE"},
-		{BROWN, "BROWN"},
-		{DARKBROWN, "DARKBROWN"},
-		{WHITE, "WHITE"},
-		{RAYWHITE, "RAYWHITE"},
-		{MAGENTA, "MAGENTA"},
+		{LIGHTGRAY, "LIGHTGRAY"}, {GRAY, "GRAY"},					{DARKGRAY, "DARKGRAY"},
+		{YELLOW, "YELLOW"},				{GOLD, "GOLD"},					{ORANGE, "ORANGE"},
+		{PINK, "PINK"},						{RED, "RED"},						{MAROON, "MAROON"},
+		{GREEN, "GREEN"},					{LIME, "LIME"},					{DARKGREEN, "DARKGREEN"},
+		{SKYBLUE, "SKYBLUE"},			{BLUE, "BLUE"},					{DARKBLUE, "DARKBLUE"},
+		{PURPLE, "PURPLE"},				{VIOLET, "VIOLET"},			{DARKPURPLE, "DARKPURPLE"},
+		{BEIGE, "BEIGE"},					{BROWN, "BROWN"},				{DARKBROWN, "DARKBROWN"},
+		{WHITE, "WHITE"},					{RAYWHITE, "RAYWHITE"}, {MAGENTA, "MAGENTA"},
 	};
 
 	const usize len = sizeof(colors) / sizeof(NamedColor);

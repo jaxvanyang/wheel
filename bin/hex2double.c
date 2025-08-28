@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
 		Float f = decode_f64(number);
 
 		printf(
-			"%llX: %hhd x %lf x 2^%lld = %f\n", *hex_number, f.sign, f.m, f.exponent, number);
+			"%llX: %hhd x %lf x 2^%lld = %f\n", *hex_number, f.sign, f.m, f.exponent, number
+		);
 	}
 }
