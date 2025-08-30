@@ -5,6 +5,7 @@
 #include "wheel/float.h"
 #include "wheel/list.h"
 #include "wheel/math.h"
+#include "wheel/path.h"
 #include "wheel/random.h"
 #include "wheel/sort.h"
 #include "wheel/str.h"
