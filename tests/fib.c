@@ -1,8 +1,8 @@
 #include <assert.h>
-#include <wheel/core.h>
-#include <wheel/list.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <wheel/core.h>
+#include <wheel/list.h>
 
 usize fib(usize n) {
 	if (n <= 1) {

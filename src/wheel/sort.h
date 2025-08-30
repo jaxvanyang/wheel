@@ -3,6 +3,6 @@
 #include "core.h"
 #include "list.h"
 
-void qsort_u(Ulist *list);
-void qsort_i(Ilist *list);
-void qsort_s(Slist *list);
+void ulist_qsort(Ulist *list);
+void ilist_qsort(Ilist *list);
+void slist_qsort(Slist *list);

@@ -1,5 +1,5 @@
-#include <wheel.h>
 #include <string.h>
+#include <wheel.h>
 
 int main() {
 	Str *last = str_new();

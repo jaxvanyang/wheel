@@ -4,12 +4,12 @@
 #include <stdlib.h>
 
 void tsrandom() {
-	srandom(time(NULL));
+	srand(time(NULL));
 }
 
 usize random_usize() {
-	usize a = random();
-	usize b = random();
+	usize a = rand();
+	usize b = rand();
 
 	return a << 32 | b;
 }

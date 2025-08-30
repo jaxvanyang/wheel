@@ -16,7 +16,7 @@ int main() {
 		slist_push(list, s);
 	}
 
-	qsort_s(list);
+	slist_qsort(list);
 
 	for (usize i = 0; i < list->length; ++i) {
 		Str *s = slist_get(list, i);

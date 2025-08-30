@@ -43,7 +43,7 @@ jobs:
         curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
         unzip "$RAYLIB_PATH.zip"
         echo RAYLIB_CFLAGS="-I$RAYLIB_PATH/include" >> "$GITHUB_ENV"
-        echo RAYLIB_LDFLAGS="-L$RAYLIB_PATH/lib -lraylib" >> "$GITHUB_ENV"
+        echo RAYLIB_LDFLAGS="-L$RAYLIB_PATH/lib -lraylib -lgdi32 -lwinmm" >> "$GITHUB_ENV"
       shell: bash
 
     - name: Build Product

@@ -1,9 +1,9 @@
 #include <assert.h>
+#include <stdio.h>
 #include <wheel/dequeue.h>
 #include <wheel/list.h>
 #include <wheel/random.h>
 #include <wheel/tree.h>
-#include <stdio.h>
 
 int main() {
 	{

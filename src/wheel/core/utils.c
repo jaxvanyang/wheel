@@ -1,5 +1,4 @@
 #include "utils.h"
-#include <stddef.h>
 
 TimeVal time_now() {
 	TimeVal t;

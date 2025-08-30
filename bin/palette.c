@@ -1,5 +1,5 @@
-#include <wheel.h>
 #include <raylib.h>
+#include <wheel.h>
 
 typedef struct {
 	Color color;

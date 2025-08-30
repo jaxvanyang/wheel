@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-void _qsort_u(Ulist *list, usize begin, usize end) {
+void _ulist_qsort(Ulist *list, usize begin, usize end) {
 	if (end <= begin + 1)
 		return;
 
@@ -21,16 +21,16 @@ void _qsort_u(Ulist *list, usize begin, usize end) {
 
 	ulist_set(list, i, pivot);
 
-	_qsort_u(list, begin, i);
-	_qsort_u(list, i + 1, end);
+	_ulist_qsort(list, begin, i);
+	_ulist_qsort(list, i + 1, end);
 }
 
-void qsort_u(Ulist *list) {
+void ulist_qsort(Ulist *list) {
 	ulist_shuffle(list);
-	_qsort_u(list, 0, list->length);
+	_ulist_qsort(list, 0, list->length);
 }
 
-void _qsort_i(Ilist *list, usize begin, usize end) {
+void _ilist_qsort(Ilist *list, usize begin, usize end) {
 	if (end <= begin + 1)
 		return;
 
@@ -49,16 +49,16 @@ void _qsort_i(Ilist *list, usize begin, usize end) {
 
 	ilist_set(list, i, pivot);
 
-	_qsort_i(list, begin, i);
-	_qsort_i(list, i + 1, end);
+	_ilist_qsort(list, begin, i);
+	_ilist_qsort(list, i + 1, end);
 }
 
-void qsort_i(Ilist *list) {
+void ilist_qsort(Ilist *list) {
 	ilist_shuffle(list);
-	_qsort_i(list, 0, list->length);
+	_ilist_qsort(list, 0, list->length);
 }
 
-void _qsort_s(Slist *list, usize begin, usize end) {
+void _slist_qsort(Slist *list, usize begin, usize end) {
 	if (end <= begin + 1)
 		return;
 
@@ -77,11 +77,11 @@ void _qsort_s(Slist *list, usize begin, usize end) {
 
 	slist_set(list, i, pivot);
 
-	_qsort_s(list, begin, i);
-	_qsort_s(list, i + 1, end);
+	_slist_qsort(list, begin, i);
+	_slist_qsort(list, i + 1, end);
 }
 
-void qsort_s(Slist *list) {
+void slist_qsort(Slist *list) {
 	slist_shuffle(list);
-	_qsort_s(list, 0, list->length);
+	_slist_qsort(list, 0, list->length);
 }

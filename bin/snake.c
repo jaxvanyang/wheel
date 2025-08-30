@@ -1,6 +1,6 @@
-#include <wheel.h>
 #include <raylib.h>
 #include <string.h>
+#include <wheel.h>
 
 const i32 WIDTH = 800, HEIGHT = 450;
 const i32 UNIT = 10;
