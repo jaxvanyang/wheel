@@ -1,9 +1,8 @@
 CC ?= cc
-LD ?= ld
 RAYLIB_CFLAGS ?= $(shell pkg-config --cflags raylib)
 RAYLIB_LDFLAGS ?= $(shell pkg-config --libs raylib)
 CFLAGS := -O2 -g -Wall -Wextra -Isrc $(RAYLIB_CFLAGS) $(CFLAGS)
-LDFLAGS := -fuse-ld=$(LD) -Lsrc -lwheel $(RAYLIB_LDFLAGS) $(LDLAGS)
+LDFLAGS := -Lsrc -lwheel $(RAYLIB_LDFLAGS) $(LDLAGS)
 
 PREFIX ?= install
 
