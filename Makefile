@@ -1,6 +1,6 @@
 CC := clang
 LD := $(shell [ $$(uname) = 'Darwin' ] && echo ld || echo mold)
-CFLAGS := -O2 -g -Wall -Isrc $(shell pkgconf --cflags raylib) $(CFLAGS)
+CFLAGS := -O2 -g -Wall -Wextra -Isrc $(shell pkgconf --cflags raylib) $(CFLAGS)
 LDFLAGS := -fuse-ld=$(LD) -Lsrc -lbasics $(shell pkgconf --libs raylib) $(LDLAGS)
 
 BASICS := src/basics
