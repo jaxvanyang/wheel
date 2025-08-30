@@ -24,6 +24,8 @@ jobs:
 
     env:
       PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_macos
+      RAYLIB_VERSION: 5.5
+      RAYLIB_PATH: raylib-5.5_macos
 
     steps:
     - name: Checkout this repo
@@ -34,7 +36,14 @@ jobs:
       if: github.event_name == 'release' && github.event.action == 'published'
 
     - name: Setup Environment
-      run: brew install raylib just
+      run: |
+        brew install just
+        curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.tar.gz"
+        tar xvf "$RAYLIB_PATH.tar.gz"
+        # force macOS use static linked raylib when linking
+        rm "$RAYLIB_PATH/lib"/*.dylib
+        echo RAYLIB_CFLAGS="-I$RAYLIB_PATH/include" >> "$GITHUB_ENV"
+        echo RAYLIB_LDFLAGS="-framework IOKit -framework Cocoa -framework OpenGL -L$RAYLIB_PATH/lib -lraylib" >> "$GITHUB_ENV"
 
     - name: Build Product
       run: make -B -j3
