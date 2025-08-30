@@ -1,0 +1,72 @@
+name: Linux
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'src/**'
+      - 'assets/**'
+      - 'bin/**'
+      - 'tests/**'
+      - '.github/workflows/linux.yml'
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    permissions:
+      contents: write       # for actions/upload-release-asset to upload release asset
+    runs-on: ubuntu-latest
+
+    env:
+      PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_linux_x64
+      RAYLIB_VERSION: 5.5
+      RAYLIB_PATH: raylib-5.5_linux_amd64
+
+    steps:
+    - name: Checkout this repo
+      uses: actions/checkout@master
+
+    - name: Setup Release Paths
+      run: echo "PROJECT_RELEASE_PATH=${{ env.PROJECT_NAME }}_v${{ github.event.release.tag_name }}_linux_x64" >> "$GITHUB_ENV"
+      if: github.event_name == 'release' && github.event.action == 'published'
+
+    - name: Setup Environment
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y --no-install-recommends just
+        curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.tar.gz"
+        tar xvf "$RAYLIB_PATH.tar.gz"
+
+    - name: Build Product
+      run: |
+        make \
+          RAYLIB_CFLAGS="-I$RAYLIB_PATH/include" \
+          RAYLIB_LDFLAGS="-L$RAYLIB_PATH/lib -lraylib" \
+          -B -j "$(nproc)"
+
+    - name: Run tests
+      run: just test
+
+    - name: Generate Artifacts
+      run: |
+        mkdir -p ${{ env.PROJECT_RELEASE_PATH }}
+        make PREFIX=${{ env.PROJECT_RELEASE_PATH }} install
+        7z a ./${{ env.PROJECT_RELEASE_PATH }}.zip ./${{ env.PROJECT_RELEASE_PATH }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PROJECT_RELEASE_PATH }}.zip
+        path: ./${{ env.PROJECT_RELEASE_PATH }}.zip
+
+    - name: Upload Artifact to Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ${{ env.PROJECT_RELEASE_PATH }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: github.event_name == 'release' && github.event.action == 'published'
