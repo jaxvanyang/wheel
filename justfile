@@ -5,14 +5,19 @@ run bin *args:
 	make bin/{{bin}}
 	bin/{{bin}} {{args}}
 
-test test:
+run-test test:
 	make tests/{{test}}
 	tests/{{test}}
 
-# run all tests
-check:
+test *tests:
 	#!/usr/bin/env bash
-	set -e
-	for test in $(ls tests/*.c); do \
-		just test $(basename "$test" .c); \
-	done
+	set -euo pipefail
+	if [ -z "{{tests}}" ]; then
+		for test in $(ls tests/*.c); do \
+			just run-test $(basename "$test" .c); \
+		done
+	else
+		for test in {{tests}}; do \
+			just run-test "$test"; \
+		done
+	fi
