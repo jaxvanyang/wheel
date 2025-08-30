@@ -35,7 +35,7 @@ void _ilist_qsort(Ilist *list, usize begin, usize end) {
 		return;
 
 	usize i = begin, j = end - 1;
-	usize pivot = ilist_get(list, i);
+	isize pivot = ilist_get(list, i);
 
 	while (i < j) {
 		while (i < j && ilist_get(list, j) >= pivot)

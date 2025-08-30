@@ -22,7 +22,7 @@ int main() {
 
 	{
 		isize array[] = {1, 2, 3, 4, 5};
-		isize size = sizeof(array) / sizeof(isize);
+		usize size = sizeof(array) / sizeof(isize);
 		Ilist *a = ilist_from(array, size);
 		Ilist *b = ilist_new();
 

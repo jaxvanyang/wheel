@@ -28,7 +28,7 @@ int main() {
 
 		ilist_qsort(list);
 		for (usize i = 0; i < list->length; ++i) {
-			assert(ilist_get(list, i) == i);
+			assert(ilist_get(list, i) == (isize)i);
 		}
 	}
 }

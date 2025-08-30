@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	for (usize i = 1; i < argc; ++i) {
+	for (int i = 1; i < argc; ++i) {
 		char *hex = argv[i];
 		f32 number;
 
