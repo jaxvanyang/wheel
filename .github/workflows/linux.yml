@@ -41,13 +41,12 @@ jobs:
         sudo apt-get install -y --no-install-recommends just
         curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.tar.gz"
         tar xvf "$RAYLIB_PATH.tar.gz"
+        echo RAYLIB_CFLAGS="-I$RAYLIB_PATH/include" >> "$GITHUB_ENV"
+        echo RAYLIB_LDFLAGS="-L$RAYLIB_PATH/lib -lraylib" >> "$GITHUB_ENV"
 
     - name: Build Product
       run: |
-        make \
-          RAYLIB_CFLAGS="-I$RAYLIB_PATH/include" \
-          RAYLIB_LDFLAGS="-L$RAYLIB_PATH/lib -lraylib" \
-          -B -j "$(nproc)"
+        make -B -j "$(nproc)"
 
     - name: Run tests
       run: just test
