@@ -1,16 +1,16 @@
 CC := clang
 LD := $(shell [ $$(uname) = 'Darwin' ] && echo ld || echo mold)
 CFLAGS := -O2 -g -Wall -Wextra -Isrc $(shell pkgconf --cflags raylib) $(CFLAGS)
-LDFLAGS := -fuse-ld=$(LD) -Lsrc -lbasics $(shell pkgconf --libs raylib) $(LDLAGS)
+LDFLAGS := -fuse-ld=$(LD) -Lsrc -lwheel $(shell pkgconf --libs raylib) $(LDLAGS)
 
-BASICS := src/basics
-CORE := $(BASICS)/core
+WHEEL := src/wheel
+CORE := $(WHEEL)/core
 
-LIBA := src/libbasics.a
-LIBSO := src/libbasics.so
+LIBA := src/libwheel.a
+LIBSO := src/libwheel.so
 
 CORES := $(patsubst %.c,%.o,$(wildcard $(CORE)/*.c))
-OBJS := $(patsubst %.c,%.o,$(wildcard $(BASICS)/*.c))
+OBJS := $(patsubst %.c,%.o,$(wildcard $(WHEEL)/*.c))
 OBJS += $(CORES)
 
 BINS := $(patsubst %.c,%,$(wildcard bin/*.c))
@@ -34,7 +34,7 @@ tests/%: tests/%.c $(LIBA)
 $(LIBA): $(OBJS)
 	ar rs $@ $^
 
-$(BASICS)/%.o: $(BASICS)/%.c
+$(WHEEL)/%.o: $(WHEEL)/%.c
 $(CORE)/%.o: $(CORE)/%.c
 
 .PHONY: format

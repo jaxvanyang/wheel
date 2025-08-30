@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "basics/dequeue.h"
-#include "basics/list.h"
-#include "basics/math.h"
+#include "wheel/dequeue.h"
+#include "wheel/list.h"
+#include "wheel/math.h"
 
 Tree *tree_new(isize value) {
 	Tree *tree = (Tree *)malloc(sizeof(Tree));

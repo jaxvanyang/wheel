@@ -1,6 +1,6 @@
 #include "dequeue.h"
 
-#include "basics/core/error.h"
+#include "wheel/core/error.h"
 
 DequeueNode *dequeue_node_new(isize value) {
 	DequeueNode *node = malloc(sizeof(DequeueNode));

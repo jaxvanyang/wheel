@@ -1,4 +1,4 @@
-#include <basics.h>
+#include <wheel.h>
 #include <stdio.h>
 
-int main() { printf("Hello basics %s\n", BASICS_VERSION); }
+int main() { printf("Hello wheel %s\n", BASICS_VERSION); }

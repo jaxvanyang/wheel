@@ -1,6 +1,6 @@
 #include <assert.h>
-#include <basics/list.h>
-#include <basics/str.h>
+#include <wheel/list.h>
+#include <wheel/str.h>
 
 int main() {
 	{

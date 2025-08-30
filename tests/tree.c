@@ -1,8 +1,8 @@
 #include <assert.h>
-#include <basics/dequeue.h>
-#include <basics/list.h>
-#include <basics/random.h>
-#include <basics/tree.h>
+#include <wheel/dequeue.h>
+#include <wheel/list.h>
+#include <wheel/random.h>
+#include <wheel/tree.h>
 #include <stdio.h>
 
 int main() {

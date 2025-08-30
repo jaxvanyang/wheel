@@ -1,0 +1,13 @@
+#pragma once
+
+#include "wheel/core.h"
+#include "wheel/dequeue.h"
+#include "wheel/float.h"
+#include "wheel/list.h"
+#include "wheel/math.h"
+#include "wheel/random.h"
+#include "wheel/sort.h"
+#include "wheel/str.h"
+#include "wheel/tree.h"
+
+const char BASICS_VERSION[] = "0.1.0";
