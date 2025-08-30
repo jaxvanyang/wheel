@@ -1,4 +1,5 @@
 #include "xray.h"
+#include "path.h"
 #include <raymath.h>
 
 void draw_entity(Entity entity) {
@@ -50,4 +51,34 @@ Entity elist_pop(EntityList *list) {
 	free(node);
 
 	return entity;
+}
+
+Texture2D load_texture(const char *path){
+	char *p = os_path(path);
+	Texture2D ret = LoadTexture(p);
+
+	free(p);
+	p = NULL;
+
+	return ret;
+}
+
+Sound load_sound(const char *path) {
+	char *p = os_path(path);
+	Sound ret = LoadSound(p);
+
+	free(p);
+	p = NULL;
+
+	return ret;
+}
+
+Music load_music_stream(const char *path) {
+	char *p = os_path(path);
+	Music ret = LoadMusicStream(p);
+
+	free(p);
+	p = NULL;
+
+	return ret;
 }

@@ -1,7 +1,7 @@
-#include <wheel.h>
-#include <wheel/xray.h>
 #include <raylib.h>
 #include <raymath.h>
+#include <wheel.h>
+#include <wheel/xray.h>
 
 const i32 WIDTH = 800;
 const i32 HEIGHT = 450;
@@ -96,9 +96,10 @@ ResourceManager *new_resource_manager() {
 	ResourceManager *manager = malloc(sizeof(ResourceManager));
 
 	manager->platform =
-		LoadTexture("assets/brackeys_platformer_assets/sprites/platforms.png");
-	manager->player = LoadTexture("assets/brackeys_platformer_assets/sprites/knight.png");
-	manager->jump = LoadSound("assets/brackeys_platformer_assets/sounds/jump.wav");
+		load_texture("assets/brackeys_platformer_assets/sprites/platforms.png");
+	manager->player =
+		load_texture("assets/brackeys_platformer_assets/sprites/knight.png");
+	manager->jump = load_sound("assets/brackeys_platformer_assets/sounds/jump.wav");
 
 	return manager;
 }

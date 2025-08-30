@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <string.h>
 #include <wheel.h>
+#include <wheel/xray.h>
 
 const i32 WIDTH = 800, HEIGHT = 450;
 const i32 UNIT = 10;
@@ -228,10 +229,10 @@ Game *new_game() {
 	game->fastforward = false;
 
 	game->sounds.die =
-		LoadSound("assets/brackeys_platformer_assets/sounds/explosion.wav");
-	game->sounds.eat = LoadSound("assets/brackeys_platformer_assets/sounds/coin.wav");
+		load_sound("assets/brackeys_platformer_assets/sounds/explosion.wav");
+	game->sounds.eat = load_sound("assets/brackeys_platformer_assets/sounds/coin.wav");
 	game->bgm =
-		LoadMusicStream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
+		load_music_stream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
 
 	return game;
 }
