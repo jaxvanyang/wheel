@@ -26,6 +26,7 @@ jobs:
       PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_win_x64
       RAYLIB_VERSION: 5.5
       RAYLIB_PATH: raylib-5.5_win64_mingw-w64
+      CC: x86_64-w64-mingw32-gcc
 
     steps:
     - name: Checkout this repo
@@ -49,11 +50,13 @@ jobs:
     - name: Build Product
       run: |
         x86_64-w64-mingw32-gcc --version
-        make CC=x86_64-w64-mingw32-gcc -B -j4
+        make -B -j4
       shell: bash
 
     - name: Run tests
-      run: just test
+      run: |
+        ls tests
+        just test
       shell: bash
 
     - name: Generate Artifacts
