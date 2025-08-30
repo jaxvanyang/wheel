@@ -4,11 +4,12 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'src/**'
+      - '.github/workflows/linux.yml'
+      - 'Makefile'
       - 'assets/**'
       - 'bin/**'
+      - 'src/**'
       - 'tests/**'
-      - '.github/workflows/macos.yml'
   release:
     types: [published]
 
