@@ -1,7 +1,7 @@
-CC := clang
-LD := $(shell [ $$(uname) = 'Darwin' ] && echo ld || echo mold)
-CFLAGS := -O2 -g -Wall -Wextra -Isrc $(shell pkgconf --cflags raylib) $(CFLAGS)
-LDFLAGS := -fuse-ld=$(LD) -Lsrc -lwheel $(shell pkgconf --libs raylib) $(LDLAGS)
+CC ?= cc
+LD ?= ld
+CFLAGS := -O2 -g -Wall -Wextra -Isrc $(shell pkg-config --cflags raylib) $(CFLAGS)
+LDFLAGS := -fuse-ld=$(LD) -Lsrc -lwheel $(shell pkg-config --libs raylib) $(LDLAGS)
 
 WHEEL := src/wheel
 CORE := $(WHEEL)/core
