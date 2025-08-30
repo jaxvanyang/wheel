@@ -2,7 +2,10 @@ CC ?= cc
 RAYLIB_CFLAGS ?= $(shell pkg-config --cflags raylib)
 RAYLIB_LDFLAGS ?= $(shell pkg-config --libs raylib)
 CFLAGS := -O2 -g -Wall -Wextra -Isrc $(RAYLIB_CFLAGS) $(CFLAGS)
-LDFLAGS := -Lsrc -lwheel $(RAYLIB_LDFLAGS) $(LDLAGS)
+# FIXME: macOS doesn't support simple static linking
+# https://stackoverflow.com/questions/844819/how-to-static-link-on-os-x
+LDFLAGS := $(shell [ $$(uname) = 'Darwin' ] && echo '' || echo '-static') \
+	-Lsrc -lwheel $(RAYLIB_LDFLAGS) -lm $(LDLAGS)
 
 PREFIX ?= install
 
