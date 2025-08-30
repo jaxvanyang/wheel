@@ -3,6 +3,8 @@ LD ?= ld
 CFLAGS := -O2 -g -Wall -Wextra -Isrc $(shell pkg-config --cflags raylib) $(CFLAGS)
 LDFLAGS := -fuse-ld=$(LD) -Lsrc -lwheel $(shell pkg-config --libs raylib) $(LDLAGS)
 
+PREFIX ?= install
+
 WHEEL := src/wheel
 CORE := $(WHEEL)/core
 
@@ -18,6 +20,11 @@ TESTS := $(patsubst %.c,%,$(wildcard tests/*.c))
 
 .PHONY: all
 all: bins tests
+
+.PHONY: install
+install: bins
+	cp $(BINS) $(PREFIX)
+	cp -r assets $(PREFIX)
 
 .PHONY: bins
 bins: $(BINS)
