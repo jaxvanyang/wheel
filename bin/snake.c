@@ -212,11 +212,9 @@ void draw_fps() {
 }
 
 void draw_score(usize score) {
-	char *text;
-	asprintf(&text, "Score: %lu", score);
 	Color c = BLUE;
 	c.a = 150;
-	DrawText(text, 4, 24, 20, c);
+	DrawText(TextFormat("Score: %lu", score), 4, 24, 20, c);
 }
 
 Game *new_game() {
