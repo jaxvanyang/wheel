@@ -91,6 +91,10 @@ $(CORE)/%.o: $(CORE)/%.c
 format:
 	clang-format -i **/*.c **/*.h
 
+build/compile_commands.json:
+	@mkdir -p build
+	bear --output build/compile_commands.json -- make
+
 .PHONY: clean
 clean:
 	rm -f $(LIBA) $(LIBSO) $(BINS) $(TESTS) $(OBJS)
