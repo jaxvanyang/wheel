@@ -89,7 +89,7 @@ $(CORE)/%.o: $(CORE)/%.c
 
 .PHONY: format
 format:
-	clang-format -i **/*.c **/*.h
+	clang-format -style=file:.clang-format -i **/*.c **/*.h
 
 .PHONY: clean
 clean:

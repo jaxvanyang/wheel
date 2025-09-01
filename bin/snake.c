@@ -191,7 +191,8 @@ bool position_out_of_screen(Position position) {
 Position random_fruit(Snake *snake) {
 	while (true) {
 		Position fruit = {
-			UNIT * random_range(0, N_WIDTH), UNIT * random_range(0, N_HEIGHT)};
+			UNIT * random_range(0, N_WIDTH), UNIT * random_range(0, N_HEIGHT)
+		};
 
 		if (snake_contains(snake, fruit))
 			continue;
