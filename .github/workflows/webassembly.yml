@@ -28,7 +28,7 @@ jobs:
   build:
     permissions:
       contents: write # for actions/upload-release-asset & GitHub Pages
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout this repo
@@ -57,7 +57,7 @@ jobs:
         unzip "$RAYLIB_PATH.zip"
 
     - name: Build Product
-      run: make -B -j3 bins
+      run: make -B -j "$(nproc)" bins
 
     - name: Generate Artifacts
       run: |
