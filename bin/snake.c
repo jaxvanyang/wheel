@@ -191,7 +191,7 @@ bool position_out_of_screen(Position position) {
 Position random_fruit(Snake *snake) {
 	while (true) {
 		Position fruit = {
-			UNIT * random_range(0, N_WIDTH), UNIT * random_range(0, N_HEIGHT)
+			UNIT * GetRandomValue(0, N_WIDTH - 1), UNIT * GetRandomValue(0, N_HEIGHT - 1)
 		};
 
 		if (snake_contains(snake, fruit))
@@ -498,8 +498,6 @@ int main() {
 	InitAudioDevice();
 	SetTargetFPS(10);
 	HideCursor();
-
-	tsrandom();
 
 	Game *game = new_game();
 	PlayMusicStream(game->bgm);
