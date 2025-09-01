@@ -2,10 +2,9 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <time.h>
 
-void tsrandom() {
-	srand(time(NULL));
-}
+void tsrandom() { srand(time(NULL)); }
 
 usize random_usize() {
 	usize a = rand();

@@ -1,13 +1,40 @@
-CC ?= cc
-RAYLIB_CFLAGS ?= $(shell pkg-config --cflags raylib)
-RAYLIB_LDFLAGS ?= $(shell pkg-config --libs raylib)
-CFLAGS := -O2 -g -Wall -Wextra -Isrc $(RAYLIB_CFLAGS) $(CFLAGS)
-# FIXME: macOS doesn't support simple static linking
-# https://stackoverflow.com/questions/844819/how-to-static-link-on-os-x
-LDFLAGS := $(shell [ $$(uname) = 'Darwin' ] && echo '' || echo '-static') \
-	-Lsrc -lwheel $(RAYLIB_LDFLAGS) -lm $(LDLAGS)
+# Define target platform: PLATFORM_DESKTOP, PLATFORM_WEB
+PLATFORM ?= PLATFORM_DESKTOP
 
+# raylib library variables
+ifdef RAYLIB_PATH
+	RAYLIB_CFLAGS ?= -I $(RAYLIB_PATH)/include
+	RAYLIB_LDFLAGS ?= -L $(RAYLIB_PATH)/lib -lraylib
+else
+	RAYLIB_CFLAGS ?= $(shell pkg-config --cflags raylib)
+	RAYLIB_LDFLAGS ?= $(shell pkg-config --libs raylib)
+endif
+
+# Target path for artifacts
 PREFIX ?= install
+
+ifeq ($(PLATFORM),PLATFORM_WEB)
+	CC = emcc
+	AR = emar
+	LDFLAGS := -static \
+		-s USE_GLFW=3 \
+		-s ASYNCIFY \
+		--shell-file src/minshell.html \
+		--preload-file assets \
+		$(LDFLAGS)
+	BINS := $(patsubst %.c,%.html,$(wildcard bin/*.c))
+else
+	UNAMEOS = $(shell uname)
+	ifneq ($(UNAMEOS),Darwin)
+		# only use daynamic linking on macOS, see https://stackoverflow.com/questions/844819/how-to-static-link-on-os-x
+		LDFLAGS := -static $(LDFLAGS)
+	endif
+endif
+
+CC ?= cc
+AR ?= ar
+CFLAGS := -Os -g -Wall -Wextra -Isrc $(RAYLIB_CFLAGS) $(CFLAGS)
+LDFLAGS := -Lsrc -lwheel $(RAYLIB_LDFLAGS) -lm $(LDFLAGS)
 
 WHEEL := src/wheel
 CORE := $(WHEEL)/core
@@ -19,8 +46,8 @@ CORES := $(patsubst %.c,%.o,$(wildcard $(CORE)/*.c))
 OBJS := $(patsubst %.c,%.o,$(wildcard $(WHEEL)/*.c))
 OBJS += $(CORES)
 
-BINS := $(patsubst %.c,%,$(wildcard bin/*.c))
-TESTS := $(patsubst %.c,%,$(wildcard tests/*.c))
+BINS ?= $(patsubst %.c,%,$(wildcard bin/*.c))
+TESTS ?= $(patsubst %.c,%,$(wildcard tests/*.c))
 
 .PHONY: all
 all: bins tests
@@ -39,11 +66,14 @@ tests: $(TESTS)
 bin/%: bin/%.c $(LIBA)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
+bin/%.html: bin/%.c $(LIBA)
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
 tests/%: tests/%.c $(LIBA)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 $(LIBA): $(OBJS)
-	ar rs $@ $^
+	$(AR) rs $@ $^
 
 $(WHEEL)/%.o: $(WHEEL)/%.c
 $(CORE)/%.o: $(CORE)/%.c
@@ -55,3 +85,5 @@ format:
 .PHONY: clean
 clean:
 	rm -f $(LIBA) $(LIBSO) $(BINS) $(TESTS) $(OBJS)
+	-rm -f **/*.o **/*.a **/*.so
+	-rm -rf bin/*.html bin/*.wasm bin/*.js bin/*.data bin/*.dSYM
