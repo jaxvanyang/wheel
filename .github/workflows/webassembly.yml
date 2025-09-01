@@ -1,0 +1,80 @@
+name: WebAssembly
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/webassembly.yml'
+      - 'Makefile'
+      - 'assets/**'
+      - 'bin/**'
+      - 'src/**'
+      - 'tests/**'
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    permissions:
+      contents: write       # for actions/upload-release-asset to upload release asset
+    runs-on: macos-latest
+
+    env:
+      PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_wasm
+      RAYLIB_VERSION: 5.5
+      RAYLIB_PATH: raylib-5.5_webassembly
+      PLATFORM: PLATFORM_WEB
+      EM_VERSION: 4.0.13
+      EM_CACHE_FOLDER: 'emsdk-cache'
+
+    steps:
+    - name: Checkout this repo
+      uses: actions/checkout@master
+
+    - name: Setup cache
+      id: cache-system-libraries
+      uses: actions/cache@v4
+      with:
+        path: ${{env.EM_CACHE_FOLDER}}
+        key: ${{env.EM_VERSION}}-${{ runner.os }}
+
+    - uses: mymindstorm/setup-emsdk@v14
+      with:
+        version: ${{env.EM_VERSION}}
+        actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+
+    - name: Setup Release Paths
+      run: |
+        echo "PROJECT_RELEASE_PATH=${{ env.PROJECT_NAME }}_v${{ github.event.release.tag_name }}_wasm" >> "$GITHUB_ENV"
+      if: github.event_name == 'release' && github.event.action == 'published'
+
+    - name: Setup Environment
+      run: |
+        curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
+        unzip "$RAYLIB_PATH.zip"
+
+    - name: Build Product
+      run: make -B -j3 bins
+
+    - name: Generate Artifacts
+      run: |
+        mkdir -p ${{ env.PROJECT_RELEASE_PATH }}
+        cp bin/*.html bin/*.js bin/*.wasm bin/*.data ${{ env.PROJECT_RELEASE_PATH }}
+        7z a ./${{ env.PROJECT_RELEASE_PATH }}.zip ./${{ env.PROJECT_RELEASE_PATH }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PROJECT_RELEASE_PATH }}.zip
+        path: ./${{ env.PROJECT_RELEASE_PATH }}.zip
+
+    - name: Upload Artifact to Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ${{ env.PROJECT_RELEASE_PATH }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: github.event_name == 'release' && github.event.action == 'published'
