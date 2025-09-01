@@ -22,7 +22,7 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 		--shell-file src/minshell.html \
 		--preload-file assets \
 		$(LDFLAGS)
-	BINS := $(patsubst %.c,%.html,$(wildcard bin/*.c))
+	BINS := bin/snake.html bin/palette.html bin/plat.html
 else
 	UNAMEOS = $(shell uname)
 	ifneq ($(UNAMEOS),Darwin)
