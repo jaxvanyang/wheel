@@ -13,13 +13,18 @@ int main(int argc, char **argv) {
 		char *hex = argv[i];
 		f64 number;
 
-		sscanf(hex, "%llX", (u64 *)&number);
+		sscanf(hex, "%" PRIx64 "", (u64 *)&number);
 
 		u64 *hex_number = (u64 *)&number;
 		Float f = decode_f64(number);
 
 		printf(
-			"%llX: %hhd x %lf x 2^%lld = %f\n", *hex_number, f.sign, f.m, f.exponent, number
+			"%" PRIx64 ": %hhd x %lf x 2^%" PRId64 " = %f\n",
+			*hex_number,
+			f.sign,
+			f.m,
+			f.exponent,
+			number
 		);
 	}
 }
