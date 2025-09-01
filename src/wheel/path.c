@@ -14,7 +14,7 @@ char *os_path(const char *path) {
 	str->length = str->size = 0;
 	free(str);
 #else
-	char *s = malloc(sizeof(char) * strlen(path));
+	char *s = malloc(sizeof(char) * (strlen(path) + 1));
 	strcpy(s, path);
 #endif
 
