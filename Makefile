@@ -2,12 +2,17 @@
 PLATFORM ?= PLATFORM_DESKTOP
 
 # raylib library variables
-ifdef RAYLIB_PATH
-	RAYLIB_CFLAGS ?= -I $(RAYLIB_PATH)/include
-	RAYLIB_LDFLAGS ?= -L $(RAYLIB_PATH)/lib -lraylib
+ifdef RAYLIB_SRC_PATH
+	RAYLIB_CFLAGS ?= -I$(RAYLIB_SRC_PATH)
+	RAYLIB_LDFLAGS ?= -L$(RAYLIB_SRC_PATH) -lraylib
 else
-	RAYLIB_CFLAGS ?= $(shell pkg-config --cflags raylib)
-	RAYLIB_LDFLAGS ?= $(shell pkg-config --libs raylib)
+	ifdef RAYLIB_PATH
+		RAYLIB_CFLAGS ?= -I$(RAYLIB_PATH)/include
+		RAYLIB_LDFLAGS ?= -L$(RAYLIB_PATH)/lib -lraylib
+	else
+		RAYLIB_CFLAGS ?= $(shell pkg-config --cflags raylib)
+		RAYLIB_LDFLAGS ?= $(shell pkg-config --libs raylib)
+	endif
 endif
 
 # Target path for artifacts
@@ -23,6 +28,10 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 		--preload-file assets \
 		$(LDFLAGS)
 	BINS := bin/snake.html bin/palette.html bin/plat.html
+
+	ifdef RAYLIB_SRC_PATH
+		RAYLIB_LDFLAGS := $(RAYLIB_SRC_PATH)/libraylib.web.a
+	endif
 else
 	UNAMEOS = $(shell uname)
 	ifneq ($(UNAMEOS),Darwin)
