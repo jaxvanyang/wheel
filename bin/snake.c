@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <raylib.h>
 #include <string.h>
 #include <wheel.h>
@@ -213,7 +214,9 @@ void draw_fps() {
 
 void draw_score(usize score) {
 	char *text;
-	asprintf(&text, "Score: %lu", score);
+	if (asprintf(&text, "Score: %lu", score) == -1) {
+        return;
+    }
 	Color c = BLUE;
 	c.a = 150;
 	DrawText(text, 4, 24, 20, c);
