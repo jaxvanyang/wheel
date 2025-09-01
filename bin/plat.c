@@ -206,9 +206,9 @@ int main() {
 	Game *game = new_game();
 
 	while (!WindowShouldClose()) {
-		draw(game);
 		input(game);
 		update(game);
+		draw(game);
 	}
 
 	CloseAudioDevice();

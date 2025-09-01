@@ -505,8 +505,8 @@ int main() {
 	while (!WindowShouldClose()) {
 		UpdateMusicStream(game->bgm);
 
-		draw(game);
 		update(game);
+		draw(game);
 	}
 
 	free_game(game);
