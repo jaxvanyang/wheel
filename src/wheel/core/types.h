@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <inttypes.h>
 
 typedef uint8_t u8;
 typedef int8_t i8;
