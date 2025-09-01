@@ -19,7 +19,7 @@ permissions:
 env:
   PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_wasm
   RAYLIB_VERSION: 5.5
-  RAYLIB_PATH: raylib-5.5_webassembly
+  RAYLIB_SRC_PATH: raylib/src
   PLATFORM: PLATFORM_WEB
   EM_VERSION: 4.0.13
   EM_CACHE_FOLDER: 'emsdk-cache'
@@ -33,6 +33,12 @@ jobs:
     steps:
     - name: Checkout this repo
       uses: actions/checkout@master
+
+    - name: Checkout raylib repo
+      uses: actions/checkout@v4
+      with:
+        repository: raysan5/raylib
+        path: raylib
 
     - name: Setup cache
       id: cache-system-libraries
@@ -51,10 +57,11 @@ jobs:
         echo "PROJECT_RELEASE_PATH=${{ env.PROJECT_NAME }}_v${{ github.event.release.tag_name }}_wasm" >> "$GITHUB_ENV"
       if: github.event_name == 'release' && github.event.action == 'published'
 
-    - name: Setup Environment
+    - name: Build raylib Library
       run: |
-        curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
-        unzip "$RAYLIB_PATH.zip"
+        cd raylib/src
+        emcc -v
+        make PLATFORM=PLATFORM_WEB RAYLIB_BUILD_MODE=RELEASE RAYLIB_LIBTYPE=STATIC RAYLIB_RELEASE_PATH=. -B -j "$(nproc)"
 
     - name: Build Product
       run: make -B -j "$(nproc)" bins
