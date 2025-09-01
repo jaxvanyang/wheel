@@ -215,7 +215,7 @@ void draw_fps() {
 void draw_score(usize score) {
 	char *text;
 	if (asprintf(&text, "Score: %lu", score) == -1) {
-        return;
+        error("asprintf failed\n");
     }
 	Color c = BLUE;
 	c.a = 150;
