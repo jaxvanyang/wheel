@@ -16,19 +16,19 @@ on:
 permissions:
   contents: read
 
+env:
+  PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_wasm
+  RAYLIB_VERSION: 5.5
+  RAYLIB_PATH: raylib-5.5_webassembly
+  PLATFORM: PLATFORM_WEB
+  EM_VERSION: 4.0.13
+  EM_CACHE_FOLDER: 'emsdk-cache'
+
 jobs:
   build:
     permissions:
-      contents: write       # for actions/upload-release-asset to upload release asset
+      contents: write # for actions/upload-release-asset & GitHub Pages
     runs-on: macos-latest
-
-    env:
-      PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_wasm
-      RAYLIB_VERSION: 5.5
-      RAYLIB_PATH: raylib-5.5_webassembly
-      PLATFORM: PLATFORM_WEB
-      EM_VERSION: 4.0.13
-      EM_CACHE_FOLDER: 'emsdk-cache'
 
     steps:
     - name: Checkout this repo
@@ -62,6 +62,7 @@ jobs:
     - name: Generate Artifacts
       run: |
         mkdir -p ${{ env.PROJECT_RELEASE_PATH }}
+        cp src/index.html ${{ env.PROJECT_RELEASE_PATH }}
         cp bin/*.html bin/*.js bin/*.wasm bin/*.data ${{ env.PROJECT_RELEASE_PATH }}
         7z a ./${{ env.PROJECT_RELEASE_PATH }}.zip ./${{ env.PROJECT_RELEASE_PATH }}
 
@@ -78,3 +79,36 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       if: github.event_name == 'release' && github.event.action == 'published'
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    permissions:
+      contents: write # for GitHub Pages
+      pages: write # for GitHub Pages
+      id-token: write # for GitHub Pages
+
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Download Artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ env.PROJECT_RELEASE_PATH }}.zip
+      - name: Decompress Artifacts
+        run: unzip ${{ env.PROJECT_RELEASE_PATH }}.zip
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./${{ env.PROJECT_RELEASE_PATH }}
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
