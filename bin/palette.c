@@ -21,11 +21,11 @@ static NamedColor colors[] = {
 	{WHITE, "WHITE"},					{RAYWHITE, "RAYWHITE"}, {MAGENTA, "MAGENTA"},
 };
 
-const static usize len = sizeof(colors) / sizeof(NamedColor);
-const static int width = 200, height = 60;
-const static int rows = 6;
-const static int cols = (len + rows - 1) / rows;
-const static int WIDTH = width * cols, HEIGHT = height * rows;
+static const usize len = sizeof(colors) / sizeof(NamedColor);
+static const int width = 200, height = 60;
+static const int rows = 6;
+static const int cols = (len + rows - 1) / rows;
+static const int WIDTH = width * cols, HEIGHT = height * rows;
 
 void update_draw() {
 	BeginDrawing();
