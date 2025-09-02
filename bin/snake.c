@@ -3,6 +3,10 @@
 #include <wheel.h>
 #include <wheel/xray.h>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
+
 const i32 WIDTH = 800, HEIGHT = 450;
 const i32 UNIT = 10;
 const i32 N_WIDTH = WIDTH / UNIT, N_HEIGHT = HEIGHT / UNIT;
@@ -41,6 +45,8 @@ typedef struct {
 	bool paused;
 	bool fastforward;
 } Game;
+
+void update_draw();
 
 Snake *new_snake() {
 	Snake *snake = malloc(sizeof(Snake));
@@ -407,7 +413,15 @@ void auto_update(Game *game) {
 		break;
 	case KEY_F:
 		game->fastforward = !game->fastforward;
+#ifdef __EMSCRIPTEN__
+		if (game->fastforward) {
+			emscripten_set_main_loop_timing(EM_TIMING_RAF, 1);
+		} else {
+			emscripten_set_main_loop_timing(EM_TIMING_SETTIMEOUT, 100);
+		}
+#else
 		SetTargetFPS(game->fastforward ? 0 : 10);
+#endif // __EMSCRIPTEN__
 		break;
 	case KEY_B:
 		toggle_music(game->bgm);
@@ -491,21 +505,31 @@ void update(Game *game) {
 	}
 }
 
+static Game *game = NULL;
+
+void update_draw() {
+	UpdateMusicStream(game->bgm);
+
+	update(game);
+	draw(game);
+}
+
 int main() {
 	InitWindow(WIDTH, HEIGHT, "Snake");
 	InitAudioDevice();
-	SetTargetFPS(10);
 	HideCursor();
-
-	Game *game = new_game();
+	game = new_game();
 	PlayMusicStream(game->bgm);
 
-	while (!WindowShouldClose()) {
-		UpdateMusicStream(game->bgm);
+#ifdef __EMSCRIPTEN__
+	emscripten_set_main_loop(update_draw, 10, true);
+#else
+	SetTargetFPS(10);
 
-		update(game);
-		draw(game);
+	while (!WindowShouldClose()) {
+		update_draw();
 	}
+#endif // __EMSCRIPTEN__
 
 	free_game(game);
 	game = NULL;
