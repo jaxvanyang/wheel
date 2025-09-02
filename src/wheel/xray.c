@@ -28,7 +28,7 @@ void elist_free(EntityList *list) {
 	list->size = 0;
 }
 
-void elist_insert(EntityList *list, Entity entity) {
+void elist_push(EntityList *list, Entity entity) {
 	EntityNode *node = malloc(sizeof(EntityNode));
 	node->value = entity;
 

@@ -25,7 +25,7 @@ void draw_entity(Entity entity);
 
 EntityList *elist_new();
 void elist_free(EntityList *list);
-void elist_insert(EntityList *list, Entity entity);
+void elist_push(EntityList *list, Entity entity);
 Entity elist_pop(EntityList *list);
 
 // These functions act as the same as their raylib brothers, but convert the
