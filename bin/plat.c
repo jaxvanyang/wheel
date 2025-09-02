@@ -1,3 +1,4 @@
+#include "_plat/types.h"
 #include <raylib.h>
 #include <raymath.h>
 #include <wheel.h>
@@ -7,40 +8,11 @@
 #include <emscripten/emscripten.h>
 #endif
 
-const i32 WIDTH = 800;
-const i32 HEIGHT = 450;
-const i32 FPS = 60;
-const i32 SPRITE_FPS = 10;
-const i32 FPS_K = FPS / SPRITE_FPS;
-
-typedef struct {
-	Texture2D platform;
-	Texture2D player;
-	Sound jump;
-} ResourceManager;
-
-typedef enum {
-	IDLE,
-	RUN,
-	ROLL,
-	HIT,
-	DEATH,
-} PlayerState;
-
-typedef struct {
-	Entity entity;
-	// velocity
-	Vector2 v;
-	u8 frame_counter;
-	PlayerState state;
-} Player;
-
-typedef struct {
-	ResourceManager *manager;
-	Player player;
-	Entity *tiles;
-	u32 frame_counter;
-} Game;
+static const i32 WIDTH = 800;
+static const i32 HEIGHT = 450;
+static const i32 FPS = 60;
+static const i32 SPRITE_FPS = 10;
+static const i32 FPS_K = FPS / SPRITE_FPS;
 
 Player new_player(Texture2D texture, f32 x, f32 y) {
 	Rectangle source = {9, 9, 14, 19};
@@ -108,12 +80,34 @@ ResourceManager *new_resource_manager() {
 	return manager;
 }
 
-void unload_resource_manager(ResourceManager manager) {
-	// TODO
-}
+// TODO: fully memory free seems not needed
+// void unload_resource_manager(ResourceManager manager) {
+// }
 
-Entity new_platform(Texture2D texture, f32 x, f32 y) {
+#define new_platform(texture, x, y, ...)                                               \
+	_new_platform(texture, x, y, (PlatformArg){__VA_ARGS__})
+Entity _new_platform(Texture2D texture, f32 x, f32 y, PlatformArg arg) {
 	Rectangle source = {0, 0, 16, 9};
+
+	switch (arg.color) {
+	case PLATFORM_BROWN:
+		source.y = 16;
+		break;
+	case PLATFORM_GOLD:
+		source.y = 32;
+		break;
+	case PLATFORM_BLUE:
+		source.y = 48;
+		break;
+	default:
+		break;
+	}
+
+	if (arg.size == PLATFORM_LARGE) {
+		source.x = 16;
+		source.width = 32;
+	}
+
 	Rectangle dest = {x, y, 2 * source.width, 2 * source.height};
 	return (Entity){texture, source, dest, dest};
 }
@@ -123,12 +117,33 @@ Game *new_game() {
 	game->manager = new_resource_manager();
 	game->frame_counter = 0;
 	game->player = new_player(game->manager->player, 0, 0);
+	game->tiles = elist_new();
 
-	usize len = WIDTH / 32;
-	game->tiles = malloc(sizeof(Entity) * len);
-	for (usize i = 0; i < len; ++i) {
-		game->tiles[i] = new_platform(game->manager->platform, i * 32, HEIGHT - 18);
+	for (usize i = 0; i < (WIDTH + 63) / 64; ++i) {
+		elist_push(
+			game->tiles,
+			new_platform(game->manager->platform, i * 64, HEIGHT - 18, .size = PLATFORM_LARGE)
+		);
 	}
+
+	elist_push(
+		game->tiles,
+		new_platform(game->manager->platform, 100, HEIGHT - 80, .color = PLATFORM_BROWN)
+	);
+	elist_push(
+		game->tiles,
+		new_platform(game->manager->platform, 200, HEIGHT - 80, .color = PLATFORM_GOLD)
+	);
+	elist_push(
+		game->tiles,
+		new_platform(
+			game->manager->platform,
+			300,
+			HEIGHT - 80,
+			.color = PLATFORM_BLUE,
+			.size = PLATFORM_LARGE
+		)
+	);
 
 	return game;
 }
@@ -142,9 +157,8 @@ void draw(const Game *game) {
 	BeginDrawing();
 	ClearBackground(DARKBLUE);
 
-	usize len = WIDTH / 32;
-	for (usize i = 0; i < len; ++i) {
-		draw_entity(game->tiles[i]);
+	for (EntityNode *p = game->tiles->head; p; p = p->next) {
+		draw_entity(p->value);
 	}
 
 	draw_entity(game->player.entity);
@@ -155,10 +169,8 @@ void draw(const Game *game) {
 }
 
 void hit_and_correct(Game *game) {
-	usize len = WIDTH / 32;
-
-	for (usize i = 0; i < len; ++i) {
-		Rectangle hit = GetCollisionRec(game->player.entity.hitbox, game->tiles[i].hitbox);
+	for (EntityNode *p = game->tiles->head; p; p = p->next) {
+		Rectangle hit = GetCollisionRec(game->player.entity.hitbox, p->value.hitbox);
 		if (hit.width != 0) {
 			game->player.v.y = 0;
 			game->player.entity.dest.y = hit.y - game->player.entity.dest.height;
@@ -169,7 +181,7 @@ void hit_and_correct(Game *game) {
 // Process input
 void input(Game *game) {
 	if (IsKeyPressed(KEY_K)) {
-		game->player.v.y = -10;
+		game->player.v.y = -13;
 		game->player.state = RUN;
 		PlaySound(game->manager->jump);
 	}
