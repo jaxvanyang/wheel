@@ -23,7 +23,6 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 	AR = emar
 	LDFLAGS := -static \
 		-s USE_GLFW=3 \
-		-s ASYNCIFY \
 		--shell-file src/minshell.html \
 		--preload-file assets \
 		$(LDFLAGS)
