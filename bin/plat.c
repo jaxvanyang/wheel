@@ -3,6 +3,10 @@
 #include <wheel.h>
 #include <wheel/xray.h>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
+
 const i32 WIDTH = 800;
 const i32 HEIGHT = 450;
 const i32 FPS = 60;
@@ -198,18 +202,29 @@ void update(Game *game) {
 	hit_and_correct(game);
 }
 
+static Game *game = NULL;
+
+void update_draw() {
+	input(game);
+	update(game);
+	draw(game);
+}
+
 int main() {
 	InitWindow(WIDTH, HEIGHT, "Play");
 	InitAudioDevice();
+
+	game = new_game();
+
+#ifdef __EMSCRIPTEN__
+	emscripten_set_main_loop(update_draw, FPS, true);
+#else
 	SetTargetFPS(FPS);
 
-	Game *game = new_game();
-
 	while (!WindowShouldClose()) {
-		input(game);
-		update(game);
-		draw(game);
-	}
+		update_draw();
+	};
+#endif // __EMSCRIPTEN__
 
 	CloseAudioDevice();
 	CloseWindow();
