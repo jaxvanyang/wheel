@@ -13,20 +13,25 @@ typedef struct {
 
 typedef struct EntityNode {
 	Entity value;
+	struct EntityNode *prev;
 	struct EntityNode *next;
 } EntityNode;
 
+// this is actually dequeue
 typedef struct {
 	usize size;
 	EntityNode *head;
+	EntityNode *tail;
 } EntityList;
 
 void draw_entity(Entity entity);
 
 EntityList *elist_new();
 void elist_free(EntityList *list);
-void elist_push(EntityList *list, Entity entity);
-Entity elist_pop(EntityList *list);
+void elist_push_front(EntityList *list, Entity entity);
+void elist_push_back(EntityList *list, Entity entity);
+Entity elist_pop_front(EntityList *list);
+Entity elist_pop_back(EntityList *list);
 
 // These functions act as the same as their raylib brothers, but convert the
 // UNIX-style path to system style first.

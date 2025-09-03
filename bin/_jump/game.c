@@ -16,21 +16,21 @@ Game *new_game() {
 	){.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1};
 
 	for (usize i = 0; i < (WIDTH + 63) / 64; ++i) {
-		elist_push(
+		elist_push_back(
 			game->tiles,
 			new_platform(game->manager->platform, i * 64, HEIGHT - 18, .size = PLATFORM_LARGE)
 		);
 	}
 
-	elist_push(
+	elist_push_back(
 		game->tiles,
 		new_platform(game->manager->platform, 100, HEIGHT - 80, .color = PLATFORM_BROWN)
 	);
-	elist_push(
+	elist_push_back(
 		game->tiles,
 		new_platform(game->manager->platform, 200, HEIGHT - 80, .color = PLATFORM_GOLD)
 	);
-	elist_push(
+	elist_push_back(
 		game->tiles,
 		new_platform(
 			game->manager->platform,
