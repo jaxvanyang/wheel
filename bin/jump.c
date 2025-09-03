@@ -149,8 +149,36 @@ Game *new_game() {
 }
 
 void draw_hud(const Game *game) {
+	Str *text = str_from("state: ");
+
+	switch (game->player.state) {
+	case IDLE:
+		str_push_str(text, "idle\n");
+		break;
+	case RUN:
+		str_push_str(text, "run\n");
+		break;
+	case ROLL:
+		str_push_str(text, "roll\n");
+		break;
+	case HIT:
+		str_push_str(text, "hit\n");
+		break;
+	case DEATH:
+		str_push_str(text, "death\n");
+		break;
+	default:
+		error("unexpected player state: %d\n", game->player.state);
+	}
+
+	str_push_str(text, TextFormat("pos: %.1f, %.1f\n", game->player.entity.dest.x, game->player.entity.dest.y));
+	str_push_str(text, TextFormat("v: %.1f, %.1f\n", game->player.v.x, game->player.v.y));
+
 	DrawFPS(0, 0);
-	DrawText(TextFormat("state: %d", game->player.state), 0, 20, 10, WHITE);
+	DrawText(text->data, 0, 20, 10, WHITE);
+
+	str_free(text);
+	text = NULL;
 }
 
 void draw(const Game *game) {
