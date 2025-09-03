@@ -47,4 +47,5 @@ typedef struct {
 	Player player;
 	EntityList *tiles;
 	u32 frame_counter;
+	Camera2D camera;
 } Game;

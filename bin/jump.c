@@ -66,6 +66,9 @@ Game *new_game() {
 	game->frame_counter = 0;
 	game->player = new_player(game->manager->player, 0, 0);
 	game->tiles = elist_new();
+	game->camera = (Camera2D){
+		.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1
+	};
 
 	for (usize i = 0; i < (WIDTH + 63) / 64; ++i) {
 		elist_push(
@@ -100,7 +103,6 @@ void draw_hud(const Game *game) {
 	Str *text = str_new();
 
 	str_push_str(text, TextFormat("state: %s\n", state_string(game->player.state)));
-
 	str_push_str(
 		text,
 		TextFormat(
@@ -108,9 +110,10 @@ void draw_hud(const Game *game) {
 		)
 	);
 	str_push_str(text, TextFormat("v: %.1f, %.1f\n", game->player.v.x, game->player.v.y));
+	str_push_str(text, TextFormat("camera Y offset: %.1f\n", game->camera.offset.y));
 
-	DrawFPS(0, 0);
-	DrawText(text->data, 0, 20, 10, WHITE);
+	DrawFPS(0, -game->camera.offset.y);
+	DrawText(text->data, 0, 20 - game->camera.offset.y, 10, RAYWHITE);
 
 	str_free(text);
 	text = NULL;
@@ -118,6 +121,7 @@ void draw_hud(const Game *game) {
 
 void draw(const Game *game) {
 	BeginDrawing();
+	BeginMode2D(game->camera);
 	ClearBackground(DARKBLUE);
 
 	for (EntityNode *p = game->tiles->head; p; p = p->next) {
@@ -128,6 +132,7 @@ void draw(const Game *game) {
 
 	draw_hud(game);
 
+	EndMode2D();
 	EndDrawing();
 }
 
@@ -173,6 +178,8 @@ void update(Game *game) {
 	}
 
 	player_update(&game->player);
+
+	game->camera.offset.y = HEIGHT / 2 - game->player.entity.dest.y;
 
 	hit_and_correct(game);
 }
