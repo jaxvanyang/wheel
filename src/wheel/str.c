@@ -86,7 +86,7 @@ Str *str_new() {
 	return s;
 }
 
-Str *str_from(char *s) {
+Str *str_from(const char *s) {
 	Str *str = malloc(sizeof(Str));
 
 	str->length = strlen(s);
@@ -131,7 +131,7 @@ void str_insert(Str *s, usize i, char c) {
 	s->data[i] = c;
 }
 
-void str_insert_str(Str *s, usize i, char *t) {
+void str_insert_str(Str *s, const usize i, const char *t) {
 	usize len = strlen(t);
 	for (usize j = 0; j < len; ++j) {
 		str_insert(s, i + j, t[j]);
@@ -140,7 +140,7 @@ void str_insert_str(Str *s, usize i, char *t) {
 
 void str_push(Str *s, char c) { str_insert(s, s->length, c); }
 
-void str_push_str(Str *s, char *t) {
+void str_push_str(Str *s, const char *t) {
 	usize len = strlen(t);
 
 	for (usize i = 0; i < len; ++i) {
