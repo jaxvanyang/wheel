@@ -13,3 +13,5 @@ f64 elapsed(TimeVal t0);
 
 #define max(a, b) (a > b ? a : b)
 #define min(a, b) (a < b ? a : b)
+
+#define clamp(value, min, max) (value < min ? min : (value > max ? max : value))
