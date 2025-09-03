@@ -3,7 +3,9 @@
 
 void draw_hud(const Game *game) {
 	DrawFPS(0, -game->camera.offset.y);
+}
 
+void draw_debug_info(const Game *game) {
 	// below are debug infos
 	DrawRectangleLinesEx(game->player.entity.dest, 1, GREEN);
 	DrawRectangleLinesEx(game->player.entity.hitbox, 1, RED);
@@ -19,6 +21,7 @@ void draw_hud(const Game *game) {
 	);
 	str_push_str(text, TextFormat("v: %.1f, %.1f\n", game->player.v.x, game->player.v.y));
 	str_push_str(text, TextFormat("camera Y offset: %.1f\n", game->camera.offset.y));
+	str_push_str(text, TextFormat("frame counter: %u\n", game->frame_counter));
 
 	DrawText(text->data, 0, 20 - game->camera.offset.y, 10, RAYWHITE);
 
@@ -38,6 +41,7 @@ void draw(const Game *game) {
 	draw_entity(game->player.entity);
 
 	draw_hud(game);
+	draw_debug_info(game);
 
 	EndMode2D();
 	EndDrawing();

@@ -100,8 +100,8 @@ void input(Game *game) {
 }
 
 void update(Game *game) {
-	game->frame_counter = (game->frame_counter + 1) % FPS_K;
-	if (game->frame_counter == 0) {
+	++game->frame_counter;
+	if (game->frame_counter % FPS_K == 0) {
 		player_update_frame(&game->player);
 	}
 
