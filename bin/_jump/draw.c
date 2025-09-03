@@ -2,6 +2,12 @@
 #include "player.h"
 
 void draw_hud(const Game *game) {
+	DrawFPS(0, -game->camera.offset.y);
+
+	// below are debug infos
+	DrawRectangleLinesEx(game->player.entity.dest, 1, GREEN);
+	DrawRectangleLinesEx(game->player.entity.hitbox, 1, RED);
+
 	Str *text = str_new();
 
 	str_push_str(text, TextFormat("state: %s\n", state_string(game->player.state)));
@@ -14,7 +20,6 @@ void draw_hud(const Game *game) {
 	str_push_str(text, TextFormat("v: %.1f, %.1f\n", game->player.v.x, game->player.v.y));
 	str_push_str(text, TextFormat("camera Y offset: %.1f\n", game->camera.offset.y));
 
-	DrawFPS(0, -game->camera.offset.y);
 	DrawText(text->data, 0, 20 - game->camera.offset.y, 10, RAYWHITE);
 
 	str_free(text);
