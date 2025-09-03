@@ -65,7 +65,7 @@ void player_update_frame(Player *player) {
 }
 
 void player_update(Player *player) {
-	player->v.y += 1;
+	if (player->v.y < MAX_SPEED_Y) player->v.y += 1;
 	player->entity.dest.x += player->v.x;
 	player->entity.dest.y += player->v.y;
 	player->entity.hitbox.x = player->entity.dest.x;

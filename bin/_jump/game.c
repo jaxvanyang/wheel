@@ -4,12 +4,13 @@
 #include <wheel/xray.h>
 #include <raymath.h>
 #include "entity.h"
+#include "consts.h"
 
 Game *new_game() {
 	Game *game = malloc(sizeof(Game));
 	game->manager = new_resource_manager();
 	game->frame_counter = 0;
-	game->player = new_player(game->manager->player, 0, 0);
+	game->player = new_player(game->manager->player, WIDTH / 2, 0);
 	game->tiles = elist_new();
 	game->camera = (Camera2D
 	){.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1};
