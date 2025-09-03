@@ -26,7 +26,7 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 		--shell-file src/minshell.html \
 		--preload-file assets \
 		$(LDFLAGS)
-	BINS := bin/snake.html bin/palette.html bin/plat.html
+	BINS := bin/snake.html bin/palette.html bin/jump.html
 
 	ifdef RAYLIB_SRC_PATH
 		RAYLIB_LDFLAGS := $(RAYLIB_SRC_PATH)/libraylib.web.a

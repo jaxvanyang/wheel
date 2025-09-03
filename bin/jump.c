@@ -1,4 +1,4 @@
-#include "_plat/types.h"
+#include "_jump/types.h"
 #include <raylib.h>
 #include <raymath.h>
 #include <wheel.h>
@@ -8,8 +8,8 @@
 #include <emscripten/emscripten.h>
 #endif
 
-static const i32 WIDTH = 800;
-static const i32 HEIGHT = 450;
+static const i32 WIDTH = 450;
+static const i32 HEIGHT = 600;
 static const i32 FPS = 60;
 static const i32 SPRITE_FPS = 10;
 static const i32 FPS_K = FPS / SPRITE_FPS;
@@ -223,7 +223,7 @@ void update_draw() {
 }
 
 int main() {
-	InitWindow(WIDTH, HEIGHT, "Play");
+	InitWindow(WIDTH, HEIGHT, "Jump");
 	InitAudioDevice();
 
 	game = new_game();
