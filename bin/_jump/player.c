@@ -22,7 +22,6 @@ const char *state_string(PlayerState state) {
 Player new_player(Texture2D texture, f32 x, f32 y) {
 	Rectangle source = {9, 9, 14, 19};
 	Rectangle dest = {x, y, source.width * 2, source.height * 2};
-	// Rectangle hitbox = {x + 1, y + 1, dest.width - 2, dest.height - 2};
 	Rectangle hitbox = dest;
 
 	return (Player){
@@ -65,12 +64,17 @@ void player_update_frame(Player *player) {
 	}
 }
 
+void player_move(Player *player, Vector2 v) {
+	f32 x = clamp(player->entity.dest.x + v.x, 0, WIDTH - player->entity.hitbox.width);
+	player->entity.hitbox.x += x - player->entity.dest.x;
+	player->entity.dest.x = x;
+
+	player->entity.dest.y += v.y;
+	player->entity.hitbox.y += v.y;
+}
+
 void player_update(Player *player) {
 	player->v.y = min(player->v.y + 1, MAX_SPEED_Y);
 
-	player->entity.dest.x = clamp(player->entity.dest.x + player->v.x, 0, WIDTH - player->entity.hitbox.width);
-	player->entity.dest.y += player->v.y;
-
-	player->entity.hitbox.x = player->entity.dest.x;
-	player->entity.hitbox.y = player->entity.dest.y;
+	player_move(player, player->v);
 }

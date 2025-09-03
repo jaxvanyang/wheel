@@ -1,10 +1,10 @@
 #include "game.h"
-#include "utils.h"
-#include "player.h"
-#include <wheel/xray.h>
-#include <raymath.h>
-#include "entity.h"
 #include "consts.h"
+#include "entity.h"
+#include "player.h"
+#include "utils.h"
+#include <raymath.h>
+#include <wheel/xray.h>
 
 Game *new_game() {
 	Game *game = malloc(sizeof(Game));
@@ -47,10 +47,31 @@ Game *new_game() {
 void hit_and_correct(Game *game) {
 	for (EntityNode *p = game->tiles->head; p; p = p->next) {
 		Rectangle hit = GetCollisionRec(game->player.entity.hitbox, p->value.hitbox);
-		if (hit.width != 0) {
+		if (FloatEquals(hit.width, 0))
+			continue;
+
+		f32 dt_x = fabsf(hit.width / game->player.v.x);
+		f32 dt_y = fabsf(hit.height / game->player.v.y);
+		f32 dt = min(dt_x, dt_y);
+
+		// move back to determine which direction
+		player_move(&game->player, Vector2Scale(game->player.v, -dt));
+
+		// set velocity to 0 in the hit direction
+		if (FloatEquals(
+					game->player.entity.hitbox.y + game->player.entity.hitbox.height,
+					p->value.hitbox.y
+				) ||
+				FloatEquals(
+					game->player.entity.hitbox.y, p->value.hitbox.y + p->value.hitbox.height
+				)) {
 			game->player.v.y = 0;
-			game->player.entity.dest.y = hit.y - game->player.entity.dest.height;
+		} else {
+			game->player.v.x = 0;
 		}
+
+		// move with only unhit direction velocity
+		player_move(&game->player, Vector2Scale(game->player.v, dt));
 	}
 }
 
@@ -84,9 +105,12 @@ void update(Game *game) {
 		player_update_frame(&game->player);
 	}
 
+	// player updates
 	player_update(&game->player);
+	hit_and_correct(game);
+	if (FloatEquals(game->player.v.x, 0)) {
+		game->player.state = IDLE;
+	}
 
 	game->camera.offset.y = HEIGHT / 2 - game->player.entity.dest.y;
-
-	hit_and_correct(game);
 }
