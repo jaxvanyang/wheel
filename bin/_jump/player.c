@@ -1,4 +1,5 @@
 #include "player.h"
+#include "consts.h"
 #include <raymath.h>
 
 const char *state_string(PlayerState state) {
@@ -65,9 +66,11 @@ void player_update_frame(Player *player) {
 }
 
 void player_update(Player *player) {
-	if (player->v.y < MAX_SPEED_Y) player->v.y += 1;
-	player->entity.dest.x += player->v.x;
+	player->v.y = min(player->v.y + 1, MAX_SPEED_Y);
+
+	player->entity.dest.x = clamp(player->entity.dest.x + player->v.x, 0, WIDTH - player->entity.hitbox.width);
 	player->entity.dest.y += player->v.y;
+
 	player->entity.hitbox.x = player->entity.dest.x;
 	player->entity.hitbox.y = player->entity.dest.y;
 }
