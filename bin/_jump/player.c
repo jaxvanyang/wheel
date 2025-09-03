@@ -1,6 +1,23 @@
 #include "player.h"
 #include <raymath.h>
 
+const char *state_string(PlayerState state) {
+	switch (state) {
+	case IDLE:
+		return "idle";
+	case RUN:
+		return "run";
+	case ROLL:
+		return "roll";
+	case HIT:
+		return "hit";
+	case DEATH:
+		return "death";
+	default:
+		error("unexpected player state: %d\n", state);
+	}
+}
+
 Player new_player(Texture2D texture, f32 x, f32 y) {
 	Rectangle source = {9, 9, 14, 19};
 	Rectangle dest = {x, y, source.width * 2, source.height * 2};

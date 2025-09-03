@@ -97,27 +97,9 @@ Game *new_game() {
 }
 
 void draw_hud(const Game *game) {
-	Str *text = str_from("state: ");
+	Str *text = str_new();
 
-	switch (game->player.state) {
-	case IDLE:
-		str_push_str(text, "idle\n");
-		break;
-	case RUN:
-		str_push_str(text, "run\n");
-		break;
-	case ROLL:
-		str_push_str(text, "roll\n");
-		break;
-	case HIT:
-		str_push_str(text, "hit\n");
-		break;
-	case DEATH:
-		str_push_str(text, "death\n");
-		break;
-	default:
-		error("unexpected player state: %d\n", game->player.state);
-	}
+	str_push_str(text, TextFormat("state: %s\n", state_string(game->player.state)));
 
 	str_push_str(
 		text,
