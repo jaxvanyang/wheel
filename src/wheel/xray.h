@@ -38,3 +38,4 @@ Entity elist_pop_back(EntityList *list);
 Texture2D load_texture(const char *path);
 Sound load_sound(const char *path);
 Music load_music_stream(const char *path);
+Font load_font(const char *path);

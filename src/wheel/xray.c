@@ -131,3 +131,13 @@ Music load_music_stream(const char *path) {
 
 	return ret;
 }
+
+Font load_font(const char *path) {
+	char *p = os_path(path);
+	Font ret = LoadFont(p);
+
+	free(p);
+	p = NULL;
+
+	return ret;
+}
