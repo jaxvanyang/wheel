@@ -50,8 +50,22 @@ void hit_and_correct(Game *game) {
 		if (FloatEquals(hit.width, 0))
 			continue;
 
-		f32 dt_x = fabsf(hit.width / game->player.v.x);
-		f32 dt_y = fabsf(hit.height / game->player.v.y);
+		// lengthes that player should move back
+		f32 width = hit.width;
+		f32 height = hit.height;
+
+		if ((game->player.v.y > 0 && FloatEquals(game->player.entity.hitbox.y, hit.y)
+		)|| (game->player.v.y < 0 && FloatEquals(p->value.hitbox.y, hit.y))) {
+			// player passes through from top or bottom
+			height = game->player.entity.hitbox.height + p->value.hitbox.height - hit.height;
+		} else if ((game->player.v.x > 0 && FloatEquals(game->player.entity.hitbox.x, hit.x)
+		)|| (game->player.v.x < 0 && FloatEquals(p->value.hitbox.x, hit.x))) {
+			// player passes through from left or right
+			width = game->player.entity.hitbox.width + p->value.hitbox.width - hit.width;
+		}
+
+		f32 dt_x = fabsf(width / game->player.v.x);
+		f32 dt_y = fabsf(height / game->player.v.y);
 		f32 dt = min(dt_x, dt_y);
 
 		// move back to determine which direction
