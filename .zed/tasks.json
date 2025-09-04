@@ -1,0 +1,22 @@
+[
+	{
+		"label": "Build",
+		"command": "make"
+	},
+	{
+		"label": "Test",
+		"command": "just test"
+	},
+	{
+		"label": "Run Palette",
+		"command": "just run palette"
+	},
+	{
+		"label": "Run Snake",
+		"command": "just run snake"
+	},
+	{
+		"label": "Run Jump",
+		"command": "just run jump"
+	}
+]
