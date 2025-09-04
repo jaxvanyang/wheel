@@ -1,8 +1,21 @@
 #include "draw.h"
+#include "consts.h"
 #include "player.h"
+#include <raylib.h>
 
 void draw_hud(const Game *game) {
 	DrawFPS(0, -game->camera.offset.y);
+
+	const char *score = TextFormat("%010d", game->frame_counter / FPS);
+	Vector2 size = MeasureTextEx(game->manager->pixel_operator8, score, 15, 1);
+	DrawTextEx(
+		game->manager->pixel_operator8,
+		score,
+		(Vector2){WIDTH - size.x - 5, 5 -game->camera.offset.y},
+		15,
+		1,
+		RAYWHITE
+	);
 }
 
 void draw_debug_info(const Game *game) {

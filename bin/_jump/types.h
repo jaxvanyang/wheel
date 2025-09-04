@@ -7,6 +7,7 @@ typedef struct {
 	Texture2D platform;
 	Texture2D player;
 	Sound jump;
+	Font pixel_operator8;
 } ResourceManager;
 
 typedef enum {
