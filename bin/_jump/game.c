@@ -47,21 +47,22 @@ Game *new_game() {
 void hit_and_correct(Game *game) {
 	for (EntityNode *p = game->tiles->head; p; p = p->next) {
 		Rectangle hit = GetCollisionRec(game->player.entity.hitbox, p->value.hitbox);
-		if (FloatEquals(hit.width, 0))
+		if (FloatEquals(hit.width, 0) || FloatEquals(hit.width, 0))
 			continue;
 
 		// lengthes that player should move back
-		f32 width = hit.width;
-		f32 height = hit.height;
+		f32 width = hit.width, height = hit.height;
 
-		if ((game->player.v.y > 0 && FloatEquals(game->player.entity.hitbox.y, hit.y)
-		)|| (game->player.v.y < 0 && FloatEquals(p->value.hitbox.y, hit.y))) {
-			// player passes through from top or bottom
-			height = game->player.entity.hitbox.height + p->value.hitbox.height - hit.height;
-		} else if ((game->player.v.x > 0 && FloatEquals(game->player.entity.hitbox.x, hit.x)
-		)|| (game->player.v.x < 0 && FloatEquals(p->value.hitbox.x, hit.x))) {
-			// player passes through from left or right
-			width = game->player.entity.hitbox.width + p->value.hitbox.width - hit.width;
+		if (game->player.v.y > 0) {
+			height = game->player.entity.hitbox.y + game->player.entity.hitbox.height - p->value.hitbox.y;
+		} else if (game->player.v.y < 0) {
+			height = p->value.hitbox.y + p->value.hitbox.height - game->player.entity.hitbox.y;
+		}
+
+		if (game->player.v.x > 0) {
+			width = game->player.entity.hitbox.x + game->player.entity.hitbox.width - p->value.hitbox.x;
+		} else if (game->player.v.x < 0) {
+			width = p->value.hitbox.x + p->value.hitbox.width - game->player.entity.hitbox.x;
 		}
 
 		f32 dt_x = fabsf(width / game->player.v.x);
@@ -72,16 +73,11 @@ void hit_and_correct(Game *game) {
 		player_move(&game->player, Vector2Scale(game->player.v, -dt));
 
 		// set velocity to 0 in the hit direction
-		if (FloatEquals(
-					game->player.entity.hitbox.y + game->player.entity.hitbox.height,
-					p->value.hitbox.y
-				) ||
-				FloatEquals(
-					game->player.entity.hitbox.y, p->value.hitbox.y + p->value.hitbox.height
-				)) {
-			game->player.v.y = 0;
-		} else {
+		if (dt_x < dt_y) {
 			game->player.v.x = 0;
+		} else {
+			// including dt_x == dt_y, otherwise may stuck in walking on flat platforms
+			game->player.v.y = 0;
 		}
 
 		// move with only unhit direction velocity
