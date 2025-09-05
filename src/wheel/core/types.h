@@ -24,3 +24,10 @@ typedef float f32;
 typedef double f64;
 
 extern const usize USIZE_MAX;
+
+#define generic_dynamic_array(type, name) \
+    typedef struct { \
+        usize size; \
+        usize length; \
+        type *data; \
+    } name;

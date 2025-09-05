@@ -2,8 +2,4 @@
 
 #include "../core.h"
 
-typedef struct {
-	usize size;
-	usize length;
-	char *data;
-} Str;
+generic_dynamic_array(char, Str)
