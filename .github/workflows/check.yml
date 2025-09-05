@@ -24,16 +24,14 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout this repo
       uses: actions/checkout@master
 
     - name: Setup Environment
-      run: |
-        sudo apt-get update -qq
-        sudo apt-get install -y --no-install-recommends clang-format
+      run: brew install clang-format
 
     - name: Check Code Format
       run: |
