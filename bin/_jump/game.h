@@ -2,7 +2,6 @@
 
 #include "types.h"
 
-
 Game *new_game();
 void hit_and_correct(Game *game);
 // Process input

@@ -88,7 +88,7 @@ $(CORE)/%.o: $(CORE)/%.c
 
 .PHONY: format
 format:
-	clang-format -style=file:.clang-format -i **/*.c **/*.h
+	find . -type f -name "*.[ch]" | xargs clang-format -style=file:.clang-format -i
 
 build/compile_commands.json:
 	@mkdir -p build

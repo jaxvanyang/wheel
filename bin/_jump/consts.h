@@ -10,4 +10,3 @@ const i32 FPS_K = FPS / SPRITE_FPS;
 
 const f32 MAX_SPEED_Y = 50;
 const f32 MAX_SPEED_X = 50;
-

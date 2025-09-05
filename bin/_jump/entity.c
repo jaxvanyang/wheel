@@ -25,4 +25,3 @@ Entity _new_platform(Texture2D texture, f32 x, f32 y, PlatformArg arg) {
 	Rectangle dest = {x, y, 2 * source.width, 2 * source.height};
 	return (Entity){texture, source, dest, dest};
 }
-

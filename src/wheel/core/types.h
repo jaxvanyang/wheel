@@ -1,9 +1,9 @@
 #pragma once
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <inttypes.h>
 
 typedef uint8_t u8;
 typedef int8_t i8;
@@ -25,9 +25,9 @@ typedef double f64;
 
 extern const usize USIZE_MAX;
 
-#define generic_dynamic_array(type, name) \
-    typedef struct { \
-        usize size; \
-        usize length; \
-        type *data; \
-    } name;
+#define generic_dynamic_array(type, name)                                              \
+	typedef struct {                                                                     \
+		usize size;                                                                        \
+		usize length;                                                                      \
+		type *data;                                                                        \
+	} name;

@@ -1,7 +1,7 @@
 #include "str.h"
 
-#include <string.h>
 #include <errno.h>
+#include <string.h>
 
 #include "list.h"
 
@@ -113,7 +113,7 @@ static void str_insert(Str *s, usize i, char c) {
 
 	if (s->size <= s->length + 1) {
 		usize new_size =
-				s->size + (s->size < LIST_MAX_INCREASE ? s->size : LIST_MAX_INCREASE);
+			s->size + (s->size < LIST_MAX_INCREASE ? s->size : LIST_MAX_INCREASE);
 		char *new_data = malloc(new_size * sizeof(char));
 		memcpy(new_data, s->data, s->size * sizeof(char));
 		free(s->data);

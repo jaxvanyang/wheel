@@ -54,7 +54,7 @@ void ulist_insert(Ulist *list, usize i, usize val) {
 
 	if (list->size <= list->length) {
 		usize new_size =
-				list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
+			list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
 		usize *new_data = malloc(new_size * sizeof(usize));
 		memcpy(new_data, list->data, list->size * sizeof(usize));
 		free(list->data);
@@ -195,7 +195,7 @@ void ilist_insert(Ilist *list, usize i, isize val) {
 
 	if (list->size < list->length + 1) {
 		usize new_size =
-				list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
+			list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
 		usize *new_data = malloc(new_size * sizeof(usize));
 		memcpy(new_data, list->data, list->size * sizeof(usize));
 		free(list->data);
@@ -325,7 +325,7 @@ void slist_insert(Slist *list, usize i, Str *s) {
 
 	if (list->size < list->length + 1) {
 		usize new_size =
-				list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
+			list->size + (list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE);
 		Str **new_data = malloc(new_size * sizeof(Str *));
 		memcpy(new_data, list->data, list->size * sizeof(Str *));
 		free(list->data);

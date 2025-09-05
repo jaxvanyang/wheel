@@ -11,7 +11,7 @@ void draw_hud(const Game *game) {
 	DrawTextEx(
 		game->manager->pixel_operator8,
 		score,
-		(Vector2){WIDTH - size.x - 5, 5 -game->camera.offset.y},
+		(Vector2){WIDTH - size.x - 5, 5 - game->camera.offset.y},
 		15,
 		1,
 		RAYWHITE
