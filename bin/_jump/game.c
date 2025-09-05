@@ -12,8 +12,9 @@ Game *new_game() {
 	game->frame_counter = 0;
 	game->player = new_player(game->manager->player, WIDTH / 2, 0);
 	game->tiles = elist_new();
-	game->camera = (Camera2D
-	){.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1};
+	game->camera = (Camera2D){
+		.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1
+	};
 
 	for (usize i = 0; i < (WIDTH + 63) / 64; ++i) {
 		elist_push_back(
@@ -54,13 +55,16 @@ void hit_and_correct(Game *game) {
 		f32 width = hit.width, height = hit.height;
 
 		if (game->player.v.y > 0) {
-			height = game->player.entity.hitbox.y + game->player.entity.hitbox.height - p->value.hitbox.y;
+			height = game->player.entity.hitbox.y + game->player.entity.hitbox.height -
+							 p->value.hitbox.y;
 		} else if (game->player.v.y < 0) {
-			height = p->value.hitbox.y + p->value.hitbox.height - game->player.entity.hitbox.y;
+			height =
+				p->value.hitbox.y + p->value.hitbox.height - game->player.entity.hitbox.y;
 		}
 
 		if (game->player.v.x > 0) {
-			width = game->player.entity.hitbox.x + game->player.entity.hitbox.width - p->value.hitbox.x;
+			width = game->player.entity.hitbox.x + game->player.entity.hitbox.width -
+							p->value.hitbox.x;
 		} else if (game->player.v.x < 0) {
 			width = p->value.hitbox.x + p->value.hitbox.width - game->player.entity.hitbox.x;
 		}

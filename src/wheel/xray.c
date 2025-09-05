@@ -102,7 +102,7 @@ Entity elist_pop_back(EntityList *list) {
 	return entity;
 }
 
-Texture2D load_texture(const char *path){
+Texture2D load_texture(const char *path) {
 	char *p = os_path(path);
 	Texture2D ret = LoadTexture(p);
 
