@@ -5,6 +5,12 @@ run bin *args:
 	make bin/{{bin}}
 	bin/{{bin}} {{args}}
 
+# clean run (force rebuild)
+crun bin *args:
+	rm -f bin/{{bin}}
+	make bin/{{bin}}
+	bin/{{bin}} {{args}}
+
 run-test test:
 	make tests/{{test}}
 	tests/{{test}}

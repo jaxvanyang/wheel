@@ -17,6 +17,6 @@
 	},
 	{
 		"label": "Run Jump",
-		"command": "just run jump"
+		"command": "just crun jump"
 	}
 ]
