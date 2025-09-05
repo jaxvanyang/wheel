@@ -6,3 +6,4 @@ ColumnLimit: 88
 ContinuationIndentWidth: 2
 AlignAfterOpenBracket: BlockIndent
 BinPackArguments: false
+AlignEscapedNewlines: DontAlign
