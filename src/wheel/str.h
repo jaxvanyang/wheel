@@ -12,6 +12,7 @@ Str *str_new();
 Str *str_from(const char *s);
 void str_free(Str *s);
 
+void str_insert_char(Str *s, const usize i, const char c);
 void str_insert_str(Str *s, const usize i, const char *t);
 void str_push(Str *s, const char c);
 void str_push_str(Str *s, const char *t);

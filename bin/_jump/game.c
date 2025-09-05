@@ -12,8 +12,9 @@ Game *new_game() {
 	game->frame_counter = 0;
 	game->player = new_player(game->manager->player, WIDTH / 2, 0);
 	game->tiles = elist_new();
-	game->camera = (Camera2D
-	){.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1};
+	game->camera = (Camera2D){
+		.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1
+	};
 
 	for (usize i = 0; i < (WIDTH + 63) / 64; ++i) {
 		elist_push_back(

@@ -106,7 +106,7 @@ void str_free(Str *s) {
 	free(s);
 }
 
-static void str_insert(Str *s, usize i, char c) {
+void str_insert(Str *s, const usize i, const char c) {
 	if (i > s->length) {
 		error("expected i <= length, found: %zu > %zu\n", i, s->length);
 	}
