@@ -270,15 +270,13 @@ void draw_hud(Game *game) {
 
 	if (game->is_over) {
 		const char *text = "GAME OVER";
-		Vector2 size = MeasureTextEx(GetFontDefault(), text, 40, 2);
-		DrawText(text, (WIDTH - size.x) / 2, (HEIGHT - size.y) / 2, 40, RED);
+		draw_text_center(text, WIDTH / 2, HEIGHT / 2, 40, RED);
 		return;
 	}
 
 	if (game->paused) {
 		const char *text = "Paused";
-		Vector2 size = MeasureTextEx(GetFontDefault(), text, 40, 2);
-		DrawText(text, (WIDTH - size.x) / 2, (HEIGHT - size.y) / 2, 40, WHITE);
+		draw_text_center(text, WIDTH / 2, HEIGHT / 2, 40, WHITE);
 	}
 }
 
