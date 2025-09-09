@@ -1,5 +1,6 @@
 #include "xray.h"
 #include "path.h"
+#include "raylib.h"
 #include <raymath.h>
 
 void draw_entity(Entity entity) {
@@ -192,4 +193,13 @@ void draw_text_ex_center(
 	position.y -= size.y / 2;
 
 	DrawTextEx(font, text, position, font_size, spacing, tint);
+}
+
+void draw_texture_rec_scale(
+	Texture2D texture, Rectangle source, Vector2 position, f32 scale
+) {
+	Rectangle dest = {
+		position.x, position.y, source.width * scale, source.height * scale
+	};
+	DrawTexturePro(texture, source, dest, Vector2Zero(), 0, WHITE);
 }

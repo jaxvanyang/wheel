@@ -56,3 +56,7 @@ void draw_text_ex_center(
 	Font font, const char *text, Vector2 position, float font_size, float spacing,
 	Color tint
 );
+
+void draw_texture_rec_scale(
+	Texture2D texture, Rectangle source, Vector2 position, f32 scale
+);
