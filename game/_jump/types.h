@@ -8,6 +8,7 @@ typedef struct {
 	Texture2D player;
 	Sound jump;
 	Sound explosion;
+	Sound hurt;
 	Font pixel_operator8;
 } ResourceManager;
 

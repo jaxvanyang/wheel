@@ -130,6 +130,7 @@ void update(Game *game) {
 	if (game->player.entity.hitbox.y + game->player.entity.hitbox.height >
 			game->deadline) {
 		game->player.state = DEATH;
+		PlaySound(game->manager->hurt);
 	}
 }
 
