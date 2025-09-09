@@ -11,28 +11,9 @@ Game *new_game() {
 	Game *game = malloc(sizeof(Game));
 
 	game->manager = new_resource_manager();
-	game->frame_counter = 0;
-	game->player = new_player(game->manager->player, WIDTH / 2, 0);
 	game->tiles = elist_new();
-	game->camera = (Camera2D){
-		.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1
-	};
-	game->deadline = 100;
-	game->score = 0;
-
-	for (usize i = 0; i < (WIDTH + 63) / 64; ++i) {
-		elist_push_back(
-			game->tiles,
-			new_platform(game->manager->platform, i * 64, 0, .size = PLATFORM_LARGE)
-		);
-	}
-
-	for (isize i = 1; i <= (WIDTH + 63) / 64; ++i) {
-		elist_push_back(
-			game->tiles,
-			new_platform(game->manager->platform, 100 * i, -80 * i, .color = PLATFORM_BLUE)
-		);
-	}
+	
+	reset(game);
 
 	return game;
 }
@@ -81,7 +62,7 @@ void hit_and_correct(Game *game) {
 	}
 }
 
-void input(Game *game) {
+void handle_input(Game *game) {
 	if (IsKeyPressed(KEY_K)) {
 		game->player.v.y = -15;
 		game->player.state = RUN;
@@ -149,5 +130,31 @@ void update(Game *game) {
 	if (game->player.entity.hitbox.y + game->player.entity.hitbox.height >
 			game->deadline) {
 		game->player.state = DEATH;
+	}
+}
+
+void reset(Game *game) {
+	game->frame_counter = 0;
+	game->camera = (Camera2D){
+		.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1
+	};
+	game->deadline = 100;
+	game->score = 0;
+	game->player = new_player(game->manager->player, WIDTH / 2, 0);
+
+	elist_clear(game->tiles);
+
+	for (usize i = 0; i < (WIDTH + 63) / 64; ++i) {
+		elist_push_back(
+			game->tiles,
+			new_platform(game->manager->platform, i * 64, 0, .size = PLATFORM_LARGE)
+		);
+	}
+
+	for (isize i = 1; i <= (WIDTH + 63) / 64; ++i) {
+		elist_push_back(
+			game->tiles,
+			new_platform(game->manager->platform, 100 * i, -80 * i, .color = PLATFORM_BLUE)
+		);
 	}
 }

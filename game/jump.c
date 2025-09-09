@@ -16,8 +16,15 @@
 
 static Game *game = NULL;
 
-void update_draw() {
-	input(game);
+void main_loop() {
+	if (game->player.state != DEATH) {
+		handle_input(game);
+	} else {
+		if (IsKeyPressed(KEY_R)) {
+			reset(game);
+		}
+	}
+
 	update(game);
 	draw(game);
 }
@@ -34,7 +41,7 @@ int main() {
 	SetTargetFPS(FPS);
 
 	while (!WindowShouldClose()) {
-		update_draw();
+		main_loop();
 	};
 #endif // __EMSCRIPTEN__
 

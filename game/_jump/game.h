@@ -4,6 +4,6 @@
 
 Game *new_game();
 void hit_and_correct(Game *game);
-// Process input
-void input(Game *game);
+void handle_input(Game *game);
 void update(Game *game);
+void reset(Game *game);
