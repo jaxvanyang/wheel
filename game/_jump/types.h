@@ -6,6 +6,7 @@
 typedef struct {
 	Texture2D platform;
 	Texture2D player;
+	Texture2D tileset;
 	Sound jump;
 	Sound explosion;
 	Sound hurt;

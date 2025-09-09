@@ -2,16 +2,19 @@
 #include "consts.h"
 #include "game.h"
 #include "player.h"
+#include "wheel/xray.h"
 #include <raylib.h>
 
 void draw_hud(const Game *game) {
-	DrawFPS(0, -game->camera.offset.y);
+	i32 start_y = get_screen_start_y(&game->player);
+
+	DrawFPS(0, start_y);
 
 	const char *score = TextFormat("%010u", game->score);
 	draw_text_ex_tr(
 		game->manager->pixel_operator8,
 		score,
-		(Vector2){WIDTH - 5, 5 - game->camera.offset.y},
+		(Vector2){WIDTH - 5, start_y + 5},
 		15,
 		1,
 		RAYWHITE
@@ -36,16 +39,42 @@ void draw_debug_info(const Game *game) {
 	str_push_str(text, TextFormat("camera Y offset: %.1f\n", game->camera.offset.y));
 	str_push_str(text, TextFormat("frame counter: %u\n", game->frame_counter));
 
-	DrawText(text->data, 0, 20 - game->camera.offset.y, 10, RAYWHITE);
+	DrawText(text->data, 0, get_screen_start_y(&game->player) + 20, 10, RAYWHITE);
 
 	str_free(text);
 	text = NULL;
 }
 
+static void _draw_background(Texture2D texture, Rectangle source, f32 y) {
+	i32 width = (i32)source.width * 2;
+
+	for (i32 i = 0; i <= WIDTH / width; ++i) {
+		Vector2 position = {i * width, y};
+		draw_texture_rec_scale(texture, source, position, 2);
+	}
+}
+
+void draw_background(const Game *game) {
+	Rectangle source = {0, 175, 16, 80};
+
+	i32 start_y = get_screen_start_y(&game->player);
+	i32 end_y = start_y + HEIGHT;
+	i32 height = (i32)source.height * 2 + 34;
+
+	for (i32 i = start_y / height - 1; i <= end_y / height; ++i) {
+		_draw_background(game->manager->tileset, source, i * height);
+	}
+}
+
 void draw(const Game *game) {
 	BeginDrawing();
 	BeginMode2D(game->camera);
-	ClearBackground(DARKBLUE);
+
+	Color bg_color = {3, 38, 89, 255};
+
+	ClearBackground(bg_color);
+
+	draw_background(game);
 
 	for (EntityNode *p = game->tiles->head; p; p = p->next) {
 		draw_entity(p->value);

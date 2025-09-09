@@ -88,6 +88,7 @@ void handle_input(Game *game) {
 
 void update(Game *game) {
 	++game->frame_counter;
+
 	if (game->frame_counter % FPS_K == 0) {
 		player_update_frame(&game->player);
 	}
@@ -107,7 +108,7 @@ void update(Game *game) {
 		game->player.state = IDLE;
 	}
 
-	game->camera.offset.y = (f32)HEIGHT / 16 * 11 - game->player.entity.dest.y;
+	game->camera.target.y = get_screen_start_y(&game->player);
 
 	bool should_destroy_tile = false;
 
@@ -136,12 +137,12 @@ void update(Game *game) {
 
 void reset(Game *game) {
 	game->frame_counter = 0;
+	game->player = new_player(game->manager->player, (f32)WIDTH / 2, 0);
 	game->camera = (Camera2D){
-		.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1
+		.target = {0, game->player.entity.hitbox.y}, .offset = Vector2Zero(), .rotation = 0, .zoom = 1
 	};
 	game->deadline = 100;
 	game->score = 0;
-	game->player = new_player(game->manager->player, WIDTH / 2, 0);
 
 	elist_clear(game->tiles);
 
@@ -158,4 +159,8 @@ void reset(Game *game) {
 			new_platform(game->manager->platform, 100 * i, -80 * i, .color = PLATFORM_BLUE)
 		);
 	}
+}
+
+i32 get_screen_start_y(const Player *player) {
+	return (i32)player->entity.hitbox.y - HEIGHT / 2;
 }
