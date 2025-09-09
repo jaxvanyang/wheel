@@ -102,6 +102,12 @@ Entity elist_pop_back(EntityList *list) {
 	return entity;
 }
 
+void elist_clear(EntityList *list) {
+	while (list->size != 0) {
+		elist_pop_front(list);
+	}
+}
+
 Texture2D load_texture(const char *path) {
 	char *p = os_path(path);
 	Texture2D ret = LoadTexture(p);
