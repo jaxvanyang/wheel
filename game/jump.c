@@ -36,7 +36,7 @@ int main() {
 	game = new_game();
 
 #ifdef __EMSCRIPTEN__
-	emscripten_set_main_loop(update_draw, FPS, true);
+	emscripten_set_main_loop(main_loop, FPS, true);
 #else
 	SetTargetFPS(FPS);
 
