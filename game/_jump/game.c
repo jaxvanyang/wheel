@@ -2,6 +2,7 @@
 #include "consts.h"
 #include "entity.h"
 #include "player.h"
+#include "raylib.h"
 #include "utils.h"
 #include <raymath.h>
 #include <wheel/xray.h>
@@ -125,13 +126,13 @@ void update(Game *game) {
 		game->player.state = IDLE;
 	}
 
-	game->camera.offset.y = HEIGHT / 16 * 11 - game->player.entity.dest.y;
+	game->camera.offset.y = (f32)HEIGHT / 16 * 11 - game->player.entity.dest.y;
 
-	bool has_dead_tile = false;
+	bool should_destroy_tile = false;
 
 	for (EntityNode *p = game->tiles->head; p;) {
 		if (p->value.hitbox.y + p->value.hitbox.height > game->deadline) {
-			has_dead_tile = true;
+			should_destroy_tile = true;
 
 			EntityNode *next = p->next;
 			elist_pop_front(game->tiles);
@@ -139,6 +140,10 @@ void update(Game *game) {
 		} else {
 			break;
 		}
+	}
+
+	if (should_destroy_tile) {
+		PlaySound(game->manager->explosion);
 	}
 
 	if (game->player.entity.hitbox.y + game->player.entity.hitbox.height >

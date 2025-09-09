@@ -7,6 +7,7 @@ typedef struct {
 	Texture2D platform;
 	Texture2D player;
 	Sound jump;
+	Sound explosion;
 	Font pixel_operator8;
 } ResourceManager;
 
@@ -20,8 +21,7 @@ typedef enum {
 
 typedef struct {
 	Entity entity;
-	// velocity
-	Vector2 v;
+	Vector2 v; // velocity
 	u8 frame_counter;
 	PlayerState state;
 } Player;
