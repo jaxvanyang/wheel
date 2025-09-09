@@ -196,10 +196,10 @@ void draw_text_ex_center(
 }
 
 void draw_texture_rec_scale(
-	Texture2D texture, Rectangle source, Vector2 position, f32 scale
+	Texture2D texture, Rectangle source, Vector2 position, Color tint, f32 scale
 ) {
 	Rectangle dest = {
 		position.x, position.y, source.width * scale, source.height * scale
 	};
-	DrawTexturePro(texture, source, dest, Vector2Zero(), 0, WHITE);
+	DrawTexturePro(texture, source, dest, Vector2Zero(), 0, tint);
 }

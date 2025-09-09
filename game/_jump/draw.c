@@ -50,13 +50,12 @@ static void _draw_background(Texture2D texture, Rectangle source, f32 y) {
 
 	for (i32 i = 0; i <= WIDTH / width; ++i) {
 		Vector2 position = {i * width, y};
-		draw_texture_rec_scale(texture, source, position, 2);
+		draw_texture_rec_scale(texture, source, position, WHITE, 2);
 	}
 }
 
 void draw_background(const Game *game) {
 	Rectangle source = {0, 175, 16, 80};
-
 	i32 start_y = get_screen_start_y(&game->player);
 	i32 end_y = start_y + HEIGHT;
 	i32 height = (i32)source.height * 2 + 34;
