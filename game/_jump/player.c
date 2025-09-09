@@ -20,57 +20,62 @@ const char *state_string(PlayerState state) {
 }
 
 Player new_player(Texture2D texture, f32 x, f32 y) {
-	Rectangle source = {9, 9, 14, 19};
-	Rectangle dest = {x, y, source.width * 2, source.height * 2};
-	Rectangle hitbox = dest;
+	Rectangle source = {0, 0, 32, 32};
+	Rectangle hitbox = {x, y, 20, 30};
+	Rectangle dest = {x - 22, y - 24, source.width * 2, source.height * 2};
 
 	return (Player){
-		{
+		.entity = {
 			texture,
 			source,
 			dest,
 			hitbox,
 		},
-		Vector2Zero(),
-		0,
-		IDLE,
+		.v = Vector2Zero(),
+		.frame_counter = 0,
+		.state = IDLE,
 	};
 }
 
 void player_update_frame(Player *player) {
+	if (player->state == DEATH && player->frame_counter % 4 == 3) {
+		return;
+	}
+
 	player->frame_counter = (player->frame_counter + 1) % 16;
 
 	switch (player->state) {
 	case IDLE:
-		player->entity.source.y = 9;
-		player->entity.source.x = 8 + player->frame_counter % 4 * 32;
+		player->entity.source.y = 0;
+		player->entity.source.x = player->frame_counter % 4 * 32;
 		break;
 	case RUN:
-		player->entity.source.y = 74 + player->frame_counter / 8 * 32;
-		player->entity.source.x = 8 + player->frame_counter % 8 * 32;
+		player->entity.source.y = 64 + player->frame_counter / 8 * 32;
+		player->entity.source.x = player->frame_counter % 8 * 32;
 		break;
 	case ROLL:
-		player->entity.source.y = 169;
-		player->entity.source.x = 8 + player->frame_counter % 8 * 32;
+		player->entity.source.y = 160;
+		player->entity.source.x = player->frame_counter % 8 * 32;
 		break;
 	case HIT:
-		player->entity.source.y = 201;
-		player->entity.source.x = 8 + player->frame_counter % 4 * 32;
+		player->entity.source.y = 192;
+		player->entity.source.x = player->frame_counter % 4 * 32;
 		break;
 	case DEATH:
-		player->entity.source.y = 233;
-		player->entity.source.x = 8 + player->frame_counter % 4 * 32;
+		player->entity.source.y = 224;
+		player->entity.source.x = player->frame_counter % 4 * 32;
 		break;
 	}
 }
 
 void player_move(Player *player, Vector2 v) {
-	f32 x = clamp(player->entity.dest.x + v.x, 0, WIDTH - player->entity.hitbox.width);
-	player->entity.hitbox.x += x - player->entity.dest.x;
-	player->entity.dest.x = x;
+	f32 x = player->entity.hitbox.x + v.x;
+	x = clamp(x, 0, WIDTH - player->entity.hitbox.width);
+	player->entity.dest.x += x - player->entity.hitbox.x;
+	player->entity.hitbox.x = x;
 
-	player->entity.dest.y += v.y;
 	player->entity.hitbox.y += v.y;
+	player->entity.dest.y += v.y;
 }
 
 void player_update(Player *player) {
