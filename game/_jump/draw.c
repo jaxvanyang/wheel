@@ -100,7 +100,10 @@ void draw(const Game *game) {
 	draw_lava(game);
 
 	draw_hud(game);
-	draw_debug_info(game);
+
+	if (game->debug) {
+		draw_debug_info(game);
+	}
 
 	EndMode2D();
 	EndDrawing();

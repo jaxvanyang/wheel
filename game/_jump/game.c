@@ -12,6 +12,7 @@ Game *new_game() {
 
 	game->manager = new_resource_manager();
 	game->tiles = elist_new();
+	game->debug = false;
 	
 	reset(game);
 
@@ -71,6 +72,7 @@ void handle_input(Game *game) {
 	if (IsKeyPressed(KEY_K) && game->player.is_on_ground) {
 		game->player.v.y = -15;
 		game->player.is_on_ground = false;
+
 		PlaySound(game->manager->jump);
 	}
 
@@ -78,8 +80,7 @@ void handle_input(Game *game) {
 		game->player.v.x = -5;
 		game->player.state = RUN;
 		game->player.entity.source.width = -fabsf(game->player.entity.source.width);
-	}
-	if (IsKeyDown(KEY_D)) {
+	} else if (IsKeyDown(KEY_D)) {
 		game->player.v.x = 5;
 		game->player.state = RUN;
 		game->player.entity.source.width = fabsf(game->player.entity.source.width);
@@ -88,6 +89,10 @@ void handle_input(Game *game) {
 	if (IsKeyReleased(KEY_A) || IsKeyReleased(KEY_D)) {
 		game->player.state = IDLE;
 		game->player.v.x = 0;
+	}
+
+	if (IsKeyPressed(KEY_T)) {
+		game->debug = !game->debug;
 	}
 }
 

@@ -55,4 +55,5 @@ typedef struct {
 	f32 deadline;
 	u32 score;
 	bool is_over;
+	bool debug;
 } Game;
