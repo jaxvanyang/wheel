@@ -92,17 +92,24 @@ void handle_input(Game *game) {
 }
 
 void update(Game *game) {
+	if (game->is_over) {
+		return;
+	}
+
 	++game->frame_counter;
 
 	if (game->frame_counter % FPS_K == 0) {
-		player_update_frame(&game->player);
+		if (!player_update_frame(&game->player)) {
+			game->is_over = true;
+		}
 	}
+
+	game->deadline -= 0.5;
 
 	if (game->player.state == DEATH) {
 		return;
 	}
 
-	game->deadline -= 0.5;
 	if (game->frame_counter % FPS == 0) {
 		++game->score;
 	}
@@ -142,6 +149,7 @@ void reset(Game *game) {
 	};
 	game->deadline = 100;
 	game->score = 0;
+	game->is_over = false;
 
 	elist_clear(game->tiles);
 

@@ -54,4 +54,5 @@ typedef struct {
 	Camera2D camera;
 	f32 deadline;
 	u32 score;
+	bool is_over;
 } Game;

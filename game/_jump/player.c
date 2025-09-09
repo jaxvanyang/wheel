@@ -38,9 +38,9 @@ Player new_player(Texture2D texture, f32 x, f32 y) {
 	};
 }
 
-void player_update_frame(Player *player) {
+bool player_update_frame(Player *player) {
 	if (player->state == DEATH && player->frame_counter % 4 == 3) {
-		return;
+		return false;
 	}
 
 	player->frame_counter = (player->frame_counter + 1) % 16;
@@ -67,6 +67,8 @@ void player_update_frame(Player *player) {
 		player->entity.source.x = player->frame_counter % 4 * 32;
 		break;
 	}
+
+	return true;
 }
 
 void player_move(Player *player, Vector2 v) {
