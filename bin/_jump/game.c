@@ -8,6 +8,7 @@
 
 Game *new_game() {
 	Game *game = malloc(sizeof(Game));
+
 	game->manager = new_resource_manager();
 	game->frame_counter = 0;
 	game->player = new_player(game->manager->player, WIDTH / 2, 0);
@@ -15,32 +16,22 @@ Game *new_game() {
 	game->camera = (Camera2D){
 		.offset = Vector2Zero(), .target = Vector2Zero(), .rotation = 0, .zoom = 1
 	};
+	game->deadline = 100;
+	game->score = 0;
 
 	for (usize i = 0; i < (WIDTH + 63) / 64; ++i) {
 		elist_push_back(
 			game->tiles,
-			new_platform(game->manager->platform, i * 64, HEIGHT - 18, .size = PLATFORM_LARGE)
+			new_platform(game->manager->platform, i * 64, 0, .size = PLATFORM_LARGE)
 		);
 	}
 
-	elist_push_back(
-		game->tiles,
-		new_platform(game->manager->platform, 100, HEIGHT - 80, .color = PLATFORM_BROWN)
-	);
-	elist_push_back(
-		game->tiles,
-		new_platform(game->manager->platform, 200, HEIGHT - 80, .color = PLATFORM_GOLD)
-	);
-	elist_push_back(
-		game->tiles,
-		new_platform(
-			game->manager->platform,
-			300,
-			HEIGHT - 80,
-			.color = PLATFORM_BLUE,
-			.size = PLATFORM_LARGE
-		)
-	);
+	for (isize i = 1; i <= (WIDTH + 63) / 64; ++i) {
+		elist_push_back(
+			game->tiles,
+			new_platform(game->manager->platform, 100 * i, -80 * i, .color = PLATFORM_BLUE)
+		);
+	}
 
 	return game;
 }
@@ -91,7 +82,7 @@ void hit_and_correct(Game *game) {
 
 void input(Game *game) {
 	if (IsKeyPressed(KEY_K)) {
-		game->player.v.y = -13;
+		game->player.v.y = -15;
 		game->player.state = RUN;
 		PlaySound(game->manager->jump);
 	}
@@ -119,12 +110,39 @@ void update(Game *game) {
 		player_update_frame(&game->player);
 	}
 
-	// player updates
+	if (game->player.state == DEATH) {
+		return;
+	}
+
+	game->deadline -= 0.5;
+	if (game->frame_counter % FPS == 0) {
+		++game->score;
+	}
+
 	player_update(&game->player);
 	hit_and_correct(game);
 	if (FloatEquals(game->player.v.x, 0)) {
 		game->player.state = IDLE;
 	}
 
-	game->camera.offset.y = HEIGHT / 2 - game->player.entity.dest.y;
+	game->camera.offset.y = HEIGHT / 16 * 11 - game->player.entity.dest.y;
+
+	bool has_dead_tile = false;
+
+	for (EntityNode *p = game->tiles->head; p;) {
+		if (p->value.hitbox.y + p->value.hitbox.height > game->deadline) {
+			has_dead_tile = true;
+
+			EntityNode *next = p->next;
+			elist_pop_front(game->tiles);
+			p = next;
+		} else {
+			break;
+		}
+	}
+
+	if (game->player.entity.hitbox.y + game->player.entity.hitbox.height >
+			game->deadline) {
+		game->player.state = DEATH;
+	}
 }

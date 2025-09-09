@@ -1,12 +1,13 @@
 #include "draw.h"
 #include "consts.h"
+#include "game.h"
 #include "player.h"
 #include <raylib.h>
 
 void draw_hud(const Game *game) {
 	DrawFPS(0, -game->camera.offset.y);
 
-	const char *score = TextFormat("%010d", game->frame_counter / FPS);
+	const char *score = TextFormat("%010u", game->score);
 	draw_text_ex_tr(
 		game->manager->pixel_operator8,
 		score,
@@ -51,6 +52,8 @@ void draw(const Game *game) {
 	}
 
 	draw_entity(game->player.entity);
+
+	DrawLineEx((Vector2){0, game->deadline}, (Vector2){WIDTH, game->deadline}, 2, RED);
 
 	draw_hud(game);
 	draw_debug_info(game);

@@ -49,4 +49,6 @@ typedef struct {
 	EntityList *tiles;
 	u32 frame_counter;
 	Camera2D camera;
+	f32 deadline;
+	u32 score;
 } Game;
