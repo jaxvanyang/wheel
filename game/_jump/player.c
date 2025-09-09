@@ -82,6 +82,9 @@ void player_move(Player *player, Vector2 v) {
 }
 
 void player_update(Player *player) {
+	// hit_and_correct() will correct this
+	player->is_on_ground = false;
+
 	player->v.y = min(player->v.y + 1, MAX_SPEED_Y);
 
 	player_move(player, player->v);
