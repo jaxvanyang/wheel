@@ -54,6 +54,11 @@ void hit_and_correct(Game *game) {
 			game->player.v.x = 0;
 		} else {
 			// including dt_x == dt_y, otherwise may stuck in walking on flat platforms
+			
+			if (game->player.v.y > 0) {
+				game->player.is_on_ground = true;
+			}
+
 			game->player.v.y = 0;
 		}
 
@@ -63,9 +68,9 @@ void hit_and_correct(Game *game) {
 }
 
 void handle_input(Game *game) {
-	if (IsKeyPressed(KEY_K)) {
+	if (IsKeyPressed(KEY_K) && game->player.is_on_ground) {
 		game->player.v.y = -15;
-		game->player.state = RUN;
+		game->player.is_on_ground = false;
 		PlaySound(game->manager->jump);
 	}
 

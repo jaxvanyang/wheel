@@ -26,6 +26,7 @@ typedef struct {
 	Vector2 v; // velocity
 	u8 frame_counter;
 	PlayerState state;
+	bool is_on_ground;
 } Player;
 
 typedef enum {

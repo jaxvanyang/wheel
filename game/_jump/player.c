@@ -34,6 +34,7 @@ Player new_player(Texture2D texture, f32 x, f32 y) {
 		.v = Vector2Zero(),
 		.frame_counter = 0,
 		.state = IDLE,
+		.is_on_ground = true,
 	};
 }
 
