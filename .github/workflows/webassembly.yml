@@ -74,13 +74,13 @@ jobs:
         make PLATFORM=PLATFORM_WEB RAYLIB_BUILD_MODE=RELEASE RAYLIB_LIBTYPE=STATIC RAYLIB_RELEASE_PATH=. -B -j "$(nproc)"
 
     - name: Build Product
-      run: make -B -j "$(nproc)" bins
+      run: make -B -j "$(nproc)" games
 
     - name: Generate Artifacts
       run: |
         mkdir -p ${{ env.PROJECT_RELEASE_PATH }}
         cp src/index.html ${{ env.PROJECT_RELEASE_PATH }}
-        cp bin/*.html bin/*.js bin/*.wasm bin/*.data ${{ env.PROJECT_RELEASE_PATH }}
+        cp game/*.html game/*.js game/*.wasm game/*.data ${{ env.PROJECT_RELEASE_PATH }}
         7z a ./${{ env.PROJECT_RELEASE_PATH }}.zip ./${{ env.PROJECT_RELEASE_PATH }}
 
     - name: Upload Artifacts
