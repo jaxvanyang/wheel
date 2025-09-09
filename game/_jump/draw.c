@@ -65,6 +65,22 @@ void draw_background(const Game *game) {
 	}
 }
 
+void draw_lava(const Game *game) {
+	Rectangle source = {64, 176, 16, 32};
+	i32 width = (i32)source.width * 2;
+	f32 y = game->deadline;
+
+	for (i32 i = 0; i <= WIDTH / width; ++i) {
+		Vector2 position = {i * width, y};
+		draw_texture_rec_scale(game->manager->tileset, source, position, RED, 3);
+	}
+
+	i32 height = get_screen_start_y(&game->player) + HEIGHT - y;
+	Color color = {165, 10, 32, 255};
+
+	DrawRectangle(0, y + source.height * 2, WIDTH, height, color);
+}
+
 void draw(const Game *game) {
 	BeginDrawing();
 	BeginMode2D(game->camera);
@@ -81,7 +97,7 @@ void draw(const Game *game) {
 
 	draw_entity(game->player.entity);
 
-	DrawLineEx((Vector2){0, game->deadline}, (Vector2){WIDTH, game->deadline}, 2, RED);
+	draw_lava(game);
 
 	draw_hud(game);
 	draw_debug_info(game);

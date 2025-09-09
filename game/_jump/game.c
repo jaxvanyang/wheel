@@ -109,17 +109,15 @@ void update(Game *game) {
 
 	player_update(&game->player);
 	hit_and_correct(game);
+
 	if (FloatEquals(game->player.v.x, 0)) {
 		game->player.state = IDLE;
 	}
 
 	game->camera.target.y = get_screen_start_y(&game->player);
 
-	bool should_destroy_tile = false;
-
 	for (EntityNode *p = game->tiles->head; p;) {
-		if (p->value.hitbox.y + p->value.hitbox.height > game->deadline) {
-			should_destroy_tile = true;
+		if (p->value.hitbox.y > game->deadline) {
 
 			EntityNode *next = p->next;
 			elist_pop_front(game->tiles);
@@ -127,10 +125,6 @@ void update(Game *game) {
 		} else {
 			break;
 		}
-	}
-
-	if (should_destroy_tile) {
-		PlaySound(game->manager->explosion);
 	}
 
 	if (game->player.entity.hitbox.y + game->player.entity.hitbox.height >
