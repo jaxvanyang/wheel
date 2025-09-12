@@ -11,18 +11,7 @@ typedef struct {
 	Rectangle hitbox;
 } Entity;
 
-typedef struct EntityNode {
-	Entity value;
-	struct EntityNode *prev;
-	struct EntityNode *next;
-} EntityNode;
-
-// this is actually dequeue
-typedef struct {
-	usize size;
-	EntityNode *head;
-	EntityNode *tail;
-} EntityList;
+DEQUEUE(Entity, EntityNode, EntityList)
 
 void draw_entity(Entity entity);
 

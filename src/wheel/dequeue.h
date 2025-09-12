@@ -2,17 +2,7 @@
 
 #include "core.h"
 
-typedef struct DequeueNode {
-	isize value;
-	struct DequeueNode *prev;
-	struct DequeueNode *next;
-} DequeueNode;
-
-typedef struct {
-	usize size;
-	DequeueNode *head;
-	DequeueNode *tail;
-} Dequeue;
+DEQUEUE(isize, DequeueNode, Dequeue)
 
 DequeueNode *dequeue_node_new(isize value);
 void dequeue_node_free(DequeueNode *node);
