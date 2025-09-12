@@ -25,8 +25,8 @@ typedef struct {
 
 typedef struct {
 	Direction direction;
-	Dequeue *xs;
-	Dequeue *ys;
+	Deque *xs;
+	Deque *ys;
 } Snake;
 
 typedef struct {
@@ -52,29 +52,29 @@ Snake *new_snake() {
 	Snake *snake = malloc(sizeof(Snake));
 
 	snake->direction = RIGHT;
-	snake->xs = dequeue_new();
-	snake->ys = dequeue_new();
+	snake->xs = deque_new();
+	snake->ys = deque_new();
 
 	i32 cx = N_WIDTH / 2 * UNIT, cy = N_HEIGHT / 2 * UNIT;
 
-	dequeue_push_back(snake->xs, cx + UNIT);
-	dequeue_push_back(snake->ys, cy);
-	dequeue_push_back(snake->xs, cx);
-	dequeue_push_back(snake->ys, cy);
+	deque_push_back(snake->xs, cx + UNIT);
+	deque_push_back(snake->ys, cy);
+	deque_push_back(snake->xs, cx);
+	deque_push_back(snake->ys, cy);
 
 	return snake;
 }
 
 void free_snake(Snake *snake) {
-	dequeue_free(snake->xs);
+	deque_free(snake->xs);
 	snake->xs = NULL;
-	dequeue_free(snake->ys);
+	deque_free(snake->ys);
 	snake->ys = NULL;
 
 	free(snake);
 }
 
-void draw_block(DequeueNode *xp, DequeueNode *yp) {
+void draw_block(DequeNode *xp, DequeNode *yp) {
 	Color color = xp->prev ? LIME : GREEN;
 	DrawRectangle(xp->value, yp->value, UNIT, UNIT, color);
 
@@ -118,15 +118,15 @@ void draw_block(DequeueNode *xp, DequeueNode *yp) {
 }
 
 void draw_snake(Snake *snake) {
-	for (DequeueNode *xp = snake->xs->head, *yp = snake->ys->head; xp && yp;
+	for (DequeNode *xp = snake->xs->head, *yp = snake->ys->head; xp && yp;
 			 xp = xp->next, yp = yp->next) {
 		draw_block(xp, yp);
 	}
 }
 
 Position snake_next(Snake *snake) {
-	i32 x = dequeue_first(snake->xs);
-	i32 y = dequeue_first(snake->ys);
+	i32 x = deque_first(snake->xs);
+	i32 y = deque_first(snake->ys);
 
 	switch (snake->direction) {
 	case 0:
@@ -143,10 +143,10 @@ Position snake_next(Snake *snake) {
 void snake_move(Snake *snake) {
 	Position pos = snake_next(snake);
 
-	dequeue_pop_back(snake->xs);
-	dequeue_pop_back(snake->ys);
-	dequeue_push_front(snake->xs, pos.x);
-	dequeue_push_front(snake->ys, pos.y);
+	deque_pop_back(snake->xs);
+	deque_pop_back(snake->ys);
+	deque_push_front(snake->xs, pos.x);
+	deque_push_front(snake->ys, pos.y);
 }
 
 void turn_up(Snake *snake) {
@@ -175,12 +175,12 @@ void turn_right(Snake *snake) {
 
 void snake_eat(Game *game, Position fruit) {
 	PlaySound(game->sounds.eat);
-	dequeue_push_front(game->snake->xs, fruit.x);
-	dequeue_push_front(game->snake->ys, fruit.y);
+	deque_push_front(game->snake->xs, fruit.x);
+	deque_push_front(game->snake->ys, fruit.y);
 }
 
 bool snake_contains(Snake *snake, Position position) {
-	for (DequeueNode *xp = snake->xs->head, *yp = snake->ys->head; xp && yp;
+	for (DequeNode *xp = snake->xs->head, *yp = snake->ys->head; xp && yp;
 			 xp = xp->next, yp = yp->next) {
 		if (position.x == xp->value && position.y == yp->value)
 			return true;
@@ -306,21 +306,21 @@ Direction search_path(Game *game) {
 
 	map[game->fruit.x / UNIT * N_HEIGHT + game->fruit.y / UNIT] = -1;
 
-	DequeueNode *xp = snake->xs->head, *yp = snake->ys->head;
+	DequeNode *xp = snake->xs->head, *yp = snake->ys->head;
 	map[xp->value / UNIT * N_HEIGHT + yp->value / UNIT] = 1;
 	xp = xp->next, yp = yp->next;
 	for (; xp && yp; xp = xp->next, yp = yp->next) {
 		map[xp->value / UNIT * N_HEIGHT + yp->value / UNIT] = -1;
 	}
 
-	Dequeue *xq = dequeue_new(), *yq = dequeue_new();
-	dequeue_push_back(xq, game->fruit.x / UNIT);
-	dequeue_push_back(yq, game->fruit.y / UNIT);
+	Deque *xq = deque_new(), *yq = deque_new();
+	deque_push_back(xq, game->fruit.x / UNIT);
+	deque_push_back(yq, game->fruit.y / UNIT);
 
 	i8 ret = -1;
 
-	while (!dequeue_empty(xq) && !dequeue_empty(yq)) {
-		i32 x = dequeue_pop_front(xq), y = dequeue_pop_front(yq);
+	while (!deque_empty(xq) && !deque_empty(yq)) {
+		i32 x = deque_pop_front(xq), y = deque_pop_front(yq);
 
 		if (x > 0) {
 			if (map[(x - 1) * N_HEIGHT + y] == 1) {
@@ -328,8 +328,8 @@ Direction search_path(Game *game) {
 				break;
 			} else if (map[(x - 1) * N_HEIGHT + y] == 0) {
 				map[(x - 1) * N_HEIGHT + y] = 2;
-				dequeue_push_back(xq, x - 1);
-				dequeue_push_back(yq, y);
+				deque_push_back(xq, x - 1);
+				deque_push_back(yq, y);
 			}
 		}
 		if (x + 1 < N_WIDTH) {
@@ -338,8 +338,8 @@ Direction search_path(Game *game) {
 				break;
 			} else if (map[(x + 1) * N_HEIGHT + y] == 0) {
 				map[(x + 1) * N_HEIGHT + y] = 2;
-				dequeue_push_back(xq, x + 1);
-				dequeue_push_back(yq, y);
+				deque_push_back(xq, x + 1);
+				deque_push_back(yq, y);
 			}
 		}
 		if (y > 0) {
@@ -348,8 +348,8 @@ Direction search_path(Game *game) {
 				break;
 			} else if (map[x * N_HEIGHT + y - 1] == 0) {
 				map[x * N_HEIGHT + y - 1] = 2;
-				dequeue_push_back(xq, x);
-				dequeue_push_back(yq, y - 1);
+				deque_push_back(xq, x);
+				deque_push_back(yq, y - 1);
 			}
 		}
 		if (y + 1 < N_HEIGHT) {
@@ -358,22 +358,22 @@ Direction search_path(Game *game) {
 				break;
 			} else if (map[x * N_HEIGHT + y + 1] == 0) {
 				map[x * N_HEIGHT + y + 1] = 2;
-				dequeue_push_back(xq, x);
-				dequeue_push_back(yq, y + 1);
+				deque_push_back(xq, x);
+				deque_push_back(yq, y + 1);
 			}
 		}
 	}
 
-	dequeue_free(xq);
-	dequeue_free(yq);
+	deque_free(xq);
+	deque_free(yq);
 
 	if (ret != -1) {
 		free(map);
 		return ret;
 	}
 
-	i32 x = dequeue_first(snake->xs) / UNIT;
-	i32 y = dequeue_first(snake->ys) / UNIT;
+	i32 x = deque_first(snake->xs) / UNIT;
+	i32 y = deque_first(snake->ys) / UNIT;
 
 	if (x > 0 && map[(x - 1) * N_HEIGHT + y] == 0) {
 		ret = LEFT;

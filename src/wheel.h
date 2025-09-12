@@ -1,7 +1,7 @@
 #pragma once
 
 #include "wheel/core.h"
-#include "wheel/dequeue.h"
+#include "wheel/deque.h"
 #include "wheel/float.h"
 #include "wheel/list.h"
 #include "wheel/math.h"

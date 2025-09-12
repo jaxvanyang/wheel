@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
-#include <wheel/dequeue.h>
+#include <wheel/deque.h>
 #include <wheel/list.h>
 #include <wheel/random.h>
 #include <wheel/tree.h>
@@ -103,30 +103,30 @@ int main() {
 
 	{
 		Tree *tree = tree_new(1);
-		Dequeue *queue = dequeue_new();
+		Deque *queue = deque_new();
 
-		dequeue_push_back(queue, (isize)tree);
+		deque_push_back(queue, (isize)tree);
 
-		while (!dequeue_empty(queue)) {
-			Tree *node = (Tree *)dequeue_pop_front(queue);
+		while (!deque_empty(queue)) {
+			Tree *node = (Tree *)deque_pop_front(queue);
 			usize l = node->value << 1;
 			usize r = l | 1;
 
 			if (l < 62) {
 				Tree *left = tree_new(l);
 				tree_insert(node, left, true);
-				dequeue_push_back(queue, (isize)left);
+				deque_push_back(queue, (isize)left);
 			}
 			if (r < 62) {
 				Tree *right = tree_new(r);
 				tree_insert(node, right, false);
-				dequeue_push_back(queue, (isize)right);
+				deque_push_back(queue, (isize)right);
 			}
 		}
 
 		tree_print(tree);
 
-		dequeue_free(queue);
+		deque_free(queue);
 		tree_free(tree);
 	}
 }

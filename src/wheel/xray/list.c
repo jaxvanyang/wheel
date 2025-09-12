@@ -1,6 +1,6 @@
 #include "list.h"
 
-#define DEQUEUE_IMPLEMENTATION(T, NodeName, Name, prefix) \
+#define DEQUE_IMPLEMENTATION(T, NodeName, Name, prefix) \
 \
 	Name *prefix##_new() { \
 		Name *list = malloc(sizeof(Name)); \
@@ -110,5 +110,5 @@
 		} \
 	}
 
-DEQUEUE_IMPLEMENTATION(Entity, EntityNode, EntityList, elist)
-DEQUEUE_IMPLEMENTATION(Vector2, Vector2Node, Vector2List, v2list)
+DEQUE_IMPLEMENTATION(Entity, EntityNode, EntityList, elist)
+DEQUE_IMPLEMENTATION(Vector2, Vector2Node, Vector2List, v2list)
