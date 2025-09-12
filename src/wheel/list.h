@@ -18,8 +18,8 @@ bool ulist_is_empty(Ulist *list);
 void ulist_free(Ulist *list);
 Ulist *ulist_from(usize *array, usize size);
 bool ulist_equal(Ulist *a, Ulist *b);
-void ulist_print(Ulist *list);
 void ulist_shuffle(Ulist *list);
+void ulist_print(Ulist *list);
 
 Ilist *ilist_new();
 Ilist *ilist_new_with_size(usize size);
@@ -32,15 +32,20 @@ bool ilist_is_empty(Ilist *list);
 void ilist_free(Ilist *list);
 Ilist *ilist_from(isize *array, usize size);
 bool ilist_equal(Ilist *a, Ilist *b);
-void ilist_print(Ilist *list);
 void ilist_shuffle(Ilist *list);
+void ilist_print(Ilist *list);
 
 Slist *slist_new();
+Slist *slist_new_with_size(usize size);
 Str *slist_get(Slist *list, usize i);
 void slist_set(Slist *list, usize i, Str *s);
 void slist_insert(Slist *list, usize i, Str *s);
 void slist_push(Slist *list, Str *s);
-void slist_delete(Slist *list, usize i);
+// NOTE: remember to free the return value
+Str *slist_delete(Slist *list, usize i);
 bool slist_is_empty(Slist *list);
+Slist *slist_from(Str **array, usize size);
+// NOTE: this function is implemented but should not be used
+// bool slist_equal(Slist *a, Slist *b);
 void slist_free(Slist *list);
 void slist_shuffle(Slist *list);
