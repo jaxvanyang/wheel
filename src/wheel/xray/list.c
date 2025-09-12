@@ -60,7 +60,7 @@
 \
 	T prefix##_pop_front(Name *list) { \
 		if (list->size == 0) { \
-			error("expected non-empty list"); \
+			error("expected non-empty list\n"); \
 		} \
 \
 		NodeName *node = list->head; \
@@ -80,7 +80,7 @@
 \
 	T prefix##_pop_back(Name *list) { \
 		if (list->size == 0) { \
-			error("expected non-empty list"); \
+			error("expected non-empty list\n"); \
 		} \
 \
 		NodeName *node = list->tail; \

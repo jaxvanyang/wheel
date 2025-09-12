@@ -99,11 +99,13 @@ void dequeue_push_back(Dequeue *queue, isize value) {
 
 isize dequeue_pop_front(Dequeue *queue) {
 	if (queue->size == 0) {
-		error("expected a non-empty Dequeue");
+		error("expected a non-empty Dequeue\n");
 	}
 
 	isize value = queue->head->value;
+
 	DequeueNode *next = queue->head->next;
+
 	dequeue_node_free(queue->head);
 	queue->head = next;
 
@@ -116,11 +118,13 @@ isize dequeue_pop_front(Dequeue *queue) {
 
 isize dequeue_pop_back(Dequeue *queue) {
 	if (queue->size == 0) {
-		error("expected a non-empty Dequeue");
+		error("expected a non-empty Dequeue\n");
 	}
 
 	isize value = queue->tail->value;
+
 	DequeueNode *prev = queue->tail->prev;
+
 	dequeue_node_free(queue->tail);
 	queue->tail = prev;
 
@@ -133,7 +137,7 @@ isize dequeue_pop_back(Dequeue *queue) {
 
 isize dequeue_first(Dequeue *queue) {
 	if (queue->size == 0) {
-		error("expected a non-empty Dequeue");
+		error("expected a non-empty Dequeue\n");
 	}
 
 	return queue->head->value;
@@ -141,7 +145,7 @@ isize dequeue_first(Dequeue *queue) {
 
 isize dequeue_last(Dequeue *queue) {
 	if (queue->size == 0) {
-		error("expected a non-empty Dequeue");
+		error("expected a non-empty Dequeue\n");
 	}
 
 	return queue->tail->value;

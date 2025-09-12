@@ -2,7 +2,7 @@
 
 usize usize_log2(usize n) {
 	if (n == 0) {
-		error("expected n != 0");
+		error("expected n != 0\n");
 	}
 
 	usize c = 0;
