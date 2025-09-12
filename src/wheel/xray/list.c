@@ -67,6 +67,9 @@
 		T value = node->value; \
 \
 		list->head = node->next; \
+		if (list->head) \
+			list->head->prev = NULL; \
+\
 		--list->size; \
 		node->prev = node->next = NULL; \
 		free(node); \
@@ -87,6 +90,9 @@
 		T value = node->value; \
 \
 		list->tail = node->prev; \
+		if (list->tail) \
+			list->tail->next = NULL; \
+\
 		--list->size; \
 		node->prev = node->next = NULL; \
 		free(node); \
