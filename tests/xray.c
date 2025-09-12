@@ -1,6 +1,7 @@
 #include <assert.h>
-#include <raymath.h>
 #include <wheel/xray.h>
+
+#include <raymath.h>
 
 int main() {
 	{
