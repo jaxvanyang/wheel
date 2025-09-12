@@ -105,3 +105,4 @@
 	}
 
 DEQUEUE_IMPLEMENTATION(Entity, EntityNode, EntityList, elist)
+DEQUEUE_IMPLEMENTATION(Vector2, Vector2Node, Vector2List, v2list)
