@@ -7,7 +7,7 @@
 		T *data; \
 	} Name;
 
-#define DEQUEUE(T, NodeName, Name) \
+#define DEQUE(T, NodeName, Name) \
 	typedef struct NodeName { \
 		T value; \
 		struct NodeName *prev; \

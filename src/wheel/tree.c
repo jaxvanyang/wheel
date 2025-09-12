@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "wheel/dequeue.h"
+#include "wheel/deque.h"
 #include "wheel/list.h"
 #include "wheel/math.h"
 
@@ -100,21 +100,21 @@ Ilist *tree_postorder(Tree *tree) {
 
 Ilist *tree_levelorder(Tree *tree) {
 	Ilist *list = ilist_new();
-	Dequeue *queue = dequeue_new();
+	Deque *queue = deque_new();
 
 	if (tree) {
-		dequeue_push_back(queue, (isize)tree);
+		deque_push_back(queue, (isize)tree);
 	}
 
-	while (!dequeue_empty(queue)) {
-		Tree *node = (Tree *)dequeue_pop_front(queue);
+	while (!deque_empty(queue)) {
+		Tree *node = (Tree *)deque_pop_front(queue);
 		ilist_push(list, node->value);
 
 		if (node->left) {
-			dequeue_push_back(queue, (isize)node->left);
+			deque_push_back(queue, (isize)node->left);
 		}
 		if (node->right) {
-			dequeue_push_back(queue, (isize)node->right);
+			deque_push_back(queue, (isize)node->right);
 		}
 	}
 
@@ -299,28 +299,28 @@ void tree_print(Tree *tree) {
 		cols[i] = (cols[l] + cols[r]) / 2;
 	}
 
-	Dequeue *nodes = dequeue_new();
-	Dequeue *number_queue = dequeue_new();
+	Deque *nodes = deque_new();
+	Deque *number_queue = deque_new();
 	Ilist *values = ilist_new();
 	Ulist *numbers = ulist_new();
 
-	dequeue_push_back(nodes, (isize)tree);
-	dequeue_push_back(number_queue, 1);
+	deque_push_back(nodes, (isize)tree);
+	deque_push_back(number_queue, 1);
 
-	while (!dequeue_empty(nodes)) {
-		Tree *node = (Tree *)dequeue_pop_front(nodes);
-		isize number = dequeue_pop_front(number_queue);
+	while (!deque_empty(nodes)) {
+		Tree *node = (Tree *)deque_pop_front(nodes);
+		isize number = deque_pop_front(number_queue);
 
 		ilist_push(values, node->value);
 		ulist_push(numbers, number);
 
 		if (node->left) {
-			dequeue_push_back(nodes, (isize)node->left);
-			dequeue_push_back(number_queue, number << 1);
+			deque_push_back(nodes, (isize)node->left);
+			deque_push_back(number_queue, number << 1);
 		}
 		if (node->right) {
-			dequeue_push_back(nodes, (isize)node->right);
-			dequeue_push_back(number_queue, number << 1 | 1);
+			deque_push_back(nodes, (isize)node->right);
+			deque_push_back(number_queue, number << 1 | 1);
 		}
 	}
 
@@ -359,8 +359,8 @@ void tree_print(Tree *tree) {
 
 	printf("%s\n", matrix);
 
-	dequeue_free(nodes);
-	dequeue_free(number_queue);
+	deque_free(nodes);
+	deque_free(number_queue);
 	ilist_free(values);
 	ulist_free(numbers);
 

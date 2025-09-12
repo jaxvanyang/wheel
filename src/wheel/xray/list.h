@@ -2,8 +2,8 @@
 
 #include "core.h"
 
-DEQUEUE(Entity, EntityNode, EntityList)
-DEQUEUE(Vector2, Vector2Node, Vector2List)
+DEQUE(Entity, EntityNode, EntityList)
+DEQUE(Vector2, Vector2Node, Vector2List)
 
 EntityList *elist_new();
 void elist_free(EntityList *list);
