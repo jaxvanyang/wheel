@@ -13,7 +13,7 @@ Game *new_game() {
 	game->manager = new_resource_manager();
 	game->tiles = elist_new();
 	game->debug = false;
-	
+
 	reset(game);
 
 	return game;
@@ -55,7 +55,7 @@ void hit_and_correct(Game *game) {
 			game->player.v.x = 0;
 		} else {
 			// including dt_x == dt_y, otherwise may stuck in walking on flat platforms
-			
+
 			if (game->player.v.y > 0) {
 				game->player.is_on_ground = true;
 			}
@@ -149,9 +149,14 @@ void update(Game *game) {
 void reset(Game *game) {
 	game->frame_counter = 0;
 	game->player = new_player(game->manager->player, (f32)WIDTH / 2, 0);
+	// clang-format off
 	game->camera = (Camera2D){
-		.target = {0, game->player.entity.hitbox.y}, .offset = Vector2Zero(), .rotation = 0, .zoom = 1
+		.target = {0, game->player.entity.hitbox.y},
+		.offset = Vector2Zero(),
+		.rotation = 0,
+		.zoom = 1
 	};
+	// clang-format on
 	game->deadline = 100;
 	game->score = 0;
 	game->is_over = false;

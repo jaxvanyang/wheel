@@ -25,12 +25,13 @@ Player new_player(Texture2D texture, f32 x, f32 y) {
 	Rectangle dest = {x - 22, y - 24, source.width * 2, source.height * 2};
 
 	return (Player){
-		.entity = {
-			texture,
-			source,
-			dest,
-			hitbox,
-		},
+		.entity =
+			{
+				texture,
+				source,
+				dest,
+				hitbox,
+			},
 		.v = Vector2Zero(),
 		.frame_counter = 0,
 		.state = IDLE,
