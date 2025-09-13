@@ -1,10 +1,10 @@
+#include <assert.h>
 #include <math.h>
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
 #include <wheel.h>
 #include <wheel/xray.h>
-#include <assert.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
@@ -14,7 +14,7 @@ static const i32 WIDTH = 800;
 static const i32 HEIGHT = 450;
 static const i32 FPS = 60;
 static const f32 TICK = 1.0 / (f32)FPS;
-static const f32 GRAVITY = 10;
+static const f32 GRAVITY = 500;
 
 typedef struct {
 	f32 theta;
@@ -53,14 +53,20 @@ void draw_pendulum(Pendulum pendulum, Color color) {
 #define new_pendulum(x, y, length, ...) \
 	_new_pendulum(x, y, length, (PendulumArg){__VA_ARGS__})
 Pendulum _new_pendulum(f32 x, f32 y, f32 length, PendulumArg arg) {
-	return (Pendulum
-	){.position = (Vector2){x, y}, .length = length, .theta = arg.theta, .v = arg.v};
+	return (Pendulum){
+		.position = (Vector2){x, y}, .length = length, .theta = arg.theta, .v = arg.v
+	};
 }
 
 void update_pendulum(Pendulum *pendulum) {
-	f32 dv = -GRAVITY / pendulum->length * sinf(pendulum->theta);
-	pendulum->v += dv * TICK;
-	pendulum->theta += pendulum->v;
+	f32 a = -GRAVITY / pendulum->length * sinf(pendulum->theta);
+
+	pendulum->theta += pendulum->v * TICK + 0.5 * a * powf(TICK, 2);
+
+	f32 w_mid = pendulum->v + 0.5 * a * TICK;
+	a = -GRAVITY / pendulum->length * sinf(pendulum->theta);
+
+	pendulum->v = w_mid + 0.5 * a * TICK;
 }
 
 void handle_input(Pendulum *pendulum) {
@@ -103,6 +109,23 @@ void draw_trace(const Vector2List *points, Color color) {
 	rlEnd();
 }
 
+void draw_info(Pendulum pendulum) {
+	Str *text = str_new();
+
+	f32 theta = pendulum.theta / PI;
+	// assume m = 1
+	f32 v = 0.5 * powf(pendulum.length, 2.0) * powf(pendulum.v, 2.0);
+	f32 t = -GRAVITY * pendulum.length * cosf(pendulum.theta);
+	f32 e = v + t;
+
+	str_push_str(text, TextFormat("theta: %+.2f PI\n", theta));
+	str_push_str(text, TextFormat("E: %+.2f\n", e));
+
+	DrawText(text->data, 5, 5, 20, LIME);
+
+	str_free(text);
+}
+
 void main_loop(void *arg) {
 	const usize n = 100;
 	Game *game = arg;
@@ -131,8 +154,7 @@ void main_loop(void *arg) {
 		draw_text_tr("Click to drag the pendulum", WIDTH - 5, 5, 20, RAYWHITE);
 	}
 
-	f32 theta = game->pendulum.theta / PI;
-	DrawText(TextFormat("theta: %+.2f PI", theta), 5, 5, 20, LIME);
+	draw_info(game->pendulum);
 
 	EndDrawing();
 }
