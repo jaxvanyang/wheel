@@ -5,21 +5,21 @@ on:
   push:
     branches: [main]
     paths:
+      - '**/*.c'
+      - '**/*.h'
+      - '**/*.html'
       - '.github/workflows/webassembly.yml'
       - 'Makefile'
       - 'assets/**'
-      - 'bin/**'
-      - 'src/**'
-      - 'tests/**'
   pull_request:
     branches: [main]
     paths:
+      - '**/*.c'
+      - '**/*.h'
+      - '**/*.html'
       - '.github/workflows/webassembly.yml'
       - 'Makefile'
       - 'assets/**'
-      - 'bin/**'
-      - 'src/**'
-      - 'tests/**'
   release:
     types: [published]
 

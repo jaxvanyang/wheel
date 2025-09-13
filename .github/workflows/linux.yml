@@ -5,20 +5,19 @@ on:
   push:
     branches: [main]
     paths:
+      - '**/*.c'
+      - '**/*.h'
       - '.github/workflows/linux.yml'
       - 'Makefile'
       - 'assets/**'
-      - 'bin/**'
-      - 'src/**'
-      - 'tests/**'
   pull_request:
     branches: [main]
     paths:
+      - '**/*.c'
+      - '**/*.h'
       - '.github/workflows/linux.yml'
       - 'Makefile'
       - 'assets/**'
-      - 'bin/**'
-      - 'src/**'
   release:
     types: [published]
 
