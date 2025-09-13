@@ -59,14 +59,19 @@ Pendulum _new_pendulum(f32 x, f32 y, f32 length, PendulumArg arg) {
 }
 
 void update_pendulum(Pendulum *pendulum) {
-	f32 a = -GRAVITY / pendulum->length * sinf(pendulum->theta);
+	usize n = 10;
+	f32 dt = TICK / (f32)n;
 
-	pendulum->theta += pendulum->v * TICK + 0.5 * a * powf(TICK, 2);
+	for (usize i = 0; i < n; ++i) {
+		f32 a = -GRAVITY / pendulum->length * sinf(pendulum->theta);
 
-	f32 w_mid = pendulum->v + 0.5 * a * TICK;
-	a = -GRAVITY / pendulum->length * sinf(pendulum->theta);
+		pendulum->theta += pendulum->v * dt + 0.5 * a * powf(dt, 2);
 
-	pendulum->v = w_mid + 0.5 * a * TICK;
+		f32 w_mid = pendulum->v + 0.5 * a * dt;
+		a = -GRAVITY / pendulum->length * sinf(pendulum->theta);
+
+		pendulum->v = w_mid + 0.5 * a * dt;
+	}
 }
 
 void handle_input(Pendulum *pendulum) {
