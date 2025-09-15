@@ -15,3 +15,5 @@ f64 elapsed(TimeVal t0);
 #define min(a, b) (a < b ? a : b)
 
 #define clamp(value, min, max) (value < min ? min : (value > max ? max : value))
+
+void memswap(void *a, void *b, usize size);

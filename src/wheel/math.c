@@ -1,6 +1,19 @@
 #include "math.h"
 #include <assert.h>
+#include <math.h>
 #include <string.h>
+
+bool f32_equal(f32 x, f32 y) {
+	bool ret = (fabsf(x - y)) <= (EPSILON * fmaxf(1.0f, fmaxf(fabsf(x), fabsf(y))));
+
+	return ret;
+}
+
+bool f64_equal(f64 x, f64 y) {
+	bool ret = (fabs(x - y)) <= (EPSILON * fmax(1.0f, fmax(fabs(x), fabs(y))));
+
+	return ret;
+}
 
 usize usize_log2(usize n) {
 	if (n == 0) {
@@ -43,6 +56,36 @@ Vec vec_one(usize size) {
 Vec vec_clone(const Vec v) { return vec(v.size, v.data); }
 
 void unload_vec(const Vec v) { free(v.data); }
+
+void free_vec(Vec *v) {
+	unload_vec(*v);
+	v->data = NULL;
+	v->size = 0;
+	free(v);
+}
+
+void print_vec(const Vec v) {
+	putchar('[');
+	if (v.size) {
+		printf("%f", v.data[0]);
+	}
+	for (usize i = 1; i < v.size; ++i) {
+		printf(", %f", v.data[i]);
+	}
+	printf("]\n");
+}
+
+bool vec_equal(const Vec a, const Vec b) {
+	assert(a.size == b.size);
+
+	for (usize i = 0; i < a.size; ++i) {
+		if (!f32_equal(a.data[i], b.data[i])) {
+			return false;
+		}
+	}
+
+	return true;
+}
 
 f32 vec_get(const Vec v, usize i) {
 	if (i >= v.size) {
@@ -147,7 +190,42 @@ Mat mat_clone(const Mat m) { return mat(m.rows, m.cols, m.data); }
 
 void unload_mat(const Mat m) { free(m.data); }
 
+void free_mat(Mat *m) {
+	unload_mat(*m);
+	m->data = NULL;
+	m->rows = m->cols = 0;
+	free(m);
+}
+
+void print_mat(const Mat m) {
+	for (usize i = 0; i < m.rows; ++i) {
+		putchar('|');
+		if (m.cols) {
+			printf("%f", mat_get(m, i, 0));
+		}
+		for (usize j = 1; j < m.cols; ++j) {
+			printf(", %f", mat_get(m, i, j));
+		}
+		printf("|\n");
+	}
+}
+
 usize mat_size(const Mat m) { return m.rows * m.cols; }
+
+bool mat_equal(const Mat a, const Mat b) {
+	assert(a.rows == b.rows);
+	assert(a.cols == b.cols);
+
+	usize size = mat_size(a);
+
+	for (usize i = 0; i < size; ++i) {
+		if (!f32_equal(a.data[i], b.data[i])) {
+			return false;
+		}
+	}
+
+	return true;
+}
 
 f32 mat_get(const Mat m, usize row, usize col) {
 	if (row >= m.rows) {
@@ -228,6 +306,104 @@ Vec mat_x_vec(const Mat m, const Vec v) {
 		for (usize j = 0; j < m.cols; ++j) {
 			ret.data[i] += mat_get(m, i, j) * v.data[j];
 		}
+	}
+
+	return ret;
+}
+
+Vec *solve_linear(const Mat a, const Vec b) {
+	assert(a.rows == b.size);
+
+	// FIXME: try to solve n x m equation
+	if (a.rows != a.cols) {
+		return NULL;
+	}
+
+	Mat m = mat_clone(a);
+	Vec v = vec_clone(b);
+	Vec tmp = vec_zero(a.cols);
+
+	Vec *ret = malloc(sizeof(Vec));
+	ret->size = tmp.size;
+	ret->data = tmp.data;
+
+	if (a.cols == 0) {
+		return ret;
+	}
+
+	// make m upper-triangle matrix
+	for (usize j = 0; j + 1 < m.cols; ++j) {
+		// make m[j][j] non-zero
+		if (f32_equal(mat_get(m, j, j), 0.0)) {
+			for (usize i = j + 1; i < m.rows; ++i) {
+				if (!f32_equal(mat_get(m, i, j), 0.0)) {
+					// switch m[i] & [j]
+					memswap(m.data + i * m.cols, m.data + j * m.cols, sizeof(f32) * m.cols);
+
+					// switch v[i] & v[j]
+					memswap(v.data + i, v.data + j, sizeof(f32));
+
+					break;
+				}
+			}
+		}
+
+		f32 m_jj = mat_get(m, j, j);
+
+		if (f32_equal(m_jj, 0.0)) {
+			free(ret);
+			return NULL;
+		}
+
+		f32 v_j = vec_get(v, j);
+
+		// make m[j+1..rows][j] = 0
+		for (usize i = j + 1; i < m.rows; ++i) {
+			f32 m_ij = mat_get(m, i, j);
+
+			if (f32_equal(m_ij, 0.0)) {
+				continue;
+			}
+
+			f32 t = m_ij / m_jj;
+
+			mat_set(m, i, j, 0.0);
+
+			// update m[i][j+1..cols]
+			for (usize k = j + 1; k < m.cols; ++k) {
+				f32 val = mat_get(m, i, k) - t * mat_get(m, j, k);
+				mat_set(m, i, k, val);
+			}
+
+			// update the v[i]
+			f32 val = vec_get(v, i) - t * v_j;
+			vec_set(v, i, val);
+		}
+	}
+
+	// make m diagonal matrix
+	for (usize j = m.cols - 1; j > 0; --j) {
+		f32 m_jj = mat_get(m, j, j);
+		f32 v_j = vec_get(v, j);
+
+		// make m[0..j][j] = 0
+		for (usize i = 0; i < j; ++i) {
+			f32 m_ij = mat_get(m, i, j);
+			f32 t = m_ij / m_jj;
+
+			mat_set(m, i, j, 0.0);
+
+			// update v[i]
+			f32 val = vec_get(v, i) - t * v_j;
+			vec_set(v, i, val);
+		}
+	}
+
+	for (usize i = 0; i < m.cols; ++i) {
+		f32 m_ii = mat_get(m, i, i);
+		f32 v_i = vec_get(v, i);
+		f32 val = v_i / m_ii;
+		vec_set(*ret, i, val);
 	}
 
 	return ret;
