@@ -25,7 +25,7 @@ void hit_and_correct(Game *game) {
 		if (FloatEquals(hit.width, 0) || FloatEquals(hit.width, 0))
 			continue;
 
-		// lengthes that player should move back
+		// lengths that player should move back
 		f32 width = hit.width, height = hit.height;
 
 		if (game->player.v.y > 0) {
