@@ -32,34 +32,35 @@ jobs:
 
     env:
       PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_win_x64
-      RAYLIB_VERSION: 5.5
-      RAYLIB_PATH: raylib-5.5_win64_mingw-w64
-      CC: x86_64-w64-mingw32-gcc
+
+    defaults:
+      run:
+        shell: msys2 {0}
 
     steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+          gcc
+          make
+          mingw-w64-ucrt-x86_64-just
+          mingw-w64-ucrt-x86_64-raylib
+          pkgconf
+          unzip
+
     - name: Checkout this repo
       uses: actions/checkout@master
 
     - name: Setup Release Paths
       run: |
         echo "PROJECT_RELEASE_PATH=${{ env.PROJECT_NAME }}_v${{ github.event.release.tag_name }}_win_x64" >> "$GITHUB_ENV"
-      shell: bash
       if: github.event_name == 'release' && github.event.action == 'published'
-
-    - name: Setup Environment
-      run: |
-        choco install -q -y --force --no-progress just curl
-        curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
-        unzip "$RAYLIB_PATH.zip"
-        echo RAYLIB_CFLAGS="-I$RAYLIB_PATH/include" >> "$GITHUB_ENV"
-        echo RAYLIB_LDFLAGS="-L$RAYLIB_PATH/lib -lraylib -lgdi32 -lwinmm" >> "$GITHUB_ENV"
-      shell: bash
 
     - name: Build Product
       run: |
-        x86_64-w64-mingw32-gcc --version
-        make -B -j4
-      shell: bash
+        cc --version
+        PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig make -B -j "$(nproc)"
 
     - name: Run tests
       run: |
@@ -67,7 +68,6 @@ jobs:
         rm tests/float.c
         ls tests
         just test
-      shell: bash
 
     - name: Generate Artifacts
       run: |

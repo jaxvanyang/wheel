@@ -28,7 +28,6 @@ permissions:
 
 env:
   PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_wasm
-  RAYLIB_VERSION: 5.5
   RAYLIB_SRC_PATH: raylib/src
   PLATFORM: PLATFORM_WEB
   EM_VERSION: 4.0.13
@@ -69,9 +68,9 @@ jobs:
 
     - name: Build raylib Library
       run: |
-        cd raylib/src
+        cd "$RAYLIB_SRC_PATH"
         emcc -v
-        make PLATFORM=PLATFORM_WEB RAYLIB_BUILD_MODE=RELEASE RAYLIB_LIBTYPE=STATIC RAYLIB_RELEASE_PATH=. -B -j "$(nproc)"
+        make RAYLIB_BUILD_MODE=RELEASE RAYLIB_LIBTYPE=STATIC RAYLIB_RELEASE_PATH=. -B -j "$(nproc)"
 
     - name: Build Product
       run: make -B -j "$(nproc)" games

@@ -42,7 +42,7 @@ endif
 CC ?= cc
 AR ?= ar
 CFLAGS := $(RAYLIB_CFLAGS) $(CFLAGS)
-CFLAGS := -Os -Wall -Wextra -Wno-comment -Wno-initializer-overrides -Isrc $(CFLAGS)
+CFLAGS := -Os -Wall -Wextra -Wno-comment -Wno-initializer-overrides -Wno-override-init -Isrc $(CFLAGS)
 LDFLAGS := -Lsrc -lwheel $(RAYLIB_LDFLAGS) -lm $(LDFLAGS)
 
 WHEEL := src/wheel
