@@ -48,7 +48,7 @@ jobs:
 
     - name: Setup Environment
       run: |
-        choco install -q just curl
+        choco install -q -y --force --no-progress just curl
         curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
         unzip "$RAYLIB_PATH.zip"
         echo RAYLIB_CFLAGS="-I$RAYLIB_PATH/include" >> "$GITHUB_ENV"
