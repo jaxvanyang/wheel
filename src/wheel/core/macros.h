@@ -1,5 +1,10 @@
 #pragma once
 
+// Free a pointer, and set it to NULL.
+#define FREE(p) \
+	free(p); \
+	p = NULL;
+
 #define VECTOR(T, Name) \
 	typedef struct { \
 		usize size; \

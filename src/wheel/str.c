@@ -75,16 +75,18 @@ isize kmp(char *s, char *t) {
 	return -1;
 }
 
-Str *str_new() {
-	Str *s = malloc(sizeof(Str));
+Str *str_new_with_size(usize size) {
+	Str *ret = malloc(sizeof(Str));
 
-	s->length = 0;
-	s->size = LIST_DEFAULT_SIZE;
-	s->data = malloc(s->size * sizeof(char));
-	memset(s->data, 0x00, s->size * sizeof(char));
+	ret->length = 0;
+	ret->size = size;
+	ret->data = malloc(ret->size * sizeof(char));
+	memset(ret->data, 0x00, ret->size * sizeof(char));
 
-	return s;
+	return ret;
 }
+
+Str *str_new() { return str_new_with_size(LIST_DEFAULT_SIZE); }
 
 Str *str_from(const char *s) {
 	Str *str = malloc(sizeof(Str));

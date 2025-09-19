@@ -7,3 +7,5 @@ ContinuationIndentWidth: 2
 AlignAfterOpenBracket: BlockIndent
 BinPackArguments: false
 AlignEscapedNewlines: DontAlign
+AlignTrailingComments:
+  Kind: Never

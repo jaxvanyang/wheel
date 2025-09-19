@@ -8,6 +8,7 @@ Ilist *build_next(char *t);
 Ilist *build_nextval(char *t);
 isize kmp(char *s, char *t);
 
+Str *str_new_with_size(usize size);
 Str *str_new();
 Str *str_from(const char *s);
 void str_free(Str *s);
