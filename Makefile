@@ -47,7 +47,8 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 	endif
 else
 	ifeq ($(PLATFORM_OS),WINDOWS)
-		LDFLAGS := -lws2_32 $(LDFLAGS)
+		# see https://github.com/raysan5/raylib/wiki/Working-on-Windows
+		LDFLAGS := -lgdi32 -lwinmm -lws2_32 $(LDFLAGS)
 	endif
 	ifneq ($(PLATFORM_OS),OSX)
 		# only use daynamic linking on macOS, see https://stackoverflow.com/questions/844819/how-to-static-link-on-os-x
