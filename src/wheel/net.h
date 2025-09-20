@@ -1,34 +1,45 @@
 #pragma once
 
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <netinet/in.h>
-#endif
+// To work with <windows.h>, we need a compatibility layer, see
+// https://github.com/raysan5/raylib/issues/1217
+// Here we choose the option 2 - only use it in .c files.
 
 #include "core.h"
 
 // For more information: https://en.wikipedia.org/wiki/Berkeley_sockets
 
+#ifndef INADDR_ANY
+#define INADDR_ANY 0
+#endif
+
 typedef struct {
-	struct sockaddr_in addr;
+	u32 addr;
+	u16 port;
+} SockAddr;
+
+typedef struct {
+	SockAddr sa;
 	int sock;
 } UDPServer;
 
 // Received information from a socket
 typedef struct {
-	struct sockaddr_in addr; // message source address, i.e., the client
-	i32 msg_len; // received message length, negative if error occurs
-	socklen_t addr_len;
+	SockAddr sa; // message source address, i.e., the client
+	isize len; // received message length, negative if error occurs
 } RecvInfo;
 
+typedef RecvInfo SendInfo;
+
 // Return a string in format of "address:port".
-char *format_addr(struct sockaddr_in sa);
+// NOTE: the returend pointer should be freed.
+char *format_sa(SockAddr sa);
 
 UDPServer udp_server(u32 addr, u16 port);
 // Return false if failed, true otherwise.
 bool udp_server_init(UDPServer *server);
-// Return a negative number if failed, received data length otherwise.
-RecvInfo udp_server_recv(UDPServer server, void *buffer, usize buffer_size);
 // Shutdown the server.
 void udp_server_down(UDPServer *server);
+
+RecvInfo udp_server_recv(UDPServer server, void *buffer, usize buffer_size);
+// Return -1 if failed, sent message length otherwise.
+isize send_to(int sock, SockAddr target, void *buffer, usize buffer_size);

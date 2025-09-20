@@ -16,29 +16,27 @@ int main(int argc, const char **argv) {
 	UDPServer server = udp_server(INADDR_ANY, port);
 	udp_server_init(&server);
 
-	char *addr = format_addr(server.addr);
-	printf("server: running on %s...\n", addr);
+	char *addr = format_sa(server.sa);
+	printf("server: listening on %s...\n", addr);
 	FREE(addr);
 
 	while (true) {
-		RecvInfo info = udp_server_recv(server, (void *)buffer, sizeof(buffer));
+		RecvInfo recv = udp_server_recv(server, (void *)buffer, sizeof(buffer));
 
-		if (info.msg_len < 0) {
+		if (recv.len < 0) {
 			perror("error: receive failed");
 			return EXIT_FAILURE;
 		}
 
-		char *addr = format_addr(info.addr);
+		char *addr = format_sa(recv.sa);
 
-		printf("received %d bytes from %s:\n", info.msg_len, addr);
-		printf("> %.*s\n", info.msg_len, buffer);
+		printf("received %ld bytes from %s:\n", recv.len, addr);
+		printf("> %.*s\n", (int)recv.len, buffer);
 
 		FREE(addr);
 
-		snprintf(resp, sizeof(resp), "Echo: %.*s", info.msg_len, buffer);
-		sendto(
-			server.sock, resp, strlen(resp), 0, (struct sockaddr *)&info.addr, info.addr_len
-		);
+		snprintf(resp, sizeof(resp), "Echo: %.*s", (int)recv.len, buffer);
+		send_to(server.sock, recv.sa, resp, strlen(resp));
 
 		if (strncmp(buffer, "shutdown", 8) == 0) {
 			break;

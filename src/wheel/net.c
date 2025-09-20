@@ -1,31 +1,50 @@
 #include <unistd.h>
-#include <wheel/str.h>
 
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
+// <windows.h> should be included after <winsock2.h>
+#include <windows.h>
 #else
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #endif
 
 #include "net.h"
 
-char *format_addr(struct sockaddr_in sa) {
+static struct sockaddr to_os_sa(SockAddr sa) {
+	struct sockaddr_in ret;
+	ret.sin_family = AF_INET;
+	ret.sin_addr.s_addr = htonl(sa.addr);
+	ret.sin_port = htons(sa.port);
+
+	return *(struct sockaddr *)&ret;
+}
+
+static SockAddr from_os_sa(struct sockaddr sa) {
+	struct sockaddr_in *p = (struct sockaddr_in *)&sa;
+	SockAddr ret = {
+		.addr = ntohl(p->sin_addr.s_addr),
+		.port = ntohs(p->sin_port),
+	};
+
+	return ret;
+}
+
+char *format_sa(SockAddr sa) {
+	struct sockaddr os_sa = to_os_sa(sa);
+	char *addr = inet_ntoa(((struct sockaddr_in *)&os_sa)->sin_addr);
+
 	// max IPv4 socket address is 4 * 4 + 5 + 1 = 22
 	char *ret = malloc(24);
-	char *addr = inet_ntoa(sa.sin_addr);
-
-	snprintf(ret, 24, "%s:%d", addr, ntohs(sa.sin_port));
+	snprintf(ret, 24, "%s:%d", addr, sa.port);
 
 	return ret;
 }
 
 UDPServer udp_server(u32 addr, u16 port) {
-	UDPServer ret = {};
-
-	ret.addr.sin_family = AF_INET;
-	ret.addr.sin_addr.s_addr = htonl(addr);
-	ret.addr.sin_port = htons(port);
+	UDPServer ret = {.sa = {.addr = addr, .port = port}, .sock = -1};
 
 	return ret;
 }
@@ -38,8 +57,9 @@ bool udp_server_init(UDPServer *server) {
 		return false;
 	}
 
-	if (bind(server->sock, (struct sockaddr *)&server->addr, sizeof(server->addr)) ==
-			-1) {
+	struct sockaddr sa = to_os_sa(server->sa);
+
+	if (bind(server->sock, &sa, sizeof(sa)) == -1) {
 		perror("error: bind failed");
 		close(server->sock);
 		server->sock = -1;
@@ -50,16 +70,24 @@ bool udp_server_init(UDPServer *server) {
 	return true;
 }
 
+void udp_server_down(UDPServer *server) {
+	close(server->sock);
+	server->sock = -1;
+}
+
 RecvInfo udp_server_recv(UDPServer server, void *buffer, usize buffer_size) {
-	RecvInfo ret = {.addr_len = sizeof(struct sockaddr)};
-	ret.msg_len = recvfrom(
-		server.sock, buffer, buffer_size, 0, (struct sockaddr *)&ret.addr, &ret.addr_len
-	);
+	struct sockaddr sa;
+	socklen_t len = sizeof(sa);
+	isize msg_len = recvfrom(server.sock, buffer, buffer_size, 0, &sa, &len);
+
+	RecvInfo ret = {.sa = from_os_sa(sa), .len = msg_len};
 
 	return ret;
 }
 
-void udp_server_down(UDPServer *server) {
-	close(server->sock);
-	server->sock = -1;
+isize send_to(int sock, SockAddr target, void *buffer, usize buffer_size) {
+	struct sockaddr sa = to_os_sa(target);
+	isize ret = sendto(sock, buffer, buffer_size, 0, &sa, sizeof(sa));
+
+	return ret;
 }
