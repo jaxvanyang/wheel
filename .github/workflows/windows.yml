@@ -42,8 +42,8 @@ jobs:
       with:
         update: true
         install: >-
-          gcc
           make
+          mingw-w64-ucrt-x86_64-gcc
           mingw-w64-ucrt-x86_64-just
           mingw-w64-ucrt-x86_64-raylib
           pkgconf
@@ -59,8 +59,9 @@ jobs:
 
     - name: Build Product
       run: |
+        export PATH="/ucrt64/bin:$PATH" PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
         cc --version
-        PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig make -B -j "$(nproc)"
+        make -B -j "$(nproc)"
 
     - name: Run tests
       run: |
