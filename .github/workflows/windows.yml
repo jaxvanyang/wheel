@@ -32,6 +32,8 @@ jobs:
 
     env:
       PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_win_x64
+      RAYLIB_VERSION: 5.5
+      RAYLIB_PATH: raylib-5.5_win64_mingw-w64
 
     defaults:
       run:
@@ -45,7 +47,6 @@ jobs:
           make
           mingw-w64-ucrt-x86_64-gcc
           mingw-w64-ucrt-x86_64-just
-          mingw-w64-ucrt-x86_64-raylib
           pkgconf
           unzip
 
@@ -57,11 +58,15 @@ jobs:
         echo "PROJECT_RELEASE_PATH=${{ env.PROJECT_NAME }}_v${{ github.event.release.tag_name }}_win_x64" >> "$GITHUB_ENV"
       if: github.event_name == 'release' && github.event.action == 'published'
 
+    - name: Setup Environment
+      run: |
+        # use official build because MSYS2 uses external GLFW
+        curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
+        unzip "$RAYLIB_PATH.zip"
+
     - name: Build Product
       run: |
         export PATH="/ucrt64/bin:$PATH" PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
-        # MSYS2 uses external GLFW
-        export LDFLAGS="$(pkg-config --libs glfw3)"
         cc --version
         make -B -j "$(nproc)"
 
