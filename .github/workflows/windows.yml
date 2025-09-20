@@ -42,6 +42,7 @@ jobs:
     steps:
     - uses: msys2/setup-msys2@v2
       with:
+        msystem: UCRT64
         update: true
         install: >-
           make
@@ -66,7 +67,7 @@ jobs:
 
     - name: Build Product
       run: |
-        export PATH="/ucrt64/bin:$PATH" PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
+        export PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
         cc --version
         make -B -j "$(nproc)"
 
