@@ -21,7 +21,7 @@ int main(int argc, const char **argv) {
 	FREE(addr);
 
 	while (true) {
-		RecvInfo recv = udp_server_recv(server, (void *)buffer, sizeof(buffer));
+		RecvInfo recv = recv_from(server.sock, (void *)buffer, sizeof(buffer));
 
 		if (recv.len < 0) {
 			perror("error: receive failed");

@@ -34,12 +34,16 @@ typedef RecvInfo SendInfo;
 // NOTE: the returned pointer should be freed.
 char *format_sa(SockAddr sa);
 
+int new_udp_socket();
+// Convert string address to integer address.
+u32 net_addr(const char *addr);
+
 UDPServer udp_server(u32 addr, u16 port);
 // Return false if failed, true otherwise.
 bool udp_server_init(UDPServer *server);
 // Shutdown the server.
 void udp_server_down(UDPServer *server);
 
-RecvInfo udp_server_recv(UDPServer server, void *buffer, usize buffer_size);
+RecvInfo recv_from(int sock, void *buffer, usize buffer_size);
 // Return -1 if failed, sent message length otherwise.
 isize send_to(int sock, SockAddr target, void *buffer, usize buffer_size);

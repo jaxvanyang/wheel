@@ -43,6 +43,10 @@ char *format_sa(SockAddr sa) {
 	return ret;
 }
 
+int new_udp_socket() { return socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP); }
+
+u32 net_addr(const char *addr) { return ntohl(inet_addr(addr)); }
+
 UDPServer udp_server(u32 addr, u16 port) {
 	UDPServer ret = {.sa = {.addr = addr, .port = port}, .sock = -1};
 
@@ -50,7 +54,7 @@ UDPServer udp_server(u32 addr, u16 port) {
 }
 
 bool udp_server_init(UDPServer *server) {
-	server->sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	server->sock = new_udp_socket();
 
 	if (server->sock == -1) {
 		perror("error: failed to create socket");
@@ -75,10 +79,10 @@ void udp_server_down(UDPServer *server) {
 	server->sock = -1;
 }
 
-RecvInfo udp_server_recv(UDPServer server, void *buffer, usize buffer_size) {
+RecvInfo recv_from(int sock, void *buffer, usize buffer_size) {
 	struct sockaddr sa;
 	socklen_t len = sizeof(sa);
-	isize msg_len = recvfrom(server.sock, buffer, buffer_size, 0, &sa, &len);
+	isize msg_len = recvfrom(sock, buffer, buffer_size, 0, &sa, &len);
 
 	RecvInfo ret = {.sa = from_os_sa(sa), .len = msg_len};
 
