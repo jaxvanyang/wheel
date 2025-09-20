@@ -27,7 +27,7 @@ permissions:
 jobs:
   build:
     permissions:
-      contents: write       # for actions/upload-release-asset to upload release asset
+      contents: write # for actions/upload-release-asset to upload release asset
     runs-on: windows-latest
 
     env:
@@ -60,6 +60,8 @@ jobs:
     - name: Build Product
       run: |
         export PATH="/ucrt64/bin:$PATH" PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
+        # MSYS2 uses external GLFW
+        export LDFLAGS="$(pkg-config --libs glfw3)"
         cc --version
         make -B -j "$(nproc)"
 
