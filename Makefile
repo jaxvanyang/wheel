@@ -1,7 +1,16 @@
 # Define target platform: PLATFORM_DESKTOP, PLATFORM_WEB
 PLATFORM ?= PLATFORM_DESKTOP
 
-# raylib library variables
+# By default we suppose we are working on Windows
+PLATFORM_OS ?= WINDOWS
+
+# Target path for artifacts
+PREFIX ?= install
+
+# By default we use pkg-config to find raylib
+# Use RAYLIB_SRC_PATH if you build raylib from source
+# Use RAYLIB_PATH if you downlaod prebuilt raylib from its releases
+# Use RAYLIB_CFLAGS and RAYLIB_LDFLAGS if you want more control
 ifdef RAYLIB_SRC_PATH
 	RAYLIB_CFLAGS ?= -I$(RAYLIB_SRC_PATH)
 	RAYLIB_LDFLAGS ?= -L$(RAYLIB_SRC_PATH) -lraylib
@@ -15,8 +24,13 @@ else
 	endif
 endif
 
-# Target path for artifacts
-PREFIX ?= install
+UNAMEOS = $(shell uname)
+ifeq ($(UNAMEOS),Linux)
+	PLATFORM_OS = LINUX
+endif
+ifeq ($(UNAMEOS),Darwin)
+	PLATFORM_OS = OSX
+endif
 
 ifeq ($(PLATFORM),PLATFORM_WEB)
 	CC = emcc
@@ -32,8 +46,10 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 		RAYLIB_LDFLAGS := $(RAYLIB_SRC_PATH)/libraylib.web.a
 	endif
 else
-	UNAMEOS = $(shell uname)
-	ifneq ($(UNAMEOS),Darwin)
+	ifeq ($(PLATFORM_OS),WINDOWS)
+		LDFLAGS := -lws2_32 $(LDFLAGS)
+	endif
+	ifneq ($(PLATFORM_OS),OSX)
 		# only use daynamic linking on macOS, see https://stackoverflow.com/questions/844819/how-to-static-link-on-os-x
 		LDFLAGS := -static $(LDFLAGS)
 	endif
@@ -57,23 +73,29 @@ XRAYS := $(patsubst %.c,%.o,$(wildcard $(XRAY)/*.c))
 OBJS := $(patsubst %.c,%.o,$(wildcard $(WHEEL)/*.c))
 OBJS += $(CORES) $(XRAYS)
 
+BINS ?= $(patsubst %.c,%,$(wildcard bin/*.c))
 GAMES ?= $(patsubst %.c,%,$(wildcard game/*.c))
-BINS ?= $(patsubst %.c,%,$(wildcard bin/*.c)) $(GAMES)
 TESTS ?= $(patsubst %.c,%,$(wildcard tests/*.c))
 
+ifeq ($(PLATFORM_OS),WINDOWS)
+	BINS := $(patsubst %,%.exe,$(BINS))
+	GAMES := $(patsubst %,%.exe,$(GAMES))
+	TESTS := $(patsubst %,%.exe,$(TESTS))
+endif
+
 .PHONY: all
-all: bins tests
+all: bins games tests
 
 .PHONY: install
-install: bins
+install: bins games
 	cp $(BINS) $(PREFIX)
 	cp -r assets $(PREFIX)
 
-.PHONY: games
-games: $(GAMES)
-
 .PHONY: bins
 bins: $(BINS)
+
+.PHONY: games
+games: $(GAMES)
 
 .PHONY: tests
 tests: $(TESTS)
@@ -81,13 +103,22 @@ tests: $(TESTS)
 bin/%: bin/%.c $(LIBA)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
+bin/%.exe: bin/%.c $(LIBA)
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
 game/%: game/%.c $(LIBA)
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
+game/%.exe: game/%.c $(LIBA)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 game/%.html: game/%.c $(LIBA)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 tests/%: tests/%.c $(LIBA)
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
+tests/%.exe: tests/%.c $(LIBA)
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 $(LIBA): $(OBJS)
@@ -108,6 +139,6 @@ build/compile_commands.json:
 .PHONY: clean
 clean:
 	rm -f $(LIBA) $(LIBSO) $(BINS) $(TESTS) $(OBJS)
-	-rm -f **/*.o **/*.a **/*.so
+	-rm -f **/*.o **/*.a **/*.so **/*.exe
 	-rm -rf bin/*.dSYM
 	-rm -rf game/*.html game/*.wasm game/*.js game/*.data game/*.dSYM
