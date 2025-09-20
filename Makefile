@@ -9,7 +9,7 @@ PREFIX ?= install
 
 # By default we use pkg-config to find raylib
 # Use RAYLIB_SRC_PATH if you build raylib from source
-# Use RAYLIB_PATH if you downlaod prebuilt raylib from its releases
+# Use RAYLIB_PATH if you download prebuilt raylib from its releases
 # Use RAYLIB_CFLAGS and RAYLIB_LDFLAGS if you want more control
 ifdef RAYLIB_SRC_PATH
 	RAYLIB_CFLAGS ?= -I$(RAYLIB_SRC_PATH)

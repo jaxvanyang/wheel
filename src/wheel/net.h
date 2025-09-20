@@ -31,7 +31,7 @@ typedef struct {
 typedef RecvInfo SendInfo;
 
 // Return a string in format of "address:port".
-// NOTE: the returend pointer should be freed.
+// NOTE: the returned pointer should be freed.
 char *format_sa(SockAddr sa);
 
 UDPServer udp_server(u32 addr, u16 port);
