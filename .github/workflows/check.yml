@@ -4,18 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - '**/*.c'
-      - '**/*.h'
-      - '.github/workflows/check.yml'
-      - 'Makefile'
   pull_request:
     branches: [main]
-    paths:
-      - '**/*.c'
-      - '**/*.h'
-      - '.github/workflows/check.yml'
-      - 'Makefile'
 
 permissions:
   contents: read
