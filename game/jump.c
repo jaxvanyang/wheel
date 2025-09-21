@@ -17,6 +17,8 @@
 static Game *game = NULL;
 
 void main_loop() {
+	UpdateMusicStream(game->manager->bgm);
+
 	if (game->player.state != DEATH) {
 		handle_input(game);
 	} else {
@@ -34,6 +36,8 @@ int main() {
 	InitAudioDevice();
 
 	game = new_game();
+
+	PlayMusicStream(game->manager->bgm);
 
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(main_loop, FPS, true);

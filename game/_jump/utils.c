@@ -9,6 +9,8 @@ ResourceManager *new_resource_manager() {
 		load_texture("assets/brackeys_platformer_assets/sprites/knight.png");
 	manager->tileset =
 		load_texture("assets/brackeys_platformer_assets/sprites/world_tileset.png");
+	manager->bgm =
+		load_music_stream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
 	manager->jump = load_sound("assets/brackeys_platformer_assets/sounds/jump.wav");
 	manager->explosion =
 		load_sound("assets/brackeys_platformer_assets/sounds/explosion.wav");
