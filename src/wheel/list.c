@@ -33,7 +33,7 @@ const usize LIST_MAX_INCREASE = 1024;
 		return list; \
 	} \
 \
-	T prefix##_get(Name *list, usize i) { \
+	T prefix##_get(const Name *list, usize i) { \
 		if (i >= list->length) { \
 			error("expected i < length, found: %zu >= %zu\n", i, list->length); \
 		} \

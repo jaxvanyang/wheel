@@ -9,7 +9,7 @@ extern const usize LIST_MAX_INCREASE;
 
 Ulist *ulist_new();
 Ulist *ulist_new_with_size(usize size);
-usize ulist_get(Ulist *list, usize i);
+usize ulist_get(const Ulist *list, usize i);
 void ulist_set(Ulist *list, usize i, usize val);
 void ulist_insert(Ulist *list, usize i, usize val);
 void ulist_push(Ulist *list, usize val);
@@ -23,7 +23,7 @@ void ulist_print(Ulist *list);
 
 Ilist *ilist_new();
 Ilist *ilist_new_with_size(usize size);
-isize ilist_get(Ilist *list, usize i);
+isize ilist_get(const Ilist *list, usize i);
 void ilist_set(Ilist *list, usize i, isize val);
 void ilist_insert(Ilist *list, usize i, isize val);
 void ilist_push(Ilist *list, isize val);
@@ -37,7 +37,7 @@ void ilist_print(Ilist *list);
 
 Slist *slist_new();
 Slist *slist_new_with_size(usize size);
-Str *slist_get(Slist *list, usize i);
+Str *slist_get(const Slist *list, usize i);
 void slist_set(Slist *list, usize i, Str *s);
 void slist_insert(Slist *list, usize i, Str *s);
 void slist_push(Slist *list, Str *s);
