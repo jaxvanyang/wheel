@@ -5,6 +5,11 @@
 	free(p); \
 	p = NULL;
 
+// Close a file descriptor, and set it to -1.
+#define CLOSE(fd) \
+	close(fd); \
+	fd = -1;
+
 #define VECTOR(T, Name) \
 	typedef struct { \
 		usize size; \

@@ -1,10 +1,18 @@
+#include <assert.h>
 #include <errno.h>
 #include <string.h>
+#include <unistd.h>
 #include <wheel.h>
+
+typedef struct {
+	SockAddr sa;
+	int udp_sock;
+	int tcp_sock;
+} Server;
 
 int main(int argc, const char **argv) {
 	if (argc != 2) {
-		error("expected one and only one argument\n");
+		error("expected one and only one argument");
 	}
 
 	u16 port = 0;
@@ -13,35 +21,48 @@ int main(int argc, const char **argv) {
 	char buffer[1024];
 	char resp[1024];
 
-	UDPServer server = udp_server(INADDR_ANY, port);
-	udp_server_init(&server);
+	Server server = {.sa = {.addr = INADDR_ANY, .port = port}};
+	server.udp_sock = new_udp_socket();
+	server.tcp_sock = new_tcp_socket();
+
+	if (server.udp_sock == -1) {
+		error("failed to create UDP socket");
+	} else if (server.tcp_sock == -1) {
+		error("failed to create TCP socket");
+	}
+
+	if (net_bind(server.udp_sock, server.sa) == -1) {
+		error("failed to bind the UDP socket");
+	} else if (net_bind(server.tcp_sock, server.sa) == -1) {
+		error("failed to bind the TCP socket");
+	}
+
+	if (listen(server.tcp_sock, 1) == -1) {
+		error("failed to listen for TCP connenction");
+	}
 
 	char *addr = format_sa(server.sa);
 	printf("server: listening on %s...\n", addr);
 	FREE(addr);
 
 	while (true) {
-		RecvInfo recv = recv_from(server.sock, (void *)buffer, sizeof(buffer));
+		SockAddr client;
+		isize len = recv_from(server.udp_sock, &client, (void *)buffer, sizeof(buffer), 0);
 
-		if (recv.len < 0) {
-			perror("error: receive failed");
-			return EXIT_FAILURE;
+		if (len < 0) {
+			error("failed to receive from the UDP socket\n");
 		}
 
-		char *addr = format_sa(recv.sa);
-
-		printf("received %ld bytes from %s:\n", recv.len, addr);
-		printf("> %.*s\n", (int)recv.len, buffer);
-
+		char *addr = format_sa(client);
+		printf("received %ld bytes from UDP %s:\n", len, addr);
+		printf("> %.*s\n", (int)len, buffer);
 		FREE(addr);
 
-		snprintf(resp, sizeof(resp), "Echo: %.*s", (int)recv.len, buffer);
-		send_to(server.sock, recv.sa, resp, strlen(resp));
+		snprintf(resp, sizeof(resp), "Echo: %.*s", (int)len, buffer);
+		send_to(server.udp_sock, client, resp, strlen(resp), 0);
 
-		if (strncmp(buffer, "shutdown", 8) == 0) {
-			break;
-		}
 	}
 
-	udp_server_down(&server);
+	CLOSE(server.udp_sock);
+	CLOSE(server.tcp_sock);
 }

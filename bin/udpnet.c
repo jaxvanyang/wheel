@@ -7,7 +7,7 @@
 
 int main(int argc, const char **const argv) {
 	if (argc != 3) {
-		error("expected 3 and only 3 arguments\n");
+		error("expected 3 and only 3 arguments");
 	}
 
 	u16 port;
@@ -32,20 +32,21 @@ int main(int argc, const char **const argv) {
 			break;
 		}
 
-		isize bytes_sent = send_to(sock, server_sa, buffer, strlen(buffer));
+		isize bytes_sent = send_to(sock, server_sa, buffer, strlen(buffer), 0);
 		if (bytes_sent < 0) {
 			printf("Error sending packet: %s\n", strerror(errno));
 			return EXIT_FAILURE;
 		}
 
-		RecvInfo recv = recv_from(sock, buffer, sizeof(buffer));
+		SockAddr client;
+		isize len = recv_from(sock, &client, buffer, sizeof(buffer), 0);
 
-		if (recv.len < 0) {
+		if (len < 0) {
 			printf("Error receiving packet: %s\n", strerror(errno));
 			return EXIT_FAILURE;
 		}
 
-		printf("%.*s\n", (int)recv.len, buffer);
+		printf("%.*s\n", (int)len, buffer);
 	}
 
 	close(sock);

@@ -45,53 +45,46 @@ char *format_sa(SockAddr sa) {
 
 int new_udp_socket() { return socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP); }
 
+int new_tcp_socket() { return socket(PF_INET, SOCK_STREAM, IPPROTO_TCP); }
+
 u32 net_addr(const char *addr) { return ntohl(inet_addr(addr)); }
 
-UDPServer udp_server(u32 addr, u16 port) {
-	UDPServer ret = {.sa = {.addr = addr, .port = port}, .sock = -1};
+int net_bind(int socket, SockAddr sa) {
+	struct sockaddr os_sa = to_os_sa(sa);
+	return bind(socket, &os_sa, sizeof(os_sa));
+}
+
+int net_accept(int socket, SockAddr *sa) {
+	struct sockaddr os_sa;
+	socklen_t len = sizeof(os_sa);
+	int ret = accept(socket, &os_sa, &len);
+
+	if (sa) {
+		*sa = from_os_sa(os_sa);
+	}
 
 	return ret;
 }
 
-bool udp_server_init(UDPServer *server) {
-	server->sock = new_udp_socket();
-
-	if (server->sock == -1) {
-		perror("error: failed to create socket");
-		return false;
-	}
-
-	struct sockaddr sa = to_os_sa(server->sa);
-
-	if (bind(server->sock, &sa, sizeof(sa)) == -1) {
-		perror("error: bind failed");
-		close(server->sock);
-		server->sock = -1;
-
-		return false;
-	}
-
-	return true;
+isize net_recv(int socket, void *buffer, usize buffer_size, int flags) {
+	return recv_from(socket, NULL, buffer, buffer_size, flags);
 }
 
-void udp_server_down(UDPServer *server) {
-	close(server->sock);
-	server->sock = -1;
-}
-
-RecvInfo recv_from(int sock, void *buffer, usize buffer_size) {
+isize recv_from(int socket, SockAddr *src, void *buffer, usize buffer_size, int flags) {
 	struct sockaddr sa;
 	socklen_t len = sizeof(sa);
-	isize msg_len = recvfrom(sock, buffer, buffer_size, 0, &sa, &len);
+	isize ret = recvfrom(socket, buffer, buffer_size, flags, &sa, &len);
 
-	RecvInfo ret = {.sa = from_os_sa(sa), .len = msg_len};
+	if (src) {
+		*src = from_os_sa(sa);
+	}
 
 	return ret;
 }
 
-isize send_to(int sock, SockAddr target, void *buffer, usize buffer_size) {
-	struct sockaddr sa = to_os_sa(target);
-	isize ret = sendto(sock, buffer, buffer_size, 0, &sa, sizeof(sa));
+isize send_to(int socket, SockAddr dest, void *buffer, usize buffer_size, int flags) {
+	struct sockaddr sa = to_os_sa(dest);
+	isize ret = sendto(socket, buffer, buffer_size, flags, &sa, sizeof(sa));
 
 	return ret;
 }
