@@ -18,4 +18,20 @@ int main() {
 
 		str_free(s);
 	}
+
+	{
+		char s[] = "abcdefg";
+		assert(str_start_with(s, "abc"));
+		assert(str_end_with(s, "efg"));
+
+		str_remove_prefix(s, "abc");
+		assert(strcmp(s, "defg") == 0);
+		str_remove_postfix(s, "efg");
+		assert(strcmp(s, "d") == 0);
+
+		str_remove_prefix(s, "x");
+		assert(strcmp(s, "d") == 0);
+		str_remove_postfix(s, "x");
+		assert(strcmp(s, "d") == 0);
+	}
 }

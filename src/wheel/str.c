@@ -75,6 +75,61 @@ isize kmp(char *s, char *t) {
 	return -1;
 }
 
+bool str_start_with(const char *s, const char *pattern) {
+	usize s_len = strlen(s), p_len = strlen(pattern);
+
+	if (s_len < p_len) {
+		return false;
+	}
+
+	for (usize i = 0; i < p_len; ++i) {
+		if (s[i] != pattern[i]) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool str_end_with(const char *s, const char *pattern) {
+	usize s_len = strlen(s), p_len = strlen(pattern);
+
+	if (s_len < p_len) {
+		return false;
+	}
+
+	usize diff = s_len - p_len;
+	for (usize i = 0; i < p_len; ++i) {
+		if (s[i + diff] != pattern[i]) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void str_remove_prefix(char *s, const char *pattern) {
+	if (!str_start_with(s, pattern)) {
+		return;
+	}
+
+	usize s_len = strlen(s), p_len = strlen(pattern);
+	usize new_len = s_len - p_len;
+	for (usize i = 0; i < new_len + 1; ++i) {
+		s[i] = s[i + p_len];
+	}
+}
+
+void str_remove_postfix(char *s, const char *pattern) {
+	if (!str_end_with(s, pattern)) {
+		return;
+	}
+
+	usize s_len = strlen(s), p_len = strlen(pattern);
+	usize new_len = s_len - p_len;
+	s[new_len] = '\0';
+}
+
 Str *str_new_with_size(usize size) {
 	Str *ret = malloc(sizeof(Str));
 
