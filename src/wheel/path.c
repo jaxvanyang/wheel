@@ -1,5 +1,4 @@
 #include "path.h"
-#include "str.h"
 #include <string.h>
 
 char *os_path(const char *path) {
@@ -19,4 +18,13 @@ char *os_path(const char *path) {
 #endif
 
 	return s;
+}
+
+void path_join(Str *path, const char *component) {
+#ifdef _WIN32
+	str_push(path, '\\');
+#else
+	str_push(path, '/');
+#endif
+	str_push_str(path, component);
 }

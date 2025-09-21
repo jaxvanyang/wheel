@@ -13,4 +13,15 @@ int main() {
 #endif
 		free(path);
 	}
+
+	{
+		Str *path = str_from("a");
+		path_join(path, "b");
+
+#ifdef _WIN32
+		assert(strcmp(path->data, "a\\b") == 0);
+#else
+		assert(strcmp(path->data, "a/b") == 0);
+#endif
+	}
 }
