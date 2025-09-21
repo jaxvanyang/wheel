@@ -234,7 +234,7 @@ bool tree_equal(Tree *a, Tree *b) {
 
 char _tree_char(isize n) {
 	if (n < 0 || n > 62) {
-		error("expected 0 <= n <= 62, but found: n = %ld\n", n);
+		error("expected 0 <= n <= 62, but found: n = %" ISIZE_FMT "\n", n);
 	} else if (n < 10) {
 		return '0' + n;
 	} else if (n < 36) {
@@ -271,7 +271,7 @@ void tree_print(Tree *tree) {
 	}
 
 	if (h == 1) {
-		printf("%ld\n", tree->value);
+		printf("%" ISIZE_FMT "\n", tree->value);
 		return;
 	}
 

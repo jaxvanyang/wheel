@@ -141,5 +141,5 @@ build/compile_commands.json:
 clean:
 	rm -f $(LIBA) $(LIBSO) $(BINS) $(TESTS) $(OBJS)
 	-rm -f **/*.o **/*.a **/*.so **/*.exe
-	-rm -rf bin/*.dSYM
+	-rm -rf **/*.dSYM
 	-rm -rf game/*.html game/*.wasm game/*.js game/*.data game/*.dSYM

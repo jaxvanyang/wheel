@@ -5,19 +5,19 @@ on:
   push:
     branches: [main]
     paths:
-      - '**/*.c'
-      - '**/*.h'
-      - '.github/workflows/windows.yml'
-      - 'Makefile'
-      - 'assets/**'
+      - "**/*.c"
+      - "**/*.h"
+      - ".github/workflows/windows.yml"
+      - "Makefile"
+      - "assets/**"
   pull_request:
     branches: [main]
     paths:
-      - '**/*.c'
-      - '**/*.h'
-      - '.github/workflows/windows.yml'
-      - 'Makefile'
-      - 'assets/**'
+      - "**/*.c"
+      - "**/*.h"
+      - ".github/workflows/windows.yml"
+      - "Makefile"
+      - "assets/**"
   release:
     types: [published]
 
@@ -40,61 +40,57 @@ jobs:
         shell: msys2 {0}
 
     steps:
-    - uses: msys2/setup-msys2@v2
-      with:
-        msystem: UCRT64
-        update: true
-        install: >-
-          make
-          mingw-w64-ucrt-x86_64-gcc
-          mingw-w64-ucrt-x86_64-just
-          pkgconf
-          unzip
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            make
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-just
+            pkgconf
+            unzip
 
-    - name: Checkout this repo
-      uses: actions/checkout@master
+      - name: Checkout this repo
+        uses: actions/checkout@master
 
-    - name: Setup Release Paths
-      run: |
-        echo "PROJECT_RELEASE_PATH=${{ env.PROJECT_NAME }}_v${{ github.event.release.tag_name }}_win_x64" >> "$GITHUB_ENV"
-      if: github.event_name == 'release' && github.event.action == 'published'
+      - name: Setup Release Paths
+        run: |
+          echo "PROJECT_RELEASE_PATH=${{ env.PROJECT_NAME }}_v${{ github.event.release.tag_name }}_win_x64" >> "$GITHUB_ENV"
+        if: github.event_name == 'release' && github.event.action == 'published'
 
-    - name: Setup Environment
-      run: |
-        # use official build because MSYS2 uses external GLFW
-        curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
-        unzip "$RAYLIB_PATH.zip"
+      - name: Setup Environment
+        run: |
+          # use official build because MSYS2 uses external GLFW
+          curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
+          unzip "$RAYLIB_PATH.zip"
 
-    - name: Build Product
-      run: |
-        export PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
-        cc --version
-        make -j "$(nproc)"
+      - name: Build Product
+        run: |
+          export PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
+          cc --version
+          make -j "$(nproc)"
 
-    - name: Run tests
-      run: |
-        # FIXME: these tests only fail on Windows
-        rm tests/float.c
-        ls tests
-        ./bin/test
+      - name: Run tests
+        run: ./bin/test
 
-    - name: Generate Artifacts
-      run: |
-        mkdir ${{ env.PROJECT_RELEASE_PATH }}
-        make PREFIX=${{ env.PROJECT_RELEASE_PATH }} install
-        7z a .\${{ env.PROJECT_RELEASE_PATH }}.zip .\${{ env.PROJECT_RELEASE_PATH }}
-      shell: cmd
+      - name: Generate Artifacts
+        run: |
+          mkdir ${{ env.PROJECT_RELEASE_PATH }}
+          make PREFIX=${{ env.PROJECT_RELEASE_PATH }} install
+          7z a .\${{ env.PROJECT_RELEASE_PATH }}.zip .\${{ env.PROJECT_RELEASE_PATH }}
+        shell: cmd
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.PROJECT_RELEASE_PATH }}.zip
-        path: ./${{ env.PROJECT_RELEASE_PATH }}.zip
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PROJECT_RELEASE_PATH }}.zip
+          path: ./${{ env.PROJECT_RELEASE_PATH }}.zip
 
-    - name: Upload Artifact to Release
-      uses: softprops/action-gh-release@v2
-      with:
-        files: ${{ env.PROJECT_RELEASE_PATH }}.zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      if: github.event_name == 'release' && github.event.action == 'published'
+      - name: Upload Artifact to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.PROJECT_RELEASE_PATH }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event_name == 'release' && github.event.action == 'published'

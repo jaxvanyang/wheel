@@ -162,10 +162,10 @@ VECTOR_IMPLEMENTATION(isize, Ilist, ilist)
 void ilist_print(Ilist *list) {
 	printf("{");
 	if (list->length > 0) {
-		printf("%ld", ilist_get(list, 0));
+		printf("%" ISIZE_FMT, ilist_get(list, 0));
 	}
 	for (usize i = 1; i < list->length; ++i) {
-		printf(", %ld", ilist_get(list, i));
+		printf(", %" ISIZE_FMT, ilist_get(list, i));
 	}
 	printf("}");
 }

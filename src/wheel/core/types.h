@@ -24,3 +24,12 @@ typedef float f32;
 typedef double f64;
 
 extern const usize USIZE_MAX;
+
+// Platform-appropriate format specifiers
+#ifdef _WIN32
+#define USIZE_FMT "llu"
+#define ISIZE_FMT "lld"
+#else
+#define USIZE_FMT "zu"
+#define ISIZE_FMT "zd"
+#endif

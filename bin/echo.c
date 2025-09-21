@@ -49,7 +49,7 @@ void *handle_udp(void *arg) {
 		}
 
 		char *addr = format_sa(client);
-		printf("received %ld bytes from UDP %s:\n", len, addr);
+		printf("received %" ISIZE_FMT " bytes from UDP %s:\n", len, addr);
 		printf("> %.*s\n", (int)len, buffer);
 		FREE(addr);
 
@@ -89,7 +89,7 @@ void *handle_tcp(void *arg) {
 				break;
 			}
 
-			printf("received %ld bytes from TCP %s:\n", len, addr);
+			printf("received %" ISIZE_FMT " bytes from TCP %s:\n", len, addr);
 			printf("> %.*s\n", (int)len, buffer);
 
 			snprintf(resp, sizeof(resp), "Echo: %.*s", (int)len, buffer);

@@ -11,8 +11,12 @@ TimeVal time_now();
 // elapsed time in micro seconds
 f64 elapsed(TimeVal t0);
 
+#ifndef max
 #define max(a, b) (a > b ? a : b)
+#endif
+#ifndef min
 #define min(a, b) (a < b ? a : b)
+#endif
 
 #define clamp(value, min, max) (value < min ? min : (value > max ? max : value))
 
