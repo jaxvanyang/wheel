@@ -18,8 +18,14 @@
 #define SHUT_WR 1 // shut down the writing side
 #define SHUT_RDWR 2 // shut down both sides
 
+#ifdef _WIN32
+typedef u64 Socket;
+#else
+typedef int Socket;
+#endif
+
 typedef struct {
-	u32 addr;
+	u32 ip;
 	u16 port;
 } SockAddr;
 
@@ -37,18 +43,24 @@ int new_tcp_socket();
 u32 net_addr(const char *addr);
 // Bind an unnamed socket to an socket address.
 // For more information, see bind().
-int net_bind(int socket, SockAddr sa);
+int net_bind(Socket socket, SockAddr sa);
 // Return -1 if an error occurs, 0 otherwise.
-int listen(int socket, int backlog);
+int listen(Socket socket, int backlog);
 // For more information, see accept().
-int net_accept(int socket, SockAddr *sa);
+int net_accept(Socket socket, SockAddr *sa);
 
 // For more information, see recv().
-isize net_recv(int socket, void *buffer, usize buffer_size, int flags);
+isize net_recv(Socket socket, void *buffer, usize buffer_size, int flags);
 // For more information, see recvfrom()
-isize recv_from(int socket, SockAddr *src, void *buffer, usize buffer_size, int flags);
-isize send(int socket, const void *buffer, usize buffer_size, int flags);
+isize recv_from(
+	Socket socket, SockAddr *src, void *buffer, usize buffer_size, int flags
+);
+#ifdef _WIN32
+int send(Socket socket, const char *buffer, int buffer_size, int flags);
+#else
+isize send(Socket socket, const void *buffer, usize buffer_size, int flags);
+#endif
 // Return -1 if failed, sent message length otherwise.
 // For more information, see sendto()
-isize send_to(int socket, SockAddr dest, void *buffer, usize buffer_size, int flags);
-int shutdown(int socket, int how);
+isize send_to(Socket socket, SockAddr dest, void *buffer, usize buffer_size, int flags);
+int shutdown(Socket socket, int how);

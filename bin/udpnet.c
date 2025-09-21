@@ -12,7 +12,7 @@ int main(int argc, const char **const argv) {
 
 	u16 port;
 	sscanf(argv[2], "%hu", &port);
-	SockAddr server_sa = {.addr = net_addr(argv[1]), .port = port};
+	SockAddr server_sa = {.ip = net_addr(argv[1]), .port = port};
 
 	char *addr = format_sa(server_sa);
 	printf("Send message to %s:\n", addr);

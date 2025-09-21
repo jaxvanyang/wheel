@@ -4,7 +4,7 @@
 
 int main() {
 	{
-		SockAddr sa = {.addr = 0x01020304, .port = 1234};
+		SockAddr sa = {.ip = 0x01020304, .port = 1234};
 		char *addr = format_sa(sa);
 		assert(strcmp("1.2.3.4:1234", addr) == 0);
 		FREE(addr);
