@@ -6,4 +6,5 @@
 #define error(...) \
 	fprintf(stderr, "%s:%d: ", __FILE__, __LINE__); \
 	fprintf(stderr, __VA_ARGS__); \
+	fprintf(stderr, "\n"); \
 	exit(1)
