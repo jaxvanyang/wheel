@@ -54,10 +54,10 @@ jobs:
 
     - name: Build Product
       run: |
-        make -B -j "$(nproc)"
+        make -j "$(nproc)"
 
     - name: Run tests
-      run: just test
+      run: ./bin/test
 
     - name: Generate Artifacts
       run: |

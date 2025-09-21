@@ -69,14 +69,14 @@ jobs:
       run: |
         export PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
         cc --version
-        make -B -j "$(nproc)"
+        make -j "$(nproc)"
 
     - name: Run tests
       run: |
         # FIXME: these tests only fail on Windows
         rm tests/float.c
         ls tests
-        just test
+        ./bin/test
 
     - name: Generate Artifacts
       run: |

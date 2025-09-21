@@ -54,10 +54,10 @@ jobs:
         echo RAYLIB_LDFLAGS="-framework IOKit -framework Cocoa -framework OpenGL -L$RAYLIB_PATH/lib -lraylib" >> "$GITHUB_ENV"
 
     - name: Build Product
-      run: make -B -j3
+      run: make -j3
 
     - name: Run tests
-      run: just test
+      run: ./bin/test
 
     - name: Generate Artifacts
       run: |
