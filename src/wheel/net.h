@@ -14,9 +14,15 @@
 #endif
 
 // how arguments for shutdown(2), specified by Posix.1g.
+#ifndef SHUT_RD
 #define SHUT_RD 0 // shut down the reading side
+#endif
+#ifndef SHUT_WR
 #define SHUT_WR 1 // shut down the writing side
+#endif
+#ifndef SHUT_RDWR
 #define SHUT_RDWR 2 // shut down both sides
+#endif
 
 #ifdef _WIN32
 typedef u64 Socket;
