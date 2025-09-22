@@ -215,9 +215,10 @@ int main(int argc, char *const argv[]) {
 			return EXIT_FAILURE;
 		} else if (pid == 0) {
 			Str *path = str_from("tests");
+			char *argv[] = {path->data, NULL};
 			path_join(path, test);
 			printf("path: %s\n", path->data);
-			if (execv(path->data, NULL) == -1) {
+			if (execv(path->data, argv) == -1) {
 				perror("failed to run the test");
 				return EXIT_FAILURE;
 			}
