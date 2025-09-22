@@ -65,14 +65,16 @@ LDFLAGS := -Lsrc -lwheel $(RAYLIB_LDFLAGS) -lm $(LDFLAGS)
 WHEEL := src/wheel
 CORE := $(WHEEL)/core
 XRAY := $(WHEEL)/xray
+GAME_MODULE := $(WHEEL)/game
 
 LIBA := src/libwheel.a
 LIBSO := src/libwheel.so
 
 CORES := $(patsubst %.c,%.o,$(wildcard $(CORE)/*.c))
 XRAYS := $(patsubst %.c,%.o,$(wildcard $(XRAY)/*.c))
+GAME_O := $(patsubst %.c,%.o,$(wildcard $(GAME_MODULE)/*.c))
 OBJS := $(patsubst %.c,%.o,$(wildcard $(WHEEL)/*.c))
-OBJS += $(CORES) $(XRAYS)
+OBJS += $(CORES) $(XRAYS) $(GAME_O)
 
 BINS ?= $(patsubst %.c,%,$(wildcard bin/*.c))
 GAMES ?= $(patsubst %.c,%,$(wildcard game/*.c))

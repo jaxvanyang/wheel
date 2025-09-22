@@ -20,4 +20,5 @@ f64 elapsed(TimeVal t0);
 
 #define clamp(value, min, max) (value < min ? min : (value > max ? max : value))
 
+#define swap(a, b) memswap(&a, &b, sizeof(a))
 void memswap(void *a, void *b, usize size);
