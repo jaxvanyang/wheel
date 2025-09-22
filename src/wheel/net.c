@@ -18,7 +18,7 @@
 #include "net.h"
 
 static struct sockaddr to_os_sa(SockAddr sa) {
-	struct sockaddr_in ret;
+	struct sockaddr_in ret = {};
 	ret.sin_family = AF_INET;
 	ret.sin_addr.s_addr = htonl(sa.ip);
 	ret.sin_port = htons(sa.port);
