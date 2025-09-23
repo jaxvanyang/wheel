@@ -87,7 +87,7 @@ void print_progress(usize passed, usize failed, usize total) {
 	char *status;
 
 	if (finished == total) {
-		status = "Fnished";
+		status = "Finished";
 	} else {
 		status = "Testing...";
 	}
