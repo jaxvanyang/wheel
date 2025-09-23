@@ -80,6 +80,33 @@ char *find_test_by_pid(const Slist *tests, const pid_t *pids, pid_t pid) {
 }
 #endif
 
+void print_progress(usize passed, usize failed, usize total) {
+	usize finished = passed + failed;
+	// progress is in percents %
+	f32 progress = (f32)finished * 100.0 / (f32)total;
+	char *status;
+
+	if (finished == total) {
+		status = "Fnished";
+	} else {
+		status = "Testing...";
+	}
+
+	printf(
+		"[%" USIZE_FMT "/%" USIZE_FMT "/%" USIZE_FMT "] %s [", passed, failed, total, status
+	);
+
+	usize cnt = (usize)(progress / 5.0);
+	for (usize i = 0; i < cnt; ++i) {
+		putchar('#');
+	}
+	for (usize i = 0; i < 20 - cnt; ++i) {
+		putchar(' ');
+	}
+
+	printf("] %.1f%%\n", progress);
+}
+
 int main(int argc, char *const argv[]) {
 	if (!make_tests()) {
 		printf("make tests failed\n");
@@ -143,10 +170,9 @@ int main(int argc, char *const argv[]) {
 
 	for (usize i = 0; i < tests->length; ++i) {
 		char *test = slist_get(tests, i)->data;
-		printf("Testing %s...\n", test);
 
-		Str *path = str_from("tests\\");
-		str_push_str(path, test);
+		Str *path = str_from("tests");
+		path_join(path, test);
 		str_push_str(path, ".exe");
 
 		ZeroMemory(&si_array[i], sizeof(STARTUPINFO));
@@ -165,6 +191,8 @@ int main(int argc, char *const argv[]) {
 		str_free(path);
 	}
 
+	print_progress(passed_cnt, failed_cnt, tests->length);
+
 	for (usize i = 0; i < tests->length; ++i) {
 		char *test = slist_get(tests, i)->data;
 
@@ -177,25 +205,20 @@ int main(int argc, char *const argv[]) {
 			return EXIT_FAILURE;
 		}
 
+		term_clear_line();
 		DWORD exitCode;
 		if (GetExitCodeProcess(handles[i], &exitCode) && exitCode == 0) {
 			++passed_cnt;
-			printf("%s succeed\n", test);
+			printf("pass: tests/%s\n", test);
 		} else {
 			++failed_cnt;
-			printf("%s failed\n", test);
+			printf("fail: tests/%s\n", test);
 		}
+		print_progress(passed_cnt, failed_cnt, tests->length);
 
 		// Close handles for completed process
 		CloseHandle(pi_array[i].hProcess);
 		CloseHandle(pi_array[i].hThread);
-
-		printf(
-			"passed/failed/total: %" USIZE_FMT "/%" USIZE_FMT "/%" USIZE_FMT "\n",
-			passed_cnt,
-			failed_cnt,
-			tests->length
-		);
 	}
 
 	FREE(handles);
@@ -206,8 +229,6 @@ int main(int argc, char *const argv[]) {
 
 	for (usize i = 0; i < tests->length; ++i) {
 		char *test = slist_get(tests, i)->data;
-		printf("Testing %s...\n", test);
-
 		pid_t pid = fork();
 
 		if (pid == -1) {
@@ -217,7 +238,10 @@ int main(int argc, char *const argv[]) {
 			Str *path = str_from("tests");
 			char *argv[] = {path->data, NULL};
 			path_join(path, test);
-			printf("path: %s\n", path->data);
+
+			// suppress stdout
+			freopen("/dev/null", "w", stdout);
+
 			if (execv(path->data, argv) == -1) {
 				perror("failed to run the test");
 				return EXIT_FAILURE;
@@ -226,6 +250,8 @@ int main(int argc, char *const argv[]) {
 
 		pids[i] = pid;
 	}
+
+	print_progress(passed_cnt, failed_cnt, tests->length);
 
 	for (usize i = 0; i < tests->length; ++i) {
 		int status;
@@ -237,19 +263,21 @@ int main(int argc, char *const argv[]) {
 
 		char *test = find_test_by_pid(tests, pids, pid);
 
+		term_clear_line();
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 			++passed_cnt;
-			printf("%s succeed\n", test);
+			printf("pass: tests/%s\n", test);
 		} else {
 			++failed_cnt;
-			printf("%s failed\n", test);
+			printf("fail: tests/%s\n", test);
 		}
-
-		printf("passed/failed/total: %zu/%zu/%zu\n", passed_cnt, failed_cnt, tests->length);
+		print_progress(passed_cnt, failed_cnt, tests->length);
 	}
 
 	FREE(pids);
 #endif
+	term_clear_line();
+	print_progress(passed_cnt, failed_cnt, tests->length);
 
 	slist_free(tests);
 
