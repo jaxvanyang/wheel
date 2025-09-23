@@ -188,6 +188,19 @@ Mat mat_one(usize rows, usize cols) {
 
 Mat mat_clone(const Mat m) { return mat(m.rows, m.cols, m.data); }
 
+Mat mat_hilb(usize rows) {
+	Mat ret = mat_one(rows, rows);
+
+	for (usize i = 0; i < rows; ++i) {
+		for (usize j = 0; j < rows; ++j) {
+			// 1-based hilb(i, j) = 1 / (i + j - 1)
+			ret.data[i * rows + j] /= (i + j + 1);
+		}
+	}
+
+	return ret;
+}
+
 void unload_mat(const Mat m) { free(m.data); }
 
 void free_mat(Mat *m) {
@@ -404,6 +417,73 @@ Vec *solve_linear(const Mat a, const Vec b) {
 		f32 v_i = vec_get(v, i);
 		f32 val = v_i / m_ii;
 		vec_set(*ret, i, val);
+	}
+
+	return ret;
+}
+
+f32 get_det(const Mat matrix) {
+	assert(matrix.rows == matrix.cols);
+
+	// TBD: what's the definition of empty matrix's determinant?
+	if (matrix.rows == 0) {
+		return 0.0;
+	}
+
+	Mat m = mat_clone(matrix);
+	f32 ret = 1.0;
+
+	// make m upper-triangle matrix
+	for (usize j = 0; j + 1 < m.cols; ++j) {
+		// try to make m[j][j] non-zero
+		if (f32_equal(mat_get(m, j, j), 0.0)) {
+			for (usize i = j + 1; i < m.rows; ++i) {
+				if (!f32_equal(mat_get(m, i, j), 0.0)) {
+					// switch m[i] & [j]
+					memswap(m.data + i * m.cols, m.data + j * m.cols, sizeof(f32) * m.cols);
+					ret = -ret;
+
+					break;
+				}
+			}
+		}
+
+		f32 m_jj = mat_get(m, j, j);
+
+		if (f32_equal(m_jj, 0.0)) {
+			unload_mat(m);
+			return 0.0;
+		}
+
+		// make m[j+1..rows][j] = 0
+		for (usize i = j + 1; i < m.rows; ++i) {
+			f32 m_ij = mat_get(m, i, j);
+
+			if (f32_equal(m_ij, 0.0)) {
+				continue;
+			}
+
+			f32 t = m_ij / m_jj;
+
+			mat_set(m, i, j, 0.0);
+
+			// update m[i][j+1..cols]
+			for (usize k = j + 1; k < m.cols; ++k) {
+				f32 val = mat_get(m, i, k) - t * mat_get(m, j, k);
+				mat_set(m, i, k, val);
+			}
+		}
+	}
+
+	// check if the m becomes upper-triangle matrix
+	for (usize i = 1; i < m.rows; ++i) {
+		for (usize j = 0; j < i; ++j) {
+			assert(f32_equal(mat_get(m, i, j), 0.0));
+		}
+	}
+
+	for (usize i = 0; i < m.rows; ++i) {
+		ret *= mat_get(m, i, i);
 	}
 
 	return ret;

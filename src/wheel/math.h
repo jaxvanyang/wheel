@@ -22,6 +22,7 @@ bool f32_equal(f32 x, f32 y);
 bool f64_equal(f64 x, f64 y);
 usize usize_log2(usize n);
 
+// NOTE: returned vector needs to be unloaded.
 Vec vec(usize size, const f32 *data);
 Vec vec_zero(usize size);
 Vec vec_one(usize size);
@@ -40,10 +41,13 @@ Vec vec_mul(const Vec v, f32 k);
 Vec vec_div(const Vec v, f32 k);
 f32 vec_dot(const Vec a, const Vec b);
 
+// NOTE: returned matrix needs to be unloaded.
 Mat mat(usize rows, usize cols, const f32 *data);
 Mat mat_zero(usize rows, usize cols);
 Mat mat_one(usize rows, usize cols);
 Mat mat_clone(const Mat m);
+// Return a Hilbert matrix.
+Mat mat_hilb(usize rows);
 void unload_mat(const Mat m);
 void free_mat(Mat *m);
 
@@ -62,3 +66,5 @@ Vec mat_x_vec(const Mat m, const Vec v);
 // Solve linear equation, return x in Ax = b.
 // Return NULL if no solution.
 Vec *solve_linear(const Mat a, const Vec b);
+
+f32 get_det(const Mat matrix);

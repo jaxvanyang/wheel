@@ -48,4 +48,35 @@ int main() {
 		unload_vec(b);
 		free_vec(x_);
 	}
+
+	{
+		// clang-format off
+		Mat a = mat(2, 2, (f32[]){
+			1, 2,
+			3, 4,
+		});
+		// clang-format on
+		f32 det = get_det(a);
+		f32 answer = 1 * 4 - 2 * 3;
+
+		assert(det == answer);
+
+		unload_mat(a);
+	}
+
+	{
+		// clang-format off
+		Mat a = mat(3, 3, (f32[]){
+			0, 1, 2,
+			3, 0, 4,
+			5, 6, 0,
+		});
+		// clang-format on
+		f32 det = get_det(a);
+		f32 answer = 56;
+
+		assert(det == answer);
+
+		unload_mat(a);
+	}
 }
