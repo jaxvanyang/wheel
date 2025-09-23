@@ -67,10 +67,10 @@ void free_vec(Vec *v) {
 void print_vec(const Vec v) {
 	putchar('[');
 	if (v.size) {
-		printf("%f", v.data[0]);
+		printf("%+f", v.data[0]);
 	}
 	for (usize i = 1; i < v.size; ++i) {
-		printf(", %f", v.data[i]);
+		printf(", %+f", v.data[i]);
 	}
 	printf("]\n");
 }
@@ -214,10 +214,10 @@ void print_mat(const Mat m) {
 	for (usize i = 0; i < m.rows; ++i) {
 		putchar('|');
 		if (m.cols) {
-			printf("%f", mat_get(m, i, 0));
+			printf("%+f", mat_get(m, i, 0));
 		}
 		for (usize j = 1; j < m.cols; ++j) {
-			printf(", %f", mat_get(m, i, j));
+			printf(", %+f", mat_get(m, i, j));
 		}
 		printf("|\n");
 	}
