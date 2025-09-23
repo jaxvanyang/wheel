@@ -1,2 +1,4 @@
 Diagnostics:
   Suppress: [unused-includes, initializer-overrides]
+CompileFlags:
+  Add: [-xc]

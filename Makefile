@@ -144,4 +144,4 @@ clean:
 	rm -f $(LIBA) $(LIBSO) $(BINS) $(TESTS) $(OBJS)
 	-rm -f **/*.o **/*.a **/*.so **/*.exe
 	-rm -rf **/*.dSYM
-	-rm -rf game/*.html game/*.wasm game/*.js game/*.data game/*.dSYM
+	-rm -rf game/*.html **/*.wasm game/*.js **/*.data game/*.dSYM
