@@ -486,5 +486,6 @@ f32 get_det(const Mat matrix) {
 		ret *= mat_get(m, i, i);
 	}
 
+	unload_mat(m);
 	return ret;
 }
