@@ -425,9 +425,9 @@ Vec *solve_linear(const Mat a, const Vec b) {
 f32 get_det(const Mat matrix) {
 	assert(matrix.rows == matrix.cols);
 
-	// TBD: what's the definition of empty matrix's determinant?
+	// this is defined by the cofactor formula
 	if (matrix.rows == 0) {
-		return 0.0;
+		return 1.0;
 	}
 
 	Mat m = mat_clone(matrix);
