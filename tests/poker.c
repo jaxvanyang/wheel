@@ -42,12 +42,10 @@ int main() {
 			.len = 5,
 		};
 		Hand hand = {
-			.cards =
-				{
-					{DIAMOND, TWO},
-					{CLUB, TEN},
-				},
-			.len = 2,
+			.cards = {
+				{DIAMOND, TWO},
+				{CLUB, TEN},
+			},
 		};
 		Selection best = {
 			.cards =

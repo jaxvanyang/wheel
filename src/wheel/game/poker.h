@@ -10,6 +10,10 @@ extern const u8 CARD_WIDTH;
 extern const u8 CARD_HEIGHT;
 extern const u8 MINICARD_WIDTH;
 extern const u8 MINICARD_HEIGHT;
+extern const u8 CHIP_WIDTH;
+extern const u8 CHIP_HEIGHT;
+
+#define SEAT_CNT 5
 
 typedef enum {
 	HEART = 0, // ♥️
@@ -51,7 +55,8 @@ typedef struct {
 
 typedef struct {
 	Card cards[2];
-	usize len;
+	// show cards[i] if mask[i] == true
+	bool mask[2];
 } Hand;
 
 typedef enum {
@@ -76,12 +81,21 @@ typedef struct {
 typedef struct {
 	Texture2D cards;
 	Texture2D minicards;
+	Texture2D chips;
 } ResManager;
+
+typedef struct {
+	Hand hand;
+	const char *name;
+	usize chips;
+	bool is_valid;
+} Player;
 
 typedef struct {
 	ResManager manager;
 	PubCards pub_cards;
-	Hand hand;
+	Player players[SEAT_CNT];
+	usize my_seat;
 } Game;
 
 Card card_from_num(u8 num);
@@ -90,6 +104,8 @@ u8 card_to_num(Card card);
 // NOTE: need to be freed
 char *card_debug(Card card);
 Deck new_deck();
+Hand new_empty_hand();
+void deal_hand(Deck *deck, Hand *hand);
 // Return a - b, ACE is higher than KING
 i8 cmp_rank(Rank a, Rank b);
 // Sort cards from highest to lowest
@@ -104,17 +120,28 @@ const char *kind_display(Kind kind);
 void print_selection(const Selection *selection);
 
 ResManager new_res_manager();
+
+Player new_player(const char *name, usize chips, bool is_valid);
+
 Game new_game();
 void refresh(Game *game);
 
 void handle_input(Game *game);
 
+// NOTE: the seat is relative to my seat
+Rectangle get_player_widget(usize seat);
+
 void draw_card(const ResManager *manager, Card card, Vector2 pos);
 void draw_minicard(const ResManager *manager, Card card, Vector2 pos);
 void draw_back(const ResManager *manager, u8 color, u8 style, Vector2 pos);
+void draw_chip(const ResManager *manager, u8 color, u8 amount, Vector2 pos);
 void draw_table();
 void draw_pub_cards(const ResManager *manager, const PubCards *cards);
-void draw_hand(const ResManager *manager, const Hand *hand);
+void draw_hand(const ResManager *manager, const Hand *hand, Vector2 pos);
+// NOTE: the seat is relative to my seat
+void draw_player(
+	const ResManager *manager, const Player *player, usize seat, bool card_on_left
+);
 void draw_kind(Kind kind, i32 x, i32 y, i32 font_size);
 void draw_selection(const ResManager *manager, const Selection *selection);
 void draw(const Game *game);

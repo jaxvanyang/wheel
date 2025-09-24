@@ -10,7 +10,7 @@ void main_loop(void *arg) {
 	Game *game = arg;
 
 	BeginDrawing();
-	ClearBackground(LIME);
+	ClearBackground(DARKGREEN);
 
 	handle_input(game);
 	draw(game);
