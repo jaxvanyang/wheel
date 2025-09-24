@@ -115,6 +115,6 @@ void draw_back(const ResManager *manager, u8 color, u8 style, Vector2 pos);
 void draw_table();
 void draw_pub_cards(const ResManager *manager, const PubCards *cards);
 void draw_hand(const ResManager *manager, const Hand *hand);
-void draw_kind(Kind kind);
+void draw_kind(Kind kind, i32 x, i32 y, i32 font_size);
 void draw_selection(const ResManager *manager, const Selection *selection);
 void draw(const Game *game);

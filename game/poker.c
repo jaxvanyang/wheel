@@ -19,7 +19,7 @@ void main_loop(void *arg) {
 }
 
 int main() {
-	InitWindow(960, 720, "Poker");
+	InitWindow(1280, 720, "Poker");
 	Game game = new_game();
 
 #ifdef __EMSCRIPTEN__

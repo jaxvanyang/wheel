@@ -2,6 +2,13 @@
 #include "../path.h"
 #include <raymath.h>
 
+Vector2 get_screen_size() {
+	return (Vector2){
+		GetScreenWidth(),
+		GetScreenHeight(),
+	};
+}
+
 Texture2D load_texture(const char *path) {
 	char *p = os_path(path);
 	Texture2D ret = LoadTexture(p);

@@ -249,8 +249,7 @@ i8 cmp_selection(const Selection *a, const Selection *b) {
 }
 
 Selection get_best_selection(const PubCards *pub, const Hand *hand) {
-	// FIXME: pub is only valid when len == 5
-	// assert(pub->len == 5);
+	assert(pub->len == 5);
 	assert(hand->len == 2);
 
 	Card all[7];
@@ -466,17 +465,27 @@ void draw_hand(const ResManager *manager, const Hand *hand) {
 	}
 }
 
-void draw_kind(Kind kind) {
+void draw_kind(Kind kind, i32 x, i32 y, i32 font_size) {
 	const char *text = kind_display(kind);
 
-	DrawText(text, 10, 10, 20, BLACK);
+	DrawText(text, x, y, font_size, BLACK);
 }
 
 void draw_selection(const ResManager *manager, const Selection *selection) {
-	draw_kind(selection->kind);
+	Vector2 screen_size = get_screen_size();
+	i32 margin = 5;
+	i32 font_size = 20;
+	i32 width = MINICARD_WIDTH * 5 + margin * 4;
+	i32 height = font_size + margin + MINICARD_HEIGHT;
+	i32 x = screen_size.x - 2 * margin - width;
+	i32 y = screen_size.y - 2 * margin - height;
+
+	draw_kind(selection->kind, x, y, font_size);
 	for (usize i = 0; i < 5; ++i) {
 		draw_minicard(
-			manager, selection->cards[i], (Vector2){10 + i * (MINICARD_WIDTH + 5), 30}
+			manager,
+			selection->cards[i],
+			(Vector2){x + i * (MINICARD_WIDTH + 5), y + font_size + margin}
 		);
 	}
 }
@@ -488,6 +497,8 @@ void draw(const Game *game) {
 	draw_pub_cards(&m, &game->pub_cards);
 	draw_hand(&m, &game->hand);
 
-	Selection sel = get_best_selection(&game->pub_cards, &game->hand);
-	draw_selection(&m, &sel);
+	if (game->pub_cards.len == 5) {
+		Selection sel = get_best_selection(&game->pub_cards, &game->hand);
+		draw_selection(&m, &sel);
+	}
 }

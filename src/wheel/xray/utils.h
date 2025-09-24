@@ -2,6 +2,8 @@
 
 #include "core.h"
 
+Vector2 get_screen_size();
+
 // These functions act as the same as their raylib brothers, but convert the
 // UNIX-style path to system style first.
 Texture2D load_texture(const char *path);
