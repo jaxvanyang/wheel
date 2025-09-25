@@ -27,3 +27,9 @@ test *tests:
 			just run-test "$test"; \
 		done
 	fi
+
+check:
+	typos --exclude 'raylib*'
+
+fix:
+	typos -w --exclude 'raylib*'
