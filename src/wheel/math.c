@@ -288,7 +288,7 @@ Mat mat_sub(const Mat a, const Mat b) {
 	return ret;
 }
 
-Mat mat_mul(const Mat m, f32 k) {
+Mat mat_scale(const Mat m, f32 k) {
 	Mat ret = mat_clone(m);
 	usize size = mat_size(ret);
 
@@ -299,16 +299,23 @@ Mat mat_mul(const Mat m, f32 k) {
 	return ret;
 }
 
-Mat mat_div(const Mat m, f32 k) {
-	Mat ret = mat_clone(m);
-	usize size = mat_size(ret);
+Mat mat_mul(const Mat a, const Mat b) {
+	assert(a.cols == b.rows);
 
-	for (usize i = 0; i < size; ++i) {
-		ret.data[i] /= k;
+	Mat ret = mat_zero(a.rows, b.cols);
+
+	for (usize i = 0; i < a.rows; ++i) {
+		for (usize j = 0; j < b.cols; ++j) {
+			for (usize k = 0; k < a.cols; ++k) {
+				ret.data[i * ret.cols + j] += mat_get(a, i, k) * mat_get(b, k, j);
+			}
+		}
 	}
 
 	return ret;
 }
+
+Mat mat_div(const Mat m, f32 k) { return mat_scale(m, 1.0 / k); }
 
 Mat mat_trans(const Mat m) {
 	Mat ret = mat_clone(m);
@@ -321,6 +328,72 @@ Mat mat_trans(const Mat m) {
 			ret.data[j * ret.cols + i] = mat_get(m, i, j);
 		}
 	}
+
+	return ret;
+}
+
+f32 get_cofactor(const Mat m, usize row, usize col) {
+	assert(m.rows == m.cols);
+	assert(m.rows > 0);
+	assert(row < m.rows);
+	assert(col < m.cols);
+
+	Mat tmp = mat_zero(m.rows - 1, m.cols - 1);
+	for (usize i = 0; i < m.rows; ++i) {
+		usize dest_i = i;
+		if (i == row) {
+			continue;
+		} else if (i > row) {
+			--dest_i;
+		}
+
+		for (usize j = 0; j < m.cols; ++j) {
+			usize dest_j = j;
+			if (j == col) {
+				continue;
+			} else if (j > col) {
+				--dest_j;
+			}
+
+			mat_set(tmp, dest_i, dest_j, mat_get(m, i, j));
+		}
+	}
+
+	f32 ret = get_det(tmp);
+	if ((row + col) & 1) {
+		ret *= -1.0;
+	}
+
+	unload_mat(tmp);
+
+	return ret;
+}
+
+Mat mat_cofactors(const Mat m) {
+	assert(m.rows == m.cols);
+
+	Mat ret = mat_zero(m.rows, m.cols);
+	for (usize i = 0; i < m.rows; ++i) {
+		for (usize j = 0; j < m.cols; ++j) {
+			ret.data[j * m.cols + i] = get_cofactor(m, i, j);
+		}
+	}
+
+	return ret;
+}
+
+Mat *mat_inverse(const Mat m) {
+	f32 det = get_det(m);
+
+	if (f32_equal(det, 0.0)) {
+		return NULL;
+	}
+
+	Mat *ret = malloc(sizeof(Mat));
+	Mat cofactors = mat_cofactors(m);
+	*ret = mat_div(cofactors, det);
+
+	unload_mat(cofactors);
 
 	return ret;
 }

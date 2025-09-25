@@ -59,9 +59,16 @@ f32 mat_get(const Mat m, usize row, usize col);
 void mat_set(const Mat m, usize row, usize col, f32 val);
 Mat mat_add(const Mat a, const Mat b);
 Mat mat_sub(const Mat a, const Mat b);
-Mat mat_mul(const Mat m, f32 k);
+Mat mat_scale(const Mat m, f32 k);
+Mat mat_mul(const Mat a, const Mat b);
 Mat mat_div(const Mat m, f32 k);
+
 Mat mat_trans(const Mat m);
+f32 get_cofactor(const Mat m, usize row, usize col);
+// Return a cofactor matrix of `m`.
+Mat mat_cofactors(const Mat m);
+// Return the inverse matrix of `m` if it exists, `NULL` otherwise.
+Mat *mat_inverse(const Mat m);
 
 Vec mat_x_vec(const Mat m, const Vec v);
 // Solve linear equation, return x in Ax = b.
