@@ -82,6 +82,7 @@ typedef struct {
 	Texture2D cards;
 	Texture2D minicards;
 	Texture2D chips;
+	Texture2D button;
 } ResManager;
 
 typedef struct {
@@ -96,6 +97,7 @@ typedef struct {
 	PubCards pub_cards;
 	Player players[SEAT_CNT];
 	usize my_seat;
+	usize dealer;
 } Game;
 
 Card card_from_num(u8 num);
@@ -135,12 +137,14 @@ void draw_card(const ResManager *manager, Card card, Vector2 pos);
 void draw_minicard(const ResManager *manager, Card card, Vector2 pos);
 void draw_back(const ResManager *manager, u8 color, u8 style, Vector2 pos);
 void draw_chip(const ResManager *manager, u8 color, u8 amount, Vector2 pos);
+void draw_button(const ResManager *manager, i32 x, i32 y);
 void draw_table();
 void draw_pub_cards(const ResManager *manager, const PubCards *cards);
 void draw_hand(const ResManager *manager, const Hand *hand, Vector2 pos);
 // NOTE: the seat is relative to my seat
 void draw_player(
-	const ResManager *manager, const Player *player, usize seat, bool card_on_left
+	const ResManager *manager, const Player *player, usize seat, bool card_on_left,
+	bool is_dealer
 );
 void draw_kind(Kind kind, i32 x, i32 y, i32 font_size);
 void draw_selection(const ResManager *manager, const Selection *selection);

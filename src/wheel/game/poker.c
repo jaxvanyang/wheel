@@ -343,6 +343,7 @@ ResManager new_res_manager() {
 		.cards = load_texture("assets/poker/poker_cards.png"),
 		.minicards = load_texture("assets/poker/minicards.png"),
 		.chips = load_texture("assets/poker/fiches_addon.png"),
+		.button = load_texture("assets/poker/button.png"),
 	};
 
 	return manager;
@@ -365,6 +366,7 @@ Game new_game() {
 				.len = 5,
 			},
 		.my_seat = 0,
+		.dealer = SEAT_CNT - 3, // make myself after BB
 	};
 
 	// FIXME: this is for testing
@@ -402,6 +404,8 @@ void refresh(Game *game) {
 void handle_input(Game *game) {
 	if (IsKeyPressed(KEY_SPACE)) {
 		refresh(game);
+
+		game->dealer = (game->dealer + 1) % SEAT_CNT;
 	}
 
 	if (IsKeyPressed(KEY_D)) {
@@ -498,6 +502,10 @@ void draw_chip(const ResManager *manager, u8 color, u8 amount, Vector2 pos) {
 	DrawTextureRec(manager->chips, source, pos, WHITE);
 }
 
+void draw_button(const ResManager *manager, i32 x, i32 y) {
+	DrawTexture(manager->button, x, y, WHITE);
+}
+
 void draw_table() {
 	Color trans_brown = DARKBROWN;
 	trans_brown.a = 0xa0;
@@ -568,7 +576,8 @@ void draw_hand(const ResManager *manager, const Hand *hand, Vector2 pos) {
 }
 
 void draw_player(
-	const ResManager *manager, const Player *player, usize seat, bool card_on_left
+	const ResManager *manager, const Player *player, usize seat, bool card_on_left,
+	bool is_dealer
 ) {
 	Rectangle widget = get_player_widget(seat);
 	i32 small_margin = 5;
@@ -601,7 +610,12 @@ void draw_player(
 		RAYWHITE
 	);
 
+	if (is_dealer) {
+		draw_button(manager, hand_pos.x, widget.y - (f32)font_size / 2);
+	}
+
 	draw_hand(manager, &player->hand, hand_pos);
+	// FIXME: this is beyond the widget box
 	draw_text_center(player->name, name_x, widget.y, font_size, RAYWHITE);
 }
 
@@ -637,7 +651,7 @@ void draw(const Game *game) {
 	draw_pub_cards(&m, &game->pub_cards);
 
 	for (usize i = 0, seat = game->my_seat; i < 5; ++i, seat = (seat + 1) % SEAT_CNT) {
-		draw_player(&m, game->players + seat, seat, false);
+		draw_player(&m, game->players + seat, seat, false, seat == game->dealer);
 	}
 
 	if (game->pub_cards.len == 5) {
