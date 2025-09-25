@@ -10,6 +10,7 @@ void main_loop(void *arg) {
 	Game *game = arg;
 
 	handle_input(game);
+
 	draw(game);
 }
 

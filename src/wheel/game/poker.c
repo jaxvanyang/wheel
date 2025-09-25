@@ -382,6 +382,7 @@ Game new_game() {
 				.len = 5,
 			},
 		.my_seat = 0,
+		.cur = 0,
 		.dealer = SEAT_CNT - 3, // make myself after BB
 		.pot = 0,
 	};
@@ -452,6 +453,14 @@ void handle_input(Game *game) {
 			game->players[i].hand.mask[0] = !game->players[i].hand.mask[0];
 			game->players[i].hand.mask[1] = !game->players[i].hand.mask[1];
 		}
+	}
+
+	if (IsKeyPressed(KEY_A)) {
+		assert(game->players[game->cur].chips >= 2);
+		game->players[game->cur].chips -= 2;
+		game->players[game->cur].bet += 2;
+		game->pot += 2;
+		game->cur = get_next_player(game, game->cur);
 	}
 }
 
@@ -654,14 +663,22 @@ void draw_player(
 	};
 
 	if (card_on_left) {
-		chip_pos.x = widget.x + CARD_WIDTH * 2 + small_margin;
 		hand_pos.x = widget.x;
+		chip_pos.x = widget.x + CARD_WIDTH * 2 + small_margin + large_margin;
 	} else {
 		chip_pos.x = widget.x;
 		hand_pos.x = widget.x + CHIP_WIDTH + large_margin;
 	}
 
 	i32 name_x = hand_pos.x + ((f32)CARD_WIDTH * 2 + small_margin) / 2;
+
+	if (is_dealer) {
+		draw_button(manager, hand_pos.x, widget.y - (f32)font_size / 2);
+	}
+
+	draw_hand(manager, &player->hand, hand_pos);
+	// FIXME: this is beyond the widget box
+	draw_text_center(player->name, name_x, widget.y, font_size, RAYWHITE);
 
 	draw_chip(manager, 0, 3, chip_pos);
 	draw_text_center(
@@ -671,14 +688,6 @@ void draw_player(
 		font_size,
 		RAYWHITE
 	);
-
-	if (is_dealer) {
-		draw_button(manager, hand_pos.x, widget.y - (f32)font_size / 2);
-	}
-
-	draw_hand(manager, &player->hand, hand_pos);
-	// FIXME: this is beyond the widget box
-	draw_text_center(player->name, name_x, widget.y, font_size, RAYWHITE);
 }
 
 void draw_kind(Kind kind, i32 x, i32 y, i32 font_size) {
@@ -716,7 +725,8 @@ void draw(const Game *game) {
 	draw_pub_cards(&m, &game->pub_cards);
 
 	for (usize i = 0, seat = game->my_seat; i < 5; ++i, seat = (seat + 1) % SEAT_CNT) {
-		draw_player(&m, game->players + seat, seat, false, seat == game->dealer);
+		bool card_on_left = SEAT_CNT - i > 2 && i != 0;
+		draw_player(&m, game->players + seat, seat, card_on_left, seat == game->dealer);
 	}
 
 	draw_pot(&m, game->pot);

@@ -98,6 +98,7 @@ typedef struct {
 	PubCards pub_cards;
 	Player players[SEAT_CNT];
 	usize my_seat;
+	usize cur; // current player's seat number
 	usize dealer;
 	usize pot;
 } Game;
