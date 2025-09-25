@@ -32,4 +32,5 @@ check:
 	typos --exclude 'raylib*'
 
 fix:
+	make format
 	typos -w --exclude 'raylib*'
