@@ -93,6 +93,22 @@ void deal_hand(Deck *deck, Hand *hand) {
 	hand->cards[1] = deck->cards[--deck->len];
 }
 
+usize get_next_player(const Game *game, usize seat) {
+	usize ret = seat;
+
+	while (true) {
+		ret = (seat + 1) % SEAT_CNT;
+		if (ret == seat) {
+			error("expected another valid player");
+		}
+		if (!game->players[ret].is_valid) {
+			continue;
+		}
+
+		return ret;
+	}
+}
+
 i8 cmp_rank(Rank a, Rank b) {
 	if (a == ACE) {
 		a = KING + 1;
@@ -367,6 +383,7 @@ Game new_game() {
 			},
 		.my_seat = 0,
 		.dealer = SEAT_CNT - 3, // make myself after BB
+		.pot = 0,
 	};
 
 	// FIXME: this is for testing
@@ -391,14 +408,28 @@ void refresh(Game *game) {
 	}
 
 	for (usize i = 0; i < SEAT_CNT; ++i) {
-		deal_hand(&deck, &game->players[i].hand);
+		game->players[i].bet = 0;
 
 		if (i == game->my_seat) {
 			for (usize j = 0; j < 2; ++j) {
 				game->players[i].hand.mask[j] = true;
 			}
 		}
+
+		deal_hand(&deck, &game->players[i].hand);
 	}
+
+	usize sb = get_next_player(game, game->dealer);
+	usize bb = get_next_player(game, sb);
+
+	assert(game->players[sb].chips >= 1);
+	assert(game->players[bb].chips >= 2);
+
+	game->players[sb].chips -= 1;
+	game->players[sb].bet = 1;
+	game->players[bb].chips -= 2;
+	game->players[bb].bet = 2;
+	game->pot = 3;
 }
 
 void handle_input(Game *game) {
@@ -500,6 +531,37 @@ void draw_chip(const ResManager *manager, u8 color, u8 amount, Vector2 pos) {
 		.x = col * 48, .y = 4 + row * 48, .width = CHIP_WIDTH, .height = CHIP_HEIGHT
 	};
 	DrawTextureRec(manager->chips, source, pos, WHITE);
+}
+
+void draw_pot(const ResManager *manager, usize pot) {
+	if (pot == 0) {
+		return;
+	}
+
+	i32 font_size = 20;
+	Vector2 screen_size = get_screen_size();
+	Vector2 pos = {
+		.x = (screen_size.x - CHIP_WIDTH) / 2,
+		.y = 100,
+	};
+	u8 amount = 0;
+
+	if (pot >= 100) {
+		amount = 3;
+	} else if (pot >= 50) {
+		amount = 2;
+	} else if (pot >= 20) {
+		amount = 1;
+	}
+
+	draw_chip(manager, 0, amount, pos);
+	draw_text_center(
+		TextFormat("%" USIZE_FMT, pot),
+		pos.x + (f32)CHIP_WIDTH / 2,
+		pos.y - amount * 5,
+		font_size,
+		RAYWHITE
+	);
 }
 
 void draw_button(const ResManager *manager, i32 x, i32 y) {
@@ -647,12 +709,17 @@ void draw_selection(const ResManager *manager, const Selection *selection) {
 void draw(const Game *game) {
 	ResManager m = game->manager;
 
+	BeginDrawing();
+	ClearBackground(DARKGREEN);
+
 	draw_table();
 	draw_pub_cards(&m, &game->pub_cards);
 
 	for (usize i = 0, seat = game->my_seat; i < 5; ++i, seat = (seat + 1) % SEAT_CNT) {
 		draw_player(&m, game->players + seat, seat, false, seat == game->dealer);
 	}
+
+	draw_pot(&m, game->pot);
 
 	if (game->pub_cards.len == 5) {
 		Selection sel =
@@ -661,4 +728,6 @@ void draw(const Game *game) {
 	}
 
 	DrawFPS(5, 5);
+
+	EndDrawing();
 }

@@ -89,6 +89,7 @@ typedef struct {
 	Hand hand;
 	const char *name;
 	usize chips;
+	usize bet;
 	bool is_valid;
 } Player;
 
@@ -98,6 +99,7 @@ typedef struct {
 	Player players[SEAT_CNT];
 	usize my_seat;
 	usize dealer;
+	usize pot;
 } Game;
 
 Card card_from_num(u8 num);
@@ -108,6 +110,9 @@ char *card_debug(Card card);
 Deck new_deck();
 Hand new_empty_hand();
 void deal_hand(Deck *deck, Hand *hand);
+// Return next player's seat number.
+usize get_next_player(const Game *game, usize seat);
+
 // Return a - b, ACE is higher than KING
 i8 cmp_rank(Rank a, Rank b);
 // Sort cards from highest to lowest
@@ -137,6 +142,7 @@ void draw_card(const ResManager *manager, Card card, Vector2 pos);
 void draw_minicard(const ResManager *manager, Card card, Vector2 pos);
 void draw_back(const ResManager *manager, u8 color, u8 style, Vector2 pos);
 void draw_chip(const ResManager *manager, u8 color, u8 amount, Vector2 pos);
+void draw_pot(const ResManager *manager, usize pot);
 void draw_button(const ResManager *manager, i32 x, i32 y);
 void draw_table();
 void draw_pub_cards(const ResManager *manager, const PubCards *cards);

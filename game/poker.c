@@ -9,13 +9,8 @@
 void main_loop(void *arg) {
 	Game *game = arg;
 
-	BeginDrawing();
-	ClearBackground(DARKGREEN);
-
 	handle_input(game);
 	draw(game);
-
-	EndDrawing();
 }
 
 int main() {
