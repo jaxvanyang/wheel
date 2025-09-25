@@ -61,6 +61,7 @@ Mat mat_add(const Mat a, const Mat b);
 Mat mat_sub(const Mat a, const Mat b);
 Mat mat_mul(const Mat m, f32 k);
 Mat mat_div(const Mat m, f32 k);
+Mat mat_trans(const Mat m);
 
 Vec mat_x_vec(const Mat m, const Vec v);
 // Solve linear equation, return x in Ax = b.

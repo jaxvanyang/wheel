@@ -310,6 +310,21 @@ Mat mat_div(const Mat m, f32 k) {
 	return ret;
 }
 
+Mat mat_trans(const Mat m) {
+	Mat ret = mat_clone(m);
+
+	ret.rows = m.cols;
+	ret.cols = m.rows;
+
+	for (usize i = 0; i < m.rows; ++i) {
+		for (usize j = 0; j < m.cols; ++j) {
+			ret.data[j * ret.cols + i] = mat_get(m, i, j);
+		}
+	}
+
+	return ret;
+}
+
 Vec mat_x_vec(const Mat m, const Vec v) {
 	assert(m.cols == v.size);
 

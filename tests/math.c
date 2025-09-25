@@ -79,4 +79,25 @@ int main() {
 
 		unload_mat(a);
 	}
+
+	{
+		// clang-format off
+		Mat a = mat(2, 3, (f32[]){
+			0, 1, 2,
+			3, 0, 4,
+		});
+		Mat b = mat(3, 2, (f32[]){
+			0, 3,
+			1, 0,
+			2, 4,
+		});
+		// clang-format on
+		Mat x = mat_trans(a);
+
+		assert(mat_equal(b, x));
+
+		unload_mat(a);
+		unload_mat(b);
+		unload_mat(x);
+	}
 }
