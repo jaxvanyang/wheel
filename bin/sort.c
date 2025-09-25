@@ -20,6 +20,6 @@ int main() {
 
 	for (usize i = 0; i < list->length; ++i) {
 		Str *s = slist_get(list, i);
-		printf("%s\n", s->data);
+		lol_info("%s\n", s->data);
 	}
 }

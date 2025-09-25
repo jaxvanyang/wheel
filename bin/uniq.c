@@ -13,7 +13,7 @@ int main() {
 		}
 
 		if (strcmp(last->data, s->data) != 0) {
-			printf("%s", s->data);
+			lol_info("%s", s->data);
 			str_free(last);
 			last = s;
 		}

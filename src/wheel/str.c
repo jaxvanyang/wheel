@@ -165,7 +165,7 @@ void str_free(Str *s) {
 
 void str_insert(Str *s, const usize i, const char c) {
 	if (i > s->length) {
-		error("expected i <= length, found: %zu > %zu\n", i, s->length);
+		lol_term("expected i <= length, found: %zu > %zu\n", i, s->length);
 	}
 
 	if (s->size <= s->length + 1) {
@@ -207,7 +207,7 @@ void str_push_str(Str *s, const char *t) {
 
 char str_delete(Str *s, usize i) {
 	if (i >= s->length) {
-		error("expected i < length, found: %zu >= %zu\n", i, s->length);
+		lol_term("expected i < length, found: %zu >= %zu\n", i, s->length);
 	}
 
 	char ret = s->data[i];
@@ -245,7 +245,7 @@ void str_readline(Str *s, FILE *f) {
 	}
 
 	if (c == EOF && ferror(f)) {
-		perror(NULL);
+		lol_error_e(NULL);
 		exit(errno);
 	}
 }

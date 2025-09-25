@@ -16,7 +16,7 @@ typedef struct {
 
 void print_progress(usize cnt, usize max_cnt) {
 	f32 progress = (f32)cnt * 100.0 / (f32)max_cnt;
-	printf("[%" USIZE_FMT "/%" USIZE_FMT "] %.3f%%\n", cnt, max_cnt, progress);
+	lol_info("[%" USIZE_FMT "/%" USIZE_FMT "] %.3f%%\n", cnt, max_cnt, progress);
 }
 
 void *calc(void *argument) {
@@ -56,7 +56,7 @@ void *calc(void *argument) {
 
 				term_clear_line();
 				print_mat(m);
-				printf("\nmax det: %.0f\n\n", *arg->max_det);
+				lol_info("\nmax det: %.0f\n\n", *arg->max_det);
 				print_progress(*arg->cnt, max_cnt);
 			} else {
 				max_det = *arg->max_det;
@@ -74,7 +74,7 @@ void *calc(void *argument) {
 		term_clear_line();
 		putchar('\n');
 		print_mat(m);
-		printf("\nmax det: %.0f\n\n", *arg->max_det);
+		lol_info("\nmax det: %.0f\n\n", *arg->max_det);
 		print_progress(*arg->cnt, max_cnt);
 	} else {
 		max_det = *arg->max_det;
@@ -88,7 +88,7 @@ void *calc(void *argument) {
 
 int main(int argc, const char *argv[]) {
 	if (argc != 2) {
-		error("expected 1 argument");
+		lol_term("expected 1 argument");
 	}
 
 	f32 max_det = -INFINITY;

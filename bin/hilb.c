@@ -5,7 +5,7 @@ int main() {
 		Mat hilb = mat_hilb(i);
 		f32 det = get_det(hilb);
 		print_mat(hilb);
-		printf("\ndet(hilb(%" USIZE_FMT ")) = %.100f\n\n", i, det);
+		lol_info("\ndet(hilb(%" USIZE_FMT ")) = %.100f\n\n", i, det);
 		unload_mat(hilb);
 	}
 }

@@ -35,7 +35,7 @@ const usize LIST_MAX_INCREASE = 1024;
 \
 	T prefix##_get(const Name *list, usize i) { \
 		if (i >= list->length) { \
-			error("expected i < length, found: %zu >= %zu\n", i, list->length); \
+			lol_term("expected i < length, found: %zu >= %zu\n", i, list->length); \
 		} \
 \
 		return list->data[i]; \
@@ -43,7 +43,7 @@ const usize LIST_MAX_INCREASE = 1024;
 \
 	void prefix##_set(Name *list, usize i, T val) { \
 		if (i >= list->length) { \
-			error("expected i < length, found: %zu >= %zu\n", i, list->length); \
+			lol_term("expected i < length, found: %zu >= %zu\n", i, list->length); \
 		} \
 \
 		list->data[i] = val; \
@@ -51,7 +51,7 @@ const usize LIST_MAX_INCREASE = 1024;
 \
 	void prefix##_insert(Name *list, usize i, T val) { \
 		if (i > list->length) { \
-			error("expected i <= length, found: %zu > %zu\n", i, list->length); \
+			lol_term("expected i <= length, found: %zu > %zu\n", i, list->length); \
 		} \
 \
 		if (list->size <= list->length) { \
@@ -78,7 +78,7 @@ const usize LIST_MAX_INCREASE = 1024;
 \
 	T prefix##_delete(Name *list, usize i) { \
 		if (i >= list->length) { \
-			error("expected i < length, found: %zu >= %zu\n", i, list->length); \
+			lol_term("expected i < length, found: %zu >= %zu\n", i, list->length); \
 		} \
 \
 		T ret = prefix##_get(list, i); \
@@ -147,27 +147,27 @@ const usize LIST_MAX_INCREASE = 1024;
 VECTOR_IMPLEMENTATION(usize, Ulist, ulist)
 
 void ulist_print(Ulist *list) {
-	printf("{");
+	lol_info("{");
 	if (list->length > 0) {
-		printf("%zu", ulist_get(list, 0));
+		lol_info("%zu", ulist_get(list, 0));
 	}
 	for (usize i = 1; i < list->length; ++i) {
-		printf(", %zu", ulist_get(list, i));
+		lol_info(", %zu", ulist_get(list, i));
 	}
-	printf("}\n");
+	lol_info("}\n");
 }
 
 VECTOR_IMPLEMENTATION(isize, Ilist, ilist)
 
 void ilist_print(Ilist *list) {
-	printf("{");
+	lol_info("{");
 	if (list->length > 0) {
-		printf("%" ISIZE_FMT, ilist_get(list, 0));
+		lol_info("%" ISIZE_FMT, ilist_get(list, 0));
 	}
 	for (usize i = 1; i < list->length; ++i) {
-		printf(", %" ISIZE_FMT, ilist_get(list, i));
+		lol_info(", %" ISIZE_FMT, ilist_get(list, i));
 	}
-	printf("}");
+	lol_info("}");
 }
 
 VECTOR_IMPLEMENTATION(Str *, Slist, slist)

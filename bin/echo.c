@@ -17,19 +17,19 @@ Server new_server(u32 ip, u16 port) {
 	server.tcp_sock = new_tcp_socket();
 
 	if (server.udp_sock == -1) {
-		error("failed to create UDP socket");
+		lol_term("failed to create UDP socket");
 	} else if (server.tcp_sock == -1) {
-		error("failed to create TCP socket");
+		lol_term("failed to create TCP socket");
 	}
 
 	if (net_bind(server.udp_sock, server.sa) == -1) {
-		error("failed to bind the UDP socket");
+		lol_term("failed to bind the UDP socket");
 	} else if (net_bind(server.tcp_sock, server.sa) == -1) {
-		error("failed to bind the TCP socket");
+		lol_term("failed to bind the TCP socket");
 	}
 
 	if (listen(server.tcp_sock, 1) == -1) {
-		error("failed to listen for TCP connenction");
+		lol_term("failed to listen for TCP connenction");
 	}
 
 	return server;
@@ -45,12 +45,12 @@ void *handle_udp(void *arg) {
 		isize len = recv_from(server.udp_sock, &client, (void *)buffer, sizeof(buffer), 0);
 
 		if (len < 0) {
-			error("failed to receive from the UDP socket\n");
+			lol_term("failed to receive from the UDP socket\n");
 		}
 
 		char *addr = format_sa(client);
-		printf("received %" ISIZE_FMT " bytes from UDP %s:\n", len, addr);
-		printf("> %.*s\n", (int)len, buffer);
+		lol_info("received %" ISIZE_FMT " bytes from UDP %s:\n", len, addr);
+		lol_info("> %.*s\n", (int)len, buffer);
 		FREE(addr);
 
 		snprintf(resp, sizeof(resp), "Echo: %.*s", (int)len, buffer);
@@ -69,7 +69,7 @@ void *handle_tcp(void *arg) {
 		SockAddr client;
 		int conn_sock = net_accept(server.tcp_sock, &client);
 		if (conn_sock == -1) {
-			error("failed to accept TCP connection");
+			lol_term("failed to accept TCP connection");
 		}
 		char *addr = format_sa(client);
 
@@ -77,10 +77,10 @@ void *handle_tcp(void *arg) {
 			isize len = net_recv(conn_sock, (void *)buffer, sizeof(buffer), 0);
 
 			if (len == -1) {
-				perror("failed to receive from TCP connection");
+				lol_error_e("failed to receive from TCP connection");
 
 				if (shutdown(conn_sock, SHUT_RDWR) == -1) {
-					perror("failed to shutdown TCP connection");
+					lol_error_e("failed to shutdown TCP connection");
 				}
 
 				exit(EXIT_FAILURE);
@@ -89,12 +89,12 @@ void *handle_tcp(void *arg) {
 				break;
 			}
 
-			printf("received %" ISIZE_FMT " bytes from TCP %s:\n", len, addr);
-			printf("> %.*s\n", (int)len, buffer);
+			lol_info("received %" ISIZE_FMT " bytes from TCP %s:\n", len, addr);
+			lol_info("> %.*s\n", (int)len, buffer);
 
 			snprintf(resp, sizeof(resp), "Echo: %.*s", (int)len, buffer);
 			if (send(conn_sock, resp, strlen(resp), 0) < 0) {
-				perror("failed to send to TCP connection");
+				lol_error_e("failed to send to TCP connection");
 			}
 		}
 
@@ -108,7 +108,7 @@ void *handle_tcp(void *arg) {
 
 int main(int argc, const char **argv) {
 	if (argc != 2) {
-		error("expected one and only one argument");
+		lol_term("expected one and only one argument");
 	}
 
 	u16 port = 0;
@@ -117,7 +117,7 @@ int main(int argc, const char **argv) {
 	Server server = new_server(INADDR_ANY, port);
 
 	char *addr = format_sa(server.sa);
-	printf("server: listening on %s...\n", addr);
+	lol_info("server: listening on %s...\n", addr);
 	FREE(addr);
 
 	pthread_t udp_thread;
