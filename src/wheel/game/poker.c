@@ -450,11 +450,11 @@ Rectangle get_player_widget(usize seat) {
 		break;
 	case 3:
 		ret.x = screen_size.x - large_margin - width;
-		ret.y = screen_size.y / 2 + large_margin * 2;
+		ret.y = screen_size.y / 2 - large_margin * 2 - height;
 		break;
 	case 4:
 		ret.x = screen_size.x - large_margin - width;
-		ret.y = screen_size.y / 2 - large_margin * 2 - height;
+		ret.y = screen_size.y / 2 + large_margin * 2;
 		break;
 	}
 
