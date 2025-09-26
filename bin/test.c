@@ -5,9 +5,13 @@
 #define F_OK 0
 #else
 #include <dirent.h>
+#include <fcntl.h>
+#include <semaphore.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #endif
+
+#include <assert.h>
 #include <string.h>
 #include <wheel.h>
 
@@ -51,7 +55,7 @@ bool make_tests() {
 		perror("failed to create child process");
 		return false;
 	case 0:
-		execlp("make", "tests", NULL);
+		execlp("make", "make", "tests", NULL);
 	}
 
 	int status;
@@ -163,6 +167,8 @@ int main(int argc, char *const argv[]) {
 		}
 	}
 
+	print_progress(passed_cnt, failed_cnt, tests->length);
+
 #ifdef _WIN32
 	HANDLE *handles = malloc(sizeof(HANDLE) * tests->length);
 	STARTUPINFO *si_array = malloc(sizeof(STARTUPINFO) * tests->length);
@@ -209,10 +215,10 @@ int main(int argc, char *const argv[]) {
 		DWORD exitCode;
 		if (GetExitCodeProcess(handles[i], &exitCode) && exitCode == 0) {
 			++passed_cnt;
-			printf("pass: tests/%s\n", test);
+			printf("[tests/%s]: pass\n", test);
 		} else {
 			++failed_cnt;
-			printf("fail: tests/%s\n", test);
+			printf("[tests/%s]: fail\n", test);
 		}
 		print_progress(passed_cnt, failed_cnt, tests->length);
 
@@ -225,6 +231,8 @@ int main(int argc, char *const argv[]) {
 	FREE(si_array);
 	FREE(pi_array);
 #else
+	char sem_name[] = "print";
+	sem_t *sem = sem_open(sem_name, O_CREAT, 0644, 1);
 	pid_t *pids = malloc(sizeof(pid_t) * tests->length);
 
 	for (usize i = 0; i < tests->length; ++i) {
@@ -234,24 +242,114 @@ int main(int argc, char *const argv[]) {
 		if (pid == -1) {
 			perror("failed to create child process");
 			return EXIT_FAILURE;
-		} else if (pid == 0) {
-			Str *path = str_from("tests");
-			char *argv[] = {path->data, NULL};
-			path_join(path, test);
+		} else if (pid > 0) {
+			pids[i] = pid;
+			continue;
+		}
 
-			// suppress stdout
-			freopen("/dev/null", "w", stdout);
+		int original_stdout = dup(STDOUT_FILENO);
+		int original_stderr = dup(STDERR_FILENO);
+		char tmpout_template[] = "/tmp/stdout-XXXXXX";
+		char tmperr_template[] = "/tmp/stderr-XXXXXX";
 
+		int tmpout = mkstemp(tmpout_template);
+		if (tmpout == -1) {
+			perror("failed to create temporary stdout file");
+			return EXIT_FAILURE;
+		}
+		int tmperr = mkstemp(tmperr_template);
+		if (tmperr == -1) {
+			perror("failed to create temporary stderr file");
+			return EXIT_FAILURE;
+		}
+
+		// redirect stdout & stderr
+		if (dup2(tmpout, STDOUT_FILENO) == -1) {
+			perror("failed to redirect stdout");
+			return EXIT_FAILURE;
+		}
+		if (dup2(tmperr, STDERR_FILENO) == -1) {
+			perror("failed to redirect stderr");
+			return EXIT_FAILURE;
+		}
+
+		Str *path = str_from("tests");
+		path_join(path, test);
+
+		pid_t test_pid = fork();
+		if (test_pid == -1) {
+			perror("failed to fork");
+			return EXIT_FAILURE;
+		} else if (test_pid == 0) {
+			char *argv[] = {path->data, path->data, NULL};
 			if (execv(path->data, argv) == -1) {
 				perror("failed to run the test");
-				return EXIT_FAILURE;
+				exit(EXIT_FAILURE);
 			}
 		}
 
-		pids[i] = pid;
-	}
+		int status, ret;
+		if (waitpid(test_pid, &status, WUNTRACED) == -1) {
+			perror("wait failed");
+			return EXIT_FAILURE;
+		}
 
-	print_progress(passed_cnt, failed_cnt, tests->length);
+		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+			ret = EXIT_SUCCESS;
+		} else {
+			ret = EXIT_FAILURE;
+		}
+
+		fflush(stdout);
+		fflush(stderr);
+
+		// restore stdout & stderr
+		if (dup2(original_stdout, STDOUT_FILENO) == -1) {
+			perror("failed to redirect stdout");
+			return EXIT_FAILURE;
+		}
+		close(original_stdout);
+		if (dup2(original_stderr, STDERR_FILENO) == -1) {
+			perror("failed to redirect stderr");
+			return EXIT_FAILURE;
+		}
+		close(original_stderr);
+
+		lseek(tmpout, 0, SEEK_SET);
+		lseek(tmperr, 0, SEEK_SET);
+
+		char buffer[1024];
+		isize bytes_read;
+
+		sem_wait(sem);
+		term_clear_line();
+		if (ret == EXIT_SUCCESS) {
+			printf("[%s]: pass\n", path->data);
+		} else {
+			printf("[%s]: fail\n", path->data);
+		}
+		printf("[stdout]:\n");
+		// TODO: add a function to read file content in the library
+		while ((bytes_read = read(tmpout, buffer, sizeof(buffer) - 1)) > 0) {
+			buffer[bytes_read] = '\0';
+			printf("%s", buffer);
+		}
+		printf("[stderr]:\n");
+		while ((bytes_read = read(tmperr, buffer, sizeof(buffer) - 1)) > 0) {
+			buffer[bytes_read] = '\0';
+			printf("%s", buffer);
+		}
+		putchar('\n'); // for term_clear_line()
+		fflush(stdout);
+		sem_post(sem);
+
+		assert(close(tmpout) == 0);
+		assert(close(tmperr) == 0);
+		assert(unlink(tmpout_template) == 0);
+		assert(unlink(tmperr_template) == 0);
+
+		return ret;
+	}
 
 	for (usize i = 0; i < tests->length; ++i) {
 		int status;
@@ -261,23 +359,31 @@ int main(int argc, char *const argv[]) {
 			return EXIT_FAILURE;
 		}
 
-		char *test = find_test_by_pid(tests, pids, pid);
-
+		sem_wait(sem);
 		term_clear_line();
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 			++passed_cnt;
-			printf("pass: tests/%s\n", test);
 		} else {
 			++failed_cnt;
-			printf("fail: tests/%s\n", test);
 		}
 		print_progress(passed_cnt, failed_cnt, tests->length);
+		fflush(stdout);
+		sem_post(sem);
 	}
 
 	FREE(pids);
+	sem_close(sem);
+	sem_unlink(sem_name);
+#endif
+
+#ifndef _WIN32
+	sem_wait(sem);
 #endif
 	term_clear_line();
 	print_progress(passed_cnt, failed_cnt, tests->length);
+#ifndef _WIN32
+	sem_post(sem);
+#endif
 
 	slist_free(tests);
 
