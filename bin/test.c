@@ -317,9 +317,10 @@ int main(int argc, char *const argv[]) {
 
 		lseek(tmpout, 0, SEEK_SET);
 		lseek(tmperr, 0, SEEK_SET);
-
-		char buffer[1024];
-		isize bytes_read;
+		Str *out_buffer = str_new();
+		Str *err_buffer = str_new();
+		str_readfd(out_buffer, tmpout);
+		str_readfd(err_buffer, tmperr);
 
 		sem_wait(sem);
 		term_clear_line();
@@ -328,19 +329,20 @@ int main(int argc, char *const argv[]) {
 		} else {
 			printf("[%s]: fail\n", path->data);
 		}
-		printf("[stdout]:\n");
-		// TODO: add a function to read file content in the library
-		while ((bytes_read = read(tmpout, buffer, sizeof(buffer) - 1)) > 0) {
-			buffer[bytes_read] = '\0';
-			printf("%s", buffer);
+		if (out_buffer->length) {
+			printf("[stdout]:\n");
+			printf("%s\n", out_buffer->data);
 		}
-		printf("[stderr]:\n");
-		while ((bytes_read = read(tmperr, buffer, sizeof(buffer) - 1)) > 0) {
-			buffer[bytes_read] = '\0';
-			printf("%s", buffer);
+		if (err_buffer->length) {
+			printf("[stderr]:\n");
+			printf("%s\n", err_buffer->data);
+		} else if (out_buffer->length == 0) {
+			putchar('\n'); // for term_clear_line()
 		}
-		putchar('\n'); // for term_clear_line()
 		sem_post(sem);
+
+		str_free(out_buffer);
+		str_free(err_buffer);
 
 		assert(close(tmpout) == 0);
 		assert(close(tmperr) == 0);
