@@ -46,6 +46,10 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 		RAYLIB_LDFLAGS := $(RAYLIB_SRC_PATH)/libraylib.web.a
 	endif
 else
+
+SQLITE3_CFLAGS ?= $(shell pkg-config --cflags sqlite3)
+SQLITE3_LDFLAGS ?= $(shell pkg-config --libs sqlite3)
+
 	ifeq ($(PLATFORM_OS),WINDOWS)
 		# see https://github.com/raysan5/raylib/wiki/Working-on-Windows
 		LDFLAGS := -lgdi32 -lwinmm -lws2_32 $(LDFLAGS)
@@ -58,9 +62,9 @@ endif
 
 CC ?= cc
 AR ?= ar
-CFLAGS := $(RAYLIB_CFLAGS) $(CFLAGS)
+CFLAGS := $(RAYLIB_CFLAGS) $(SQLITE3_CFLAGS) $(CFLAGS)
 CFLAGS := -Os -Wall -Wextra -Wno-comment -Wno-initializer-overrides -Wno-override-init -Isrc $(CFLAGS)
-LDFLAGS := -Lsrc -lwheel $(RAYLIB_LDFLAGS) -lm $(LDFLAGS)
+LDFLAGS := -Lsrc -lwheel $(RAYLIB_LDFLAGS) $(SQLITE3_LDFLAGS) -lm $(LDFLAGS)
 
 WHEEL := src/wheel
 CORE := $(WHEEL)/core
