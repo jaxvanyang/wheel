@@ -340,7 +340,6 @@ int main(int argc, char *const argv[]) {
 			printf("%s", buffer);
 		}
 		putchar('\n'); // for term_clear_line()
-		fflush(stdout);
 		sem_post(sem);
 
 		assert(close(tmpout) == 0);
@@ -359,30 +358,21 @@ int main(int argc, char *const argv[]) {
 			return EXIT_FAILURE;
 		}
 
-		sem_wait(sem);
-		term_clear_line();
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 			++passed_cnt;
 		} else {
 			++failed_cnt;
 		}
+
+		sem_wait(sem);
+		term_clear_line();
 		print_progress(passed_cnt, failed_cnt, tests->length);
-		fflush(stdout);
 		sem_post(sem);
 	}
 
 	FREE(pids);
 	sem_close(sem);
 	sem_unlink(sem_name);
-#endif
-
-#ifndef _WIN32
-	sem_wait(sem);
-#endif
-	term_clear_line();
-	print_progress(passed_cnt, failed_cnt, tests->length);
-#ifndef _WIN32
-	sem_post(sem);
 #endif
 
 	slist_free(tests);
