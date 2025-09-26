@@ -24,7 +24,7 @@ bool make_tests() {
 
 	// Create the child process for "make tests"
 	if (!CreateProcess(NULL, "make tests", NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
-		lol_error("CreateProcess failed (%lu)\n", GetLastError());
+		fprintf(stderr, "CreateProcess failed (%lu)\n", GetLastError());
 		return false;
 	}
 
@@ -33,7 +33,7 @@ bool make_tests() {
 
 	// Get the exit code
 	if (!GetExitCodeProcess(pi.hProcess, &exitCode)) {
-		lol_error("GetExitCodeProcess failed (%lu)\n", GetLastError());
+		fprintf(stderr, "GetExitCodeProcess failed (%lu)\n", GetLastError());
 		CloseHandle(pi.hProcess);
 		CloseHandle(pi.hThread);
 		return false;
@@ -48,7 +48,7 @@ bool make_tests() {
 	pid_t pid = fork();
 	switch (pid) {
 	case -1:
-		lol_error_e("failed to create child process");
+		perror("failed to create child process");
 		return false;
 	case 0:
 		execlp("make", "tests", NULL);
@@ -56,12 +56,12 @@ bool make_tests() {
 
 	int status;
 	if (waitpid(pid, &status, 0) == -1) {
-		lol_error_e("wait failed");
+		perror("wait failed");
 		return false;
 	}
 
 	if (!WIFEXITED(status)) {
-		lol_term("expected child process exited");
+		error("expected child process exited");
 	}
 
 	return WEXITSTATUS(status) == 0;
@@ -92,7 +92,7 @@ void print_progress(usize passed, usize failed, usize total) {
 		status = "Testing...";
 	}
 
-	lol_info(
+	printf(
 		"[%" USIZE_FMT "/%" USIZE_FMT "/%" USIZE_FMT "] %s [", passed, failed, total, status
 	);
 
@@ -104,12 +104,12 @@ void print_progress(usize passed, usize failed, usize total) {
 		putchar(' ');
 	}
 
-	lol_info("] %.1f%%\n", progress);
+	printf("] %.1f%%\n", progress);
 }
 
 int main(int argc, char *const argv[]) {
 	if (!make_tests()) {
-		lol_info("make tests failed\n");
+		printf("make tests failed\n");
 		return EXIT_FAILURE;
 	}
 
@@ -122,7 +122,7 @@ int main(int argc, char *const argv[]) {
 		HANDLE hFind = FindFirstFile("tests\\*.c", &findFileData);
 
 		if (hFind == INVALID_HANDLE_VALUE) {
-			lol_error("failed to open tests/\n");
+			fprintf(stderr, "failed to open tests/\n");
 			return EXIT_FAILURE;
 		}
 
@@ -139,7 +139,7 @@ int main(int argc, char *const argv[]) {
 		DIR *dir = opendir("tests");
 
 		if (dir == NULL) {
-			lol_error_e("failed to open tests/");
+			perror("failed to open tests/");
 			return EXIT_FAILURE;
 		}
 
@@ -182,7 +182,7 @@ int main(int argc, char *const argv[]) {
 		if (!CreateProcess(
 					path->data, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si_array[i], &pi_array[i]
 				)) {
-			lol_error("CreateProcess failed for %s (%lu)\n", test, GetLastError());
+			fprintf(stderr, "CreateProcess failed for %s (%lu)\n", test, GetLastError());
 			str_free(path);
 			return EXIT_FAILURE;
 		}
@@ -199,7 +199,9 @@ int main(int argc, char *const argv[]) {
 		// Wait for this specific process to complete
 		DWORD result = WaitForSingleObject(handles[i], INFINITE);
 		if (result == WAIT_FAILED) {
-            lol_error("WaitForSingleObject failed for %s (%lu)\n", test, GetLastError());
+			fprintf(
+				stderr, "WaitForSingleObject failed for %s (%lu)\n", test, GetLastError()
+			);
 			return EXIT_FAILURE;
 		}
 
@@ -207,10 +209,10 @@ int main(int argc, char *const argv[]) {
 		DWORD exitCode;
 		if (GetExitCodeProcess(handles[i], &exitCode) && exitCode == 0) {
 			++passed_cnt;
-			lol_info("pass: tests/%s\n", test);
+			printf("pass: tests/%s\n", test);
 		} else {
 			++failed_cnt;
-			lol_info("fail: tests/%s\n", test);
+			printf("fail: tests/%s\n", test);
 		}
 		print_progress(passed_cnt, failed_cnt, tests->length);
 
@@ -230,7 +232,7 @@ int main(int argc, char *const argv[]) {
 		pid_t pid = fork();
 
 		if (pid == -1) {
-			lol_error_e("failed to create child process");
+			perror("failed to create child process");
 			return EXIT_FAILURE;
 		} else if (pid == 0) {
 			Str *path = str_from("tests");
@@ -241,7 +243,7 @@ int main(int argc, char *const argv[]) {
 			freopen("/dev/null", "w", stdout);
 
 			if (execv(path->data, argv) == -1) {
-				lol_error_e("failed to run the test");
+				perror("failed to run the test");
 				return EXIT_FAILURE;
 			}
 		}
@@ -255,7 +257,7 @@ int main(int argc, char *const argv[]) {
 		int status;
 		pid_t pid = waitpid(-1, &status, WUNTRACED);
 		if (pid == -1) {
-			lol_error_e("wait failed");
+			perror("wait failed");
 			return EXIT_FAILURE;
 		}
 
@@ -264,10 +266,10 @@ int main(int argc, char *const argv[]) {
 		term_clear_line();
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 			++passed_cnt;
-			lol_info("pass: tests/%s\n", test);
+			printf("pass: tests/%s\n", test);
 		} else {
 			++failed_cnt;
-			lol_info("fail: tests/%s\n", test);
+			printf("fail: tests/%s\n", test);
 		}
 		print_progress(passed_cnt, failed_cnt, tests->length);
 	}

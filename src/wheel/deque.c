@@ -1,5 +1,7 @@
 #include "deque.h"
 
+#include "wheel/core/error.h"
+
 DequeNode *deque_node_new(isize value) {
 	DequeNode *node = malloc(sizeof(DequeNode));
 	node->value = value;
@@ -97,7 +99,7 @@ void deque_push_back(Deque *queue, isize value) {
 
 isize deque_pop_front(Deque *queue) {
 	if (queue->size == 0) {
-		lol_term("expected a non-empty Deque\n");
+		error("expected a non-empty Deque\n");
 	}
 
 	isize value = queue->head->value;
@@ -116,7 +118,7 @@ isize deque_pop_front(Deque *queue) {
 
 isize deque_pop_back(Deque *queue) {
 	if (queue->size == 0) {
-		lol_term("expected a non-empty Deque\n");
+		error("expected a non-empty Deque\n");
 	}
 
 	isize value = queue->tail->value;
@@ -135,7 +137,7 @@ isize deque_pop_back(Deque *queue) {
 
 isize deque_first(Deque *queue) {
 	if (queue->size == 0) {
-		lol_term("expected a non-empty Deque\n");
+		error("expected a non-empty Deque\n");
 	}
 
 	return queue->head->value;
@@ -143,7 +145,7 @@ isize deque_first(Deque *queue) {
 
 isize deque_last(Deque *queue) {
 	if (queue->size == 0) {
-		lol_term("expected a non-empty Deque\n");
+		error("expected a non-empty Deque\n");
 	}
 
 	return queue->tail->value;

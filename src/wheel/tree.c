@@ -155,7 +155,7 @@ void tree_insert(Tree *parent, Tree *node, bool is_left) {
 
 Tree *tree_build(Ilist *preorder, Ilist *inorder) {
 	if (preorder->length != inorder->length) {
-		lol_term("expected equaled lengths: %zu != %zu\n", preorder->length, inorder->length);
+		error("expected equaled lengths: %zu != %zu\n", preorder->length, inorder->length);
 	}
 
 	// TODO: check if each element is unique
@@ -234,7 +234,7 @@ bool tree_equal(Tree *a, Tree *b) {
 
 char _tree_char(isize n) {
 	if (n < 0 || n > 62) {
-		lol_term("expected 0 <= n <= 62, but found: n = %" ISIZE_FMT "\n", n);
+		error("expected 0 <= n <= 62, but found: n = %" ISIZE_FMT "\n", n);
 	} else if (n < 10) {
 		return '0' + n;
 	} else if (n < 36) {
@@ -271,7 +271,7 @@ void tree_print(Tree *tree) {
 	}
 
 	if (h == 1) {
-		lol_info("%" ISIZE_FMT "\n", tree->value);
+		printf("%" ISIZE_FMT "\n", tree->value);
 		return;
 	}
 
@@ -357,7 +357,7 @@ void tree_print(Tree *tree) {
 		matrix[row * W + col] = _tree_char(value);
 	}
 
-	lol_info("%s\n", matrix);
+	printf("%s\n", matrix);
 
 	deque_free(nodes);
 	deque_free(number_queue);

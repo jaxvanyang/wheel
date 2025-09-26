@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <stdio.h>
 
 #include "poker.h"
 
@@ -100,7 +99,7 @@ usize get_next_player(const Game *game, usize seat) {
 	while (true) {
 		ret = (seat + 1) % SEAT_CNT;
 		if (ret == seat) {
-			lol_term("expected another valid player");
+			error("expected another valid player");
 		}
 		if (!game->players[ret].is_valid) {
 			continue;
@@ -341,15 +340,15 @@ const char *kind_display(Kind kind) {
 	case ROYAL_FLUSH:
 		return "Royal Flush";
 	default:
-		lol_term("expected a valid kind");
+		error("expected a valid kind");
 	}
 }
 
 void print_selection(const Selection *selection) {
-	lol_info("%s:", kind_display(selection->kind));
+	printf("%s:", kind_display(selection->kind));
 	for (usize i = 0; i < 5; ++i) {
 		char *card = card_debug(selection->cards[i]);
-		lol_info(" %s", card);
+		printf(" %s", card);
 		FREE(card);
 	}
 	putchar('\n');

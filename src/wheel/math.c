@@ -1,6 +1,5 @@
 #include "math.h"
 #include <assert.h>
-#include <stdio.h>
 #include <math.h>
 #include <string.h>
 
@@ -18,7 +17,7 @@ bool f64_equal(f64 x, f64 y) {
 
 usize usize_log2(usize n) {
 	if (n == 0) {
-		lol_term("expected n != 0\n");
+		error("expected n != 0\n");
 	}
 
 	usize c = 0;
@@ -68,12 +67,12 @@ void free_vec(Vec *v) {
 void print_vec(const Vec v) {
 	putchar('[');
 	if (v.size) {
-		lol_info("%+f", v.data[0]);
+		printf("%+f", v.data[0]);
 	}
 	for (usize i = 1; i < v.size; ++i) {
-		lol_info(", %+f", v.data[i]);
+		printf(", %+f", v.data[i]);
 	}
-	lol_info("]\n");
+	printf("]\n");
 }
 
 bool vec_equal(const Vec a, const Vec b) {
@@ -90,7 +89,7 @@ bool vec_equal(const Vec a, const Vec b) {
 
 f32 vec_get(const Vec v, usize i) {
 	if (i >= v.size) {
-		lol_term("expected i < %zu\n", v.size);
+		error("expected i < %zu\n", v.size);
 	}
 
 	return v.data[i];
@@ -98,7 +97,7 @@ f32 vec_get(const Vec v, usize i) {
 
 void vec_set(const Vec v, usize i, f32 val) {
 	if (i >= v.size) {
-		lol_term("expected i < %zu\n", v.size);
+		error("expected i < %zu\n", v.size);
 	}
 
 	v.data[i] = val;
@@ -215,12 +214,12 @@ void print_mat(const Mat m) {
 	for (usize i = 0; i < m.rows; ++i) {
 		putchar('|');
 		if (m.cols) {
-			lol_info("%+f", mat_get(m, i, 0));
+			printf("%+f", mat_get(m, i, 0));
 		}
 		for (usize j = 1; j < m.cols; ++j) {
-			lol_info(", %+f", mat_get(m, i, j));
+			printf(", %+f", mat_get(m, i, j));
 		}
-		lol_info("|\n");
+		printf("|\n");
 	}
 }
 
@@ -243,9 +242,9 @@ bool mat_equal(const Mat a, const Mat b) {
 
 f32 mat_get(const Mat m, usize row, usize col) {
 	if (row >= m.rows) {
-		lol_term("expected row < %zu\n", m.rows);
+		error("expected row < %zu\n", m.rows);
 	} else if (col >= m.cols) {
-		lol_term("expected row < %zu\n", m.rows);
+		error("expected row < %zu\n", m.rows);
 	}
 
 	return m.data[row * m.cols + col];
@@ -253,9 +252,9 @@ f32 mat_get(const Mat m, usize row, usize col) {
 
 void mat_set(const Mat m, usize row, usize col, f32 val) {
 	if (row >= m.rows) {
-		lol_term("expected row < %zu\n", m.rows);
+		error("expected row < %zu\n", m.rows);
 	} else if (col >= m.cols) {
-		lol_term("expected row < %zu\n", m.rows);
+		error("expected row < %zu\n", m.rows);
 	}
 
 	m.data[row * m.cols + col] = val;

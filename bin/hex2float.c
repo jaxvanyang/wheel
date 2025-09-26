@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 		u32 *hex_number = (u32 *)&number;
 		Float f = decode_f32(number);
 
-		lol_info(
+		printf(
 			"%X: %hhd x %lf x 2^%" PRId64 " = %f\n",
 			*hex_number,
 			f.sign,
