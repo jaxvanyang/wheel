@@ -13,7 +13,7 @@
 #define VECTOR(T, Name) \
 	typedef struct { \
 		usize size; \
-		usize length; \
+		usize len; \
 		T *data; \
 	} Name;
 

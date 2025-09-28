@@ -10,7 +10,7 @@ char *os_path(const char *path) {
 	}
 
 	char *s = str->data;
-	str->length = str->size = 0;
+	str->len = str->size = 0;
 	free(str);
 #else
 	char *s = malloc(sizeof(char) * (strlen(path) + 1));

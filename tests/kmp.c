@@ -8,7 +8,7 @@ int main() {
 		isize next[] = {-1, 0, 1, 2, 0, 1, 2, 3, 3};
 		Ilist *list = build_next(a);
 
-		for (usize i = 0; i < list->length; ++i) {
+		for (usize i = 0; i < list->len; ++i) {
 			assert(ilist_get(list, i) == next[i]);
 		}
 	}
@@ -18,7 +18,7 @@ int main() {
 		isize nextval[] = {-1, -1, -1, -1, 3};
 		Ilist *list = build_nextval(a);
 
-		for (usize i = 0; i < list->length; ++i) {
+		for (usize i = 0; i < list->len; ++i) {
 			assert(ilist_get(list, i) == nextval[i]);
 		}
 	}

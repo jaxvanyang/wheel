@@ -73,7 +73,7 @@ int main() {
 		Ilist *inorder = ilist_from((isize[]){1, 2, 3, 4, 5, 6, 7}, 7);
 
 		BST *tree = bst_new();
-		for (usize i = 0; i < preorder->length; ++i) {
+		for (usize i = 0; i < preorder->len; ++i) {
 			bst_insert(tree, ilist_get(preorder, i));
 		}
 
@@ -96,7 +96,7 @@ int main() {
 
 		Ilist *inorder = tree_inorder(tree->root);
 
-		for (usize i = 1; i < inorder->length; ++i) {
+		for (usize i = 1; i < inorder->len; ++i) {
 			assert(ilist_get(inorder, i - 1) <= ilist_get(inorder, i));
 		}
 	}

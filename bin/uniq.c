@@ -8,7 +8,7 @@ int main() {
 		Str *s = str_new();
 		str_readline(s, stdin);
 
-		if (s->length == 0) {
+		if (s->len == 0) {
 			break;
 		}
 

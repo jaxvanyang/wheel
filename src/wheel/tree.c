@@ -154,40 +154,40 @@ void tree_insert(Tree *parent, Tree *node, bool is_left) {
 }
 
 Tree *tree_build(Ilist *preorder, Ilist *inorder) {
-	if (preorder->length != inorder->length) {
-		error("expected equaled lengths: %zu != %zu\n", preorder->length, inorder->length);
+	if (preorder->len != inorder->len) {
+		error("expected equaled lengths: %zu != %zu\n", preorder->len, inorder->len);
 	}
 
 	// TODO: check if each element is unique
 
-	if (preorder->length == 0) {
+	if (preorder->len == 0) {
 		return NULL;
 	}
 
 	Tree *tree = tree_new(ilist_get(preorder, 0));
 	usize p = 0;
 
-	while (p < inorder->length && ilist_get(inorder, p) != tree->value) {
+	while (p < inorder->len && ilist_get(inorder, p) != tree->value) {
 		++p;
 	}
 
 	Ilist *left_inorder = ilist_new_with_size(p);
-	Ilist *right_inorder = ilist_new_with_size(inorder->length - p - 1);
+	Ilist *right_inorder = ilist_new_with_size(inorder->len - p - 1);
 	for (usize i = 0; i < p; ++i) {
 		ilist_push(left_inorder, ilist_get(inorder, i));
 	}
-	for (usize i = p + 1; i < inorder->length; ++i) {
+	for (usize i = p + 1; i < inorder->len; ++i) {
 		ilist_push(right_inorder, ilist_get(inorder, i));
 	}
 
-	Ilist *left_preorder = ilist_new_with_size(left_inorder->length);
-	Ilist *right_preorder = ilist_new_with_size(right_inorder->length);
-	for (usize i = 1; i < preorder->length; ++i) {
+	Ilist *left_preorder = ilist_new_with_size(left_inorder->len);
+	Ilist *right_preorder = ilist_new_with_size(right_inorder->len);
+	for (usize i = 1; i < preorder->len; ++i) {
 		isize val = ilist_get(preorder, i);
 		bool is_left = false;
 
 		// TODO: add find functions to list
-		for (usize j = 0; j < left_inorder->length; ++j) {
+		for (usize j = 0; j < left_inorder->len; ++j) {
 			if (val == ilist_get(left_inorder, j)) {
 				is_left = true;
 				break;
@@ -332,7 +332,7 @@ void tree_print(Tree *tree) {
 	}
 	matrix[W * H - 1] = '\0';
 
-	for (isize i = numbers->length - 1; i >= 0; --i) {
+	for (isize i = numbers->len - 1; i >= 0; --i) {
 		usize number = ulist_get(numbers, i);
 		isize value = ilist_get(values, i);
 
