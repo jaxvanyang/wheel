@@ -237,6 +237,7 @@ int main(int argc, char *const argv[]) {
 
 	for (usize i = 0; i < tests->length; ++i) {
 		char *test = slist_get(tests, i)->data;
+		TimeVal t0 = time_now();
 		pid_t pid = fork();
 
 		if (pid == -1) {
@@ -322,12 +323,14 @@ int main(int argc, char *const argv[]) {
 		str_readfd(out_buffer, tmpout);
 		str_readfd(err_buffer, tmperr);
 
+		f64 dt = elapsed(t0) / 1000;
+
 		sem_wait(sem);
 		term_clear_line();
 		if (ret == EXIT_SUCCESS) {
-			printf("[%s]: pass\n", path->data);
+			printf("[%s]: passed in %.3lfs\n", path->data, dt);
 		} else {
-			printf("[%s]: fail\n", path->data);
+			printf("[%s]: failed in %.3lfs\n", path->data, dt);
 		}
 		if (out_buffer->length) {
 			printf("[stdout]:\n");
