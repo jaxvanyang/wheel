@@ -33,6 +33,17 @@ const usize LIST_MAX_INCREASE = 1024;
 		return list; \
 	} \
 \
+	Name *prefix##_clone(const Name *list) { \
+		Name *ret = malloc(sizeof(Name)); \
+\
+		ret->length = list->length; \
+		ret->size = ret->length; \
+		ret->data = malloc(sizeof(T) * ret->size); \
+		memcpy(ret->data, list->data, sizeof(T) * list->length); \
+\
+		return ret; \
+	} \
+\
 	T prefix##_get(const Name *list, usize i) { \
 		if (i >= list->length) { \
 			error("expected i < length, found: %zu >= %zu\n", i, list->length); \
@@ -75,6 +86,8 @@ const usize LIST_MAX_INCREASE = 1024;
 	} \
 \
 	void prefix##_push(Name *list, T val) { prefix##_insert(list, list->length, val); } \
+\
+	void prefix##_pop(Name *list) { prefix##_delete(list, list->length - 1); } \
 \
 	T prefix##_delete(Name *list, usize i) { \
 		if (i >= list->length) { \

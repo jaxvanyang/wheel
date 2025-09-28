@@ -1,6 +1,9 @@
 build:
 	make
 
+build-debug:
+	CFLAGS='-g -O0' make
+
 run bin *args:
 	make bin/{{bin}}
 	bin/{{bin}} {{args}}

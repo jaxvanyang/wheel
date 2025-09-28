@@ -1,9 +1,9 @@
-#include "str.h"
-
 #include <errno.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "list.h"
+#include "str.h"
 
 Ilist *build_next(char *t) {
 	usize len = strlen(t);
@@ -230,6 +230,12 @@ char str_delete(Str *s, usize i) {
 	return ret;
 }
 
+void str_reverse(Str *s) {
+	for (usize i = 0; i * 2 < s->length; ++i) {
+		memswap(s->data + i, s->data + s->length - 1 - i, sizeof(char));
+	}
+}
+
 void str_readline(Str *s, FILE *f) {
 	s->length = 0;
 	s->data[0] = '\0';
@@ -248,4 +254,27 @@ void str_readline(Str *s, FILE *f) {
 		perror(NULL);
 		exit(errno);
 	}
+}
+
+void str_readfd(Str *s, int fd) {
+	s->length = 0;
+	s->data[0] = '\0';
+
+	char buffer[LIST_MAX_INCREASE];
+	isize bytes_read;
+
+	while ((bytes_read = read(fd, buffer, sizeof(buffer) - 1)) > 0) {
+		buffer[bytes_read] = '\0';
+		str_push_str(s, buffer);
+	}
+
+	if (bytes_read == -1) {
+		perror(NULL);
+		exit(errno);
+	}
+}
+
+void str_readfile(Str *s, FILE *f) {
+	int fd = fileno(f);
+	str_readfd(s, fd);
 }

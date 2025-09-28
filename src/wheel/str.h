@@ -25,6 +25,14 @@ void str_insert_str(Str *s, const usize i, const char *t);
 void str_push(Str *s, const char c);
 void str_push_str(Str *s, const char *t);
 char str_delete(Str *s, const usize i);
+void str_reverse(Str *s);
 
 /// Read a line from the file to the string.
+/// NOTE: this overrides the string.
 void str_readline(Str *s, FILE *f);
+/// Read the whole file from the file descriptor to the string.
+/// NOTE: this overrides the string.
+void str_readfd(Str *s, int fd);
+/// Read the whole file to the string.
+/// NOTE: this overrides the string.
+void str_readfile(Str *s, FILE *f);

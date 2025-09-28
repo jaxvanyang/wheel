@@ -11,6 +11,7 @@
 #include "wheel/random.h"
 #include "wheel/sort.h"
 #include "wheel/str.h"
+#include "wheel/sys.h"
 #include "wheel/term.h"
 #include "wheel/tree.h"
 
