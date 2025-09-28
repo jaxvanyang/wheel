@@ -137,7 +137,7 @@ $(XRAY)/%.o: $(XRAY)/%.c
 
 .PHONY: format
 format:
-	find src bin game tests -type f -name "*.[ch]" | grep -v -e "lol\.[ch]$$" | xargs clang-format -style=file:.clang-format -i
+	find src bin game tests -type f -name "*.[ch]" | xargs clang-format -style=file:.clang-format -i
 
 build/compile_commands.json:
 	@mkdir -p build
