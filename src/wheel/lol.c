@@ -288,9 +288,7 @@ static lol_inline void init_lol(lol_t *log, lol_level_e std_level,
     log->writer = default_writer;
 
     /* add default properties */
-#if !defined(_WIN32)
     log->print.color = 1;
-#endif
     log->print.timestamp = 1;
     log->print.level = 1;
     log->print.fileline = 1;
