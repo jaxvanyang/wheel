@@ -230,6 +230,12 @@ char str_delete(Str *s, usize i) {
 	return ret;
 }
 
+void str_reverse(Str *s) {
+	for (usize i = 0; i * 2 < s->length; ++i) {
+		memswap(s->data + i, s->data + s->length - 1 - i, sizeof(char));
+	}
+}
+
 void str_readline(Str *s, FILE *f) {
 	s->length = 0;
 	s->data[0] = '\0';
