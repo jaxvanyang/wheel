@@ -74,7 +74,7 @@ bool make_tests() {
 
 #ifndef _WIN32
 char *find_test_by_pid(const Slist *tests, const pid_t *pids, pid_t pid) {
-	for (usize i = 0; i < tests->length; ++i) {
+	for (usize i = 0; i < tests->len; ++i) {
 		if (pids[i] == pid) {
 			return slist_get(tests, i)->data;
 		}
@@ -167,14 +167,14 @@ int main(int argc, char *const argv[]) {
 		}
 	}
 
-	print_progress(passed_cnt, failed_cnt, tests->length);
+	print_progress(passed_cnt, failed_cnt, tests->len);
 
 #ifdef _WIN32
-	HANDLE *handles = malloc(sizeof(HANDLE) * tests->length);
-	STARTUPINFO *si_array = malloc(sizeof(STARTUPINFO) * tests->length);
-	PROCESS_INFORMATION *pi_array = malloc(sizeof(PROCESS_INFORMATION) * tests->length);
+	HANDLE *handles = malloc(sizeof(HANDLE) * tests->len);
+	STARTUPINFO *si_array = malloc(sizeof(STARTUPINFO) * tests->len);
+	PROCESS_INFORMATION *pi_array = malloc(sizeof(PROCESS_INFORMATION) * tests->len);
 
-	for (usize i = 0; i < tests->length; ++i) {
+	for (usize i = 0; i < tests->len; ++i) {
 		char *test = slist_get(tests, i)->data;
 
 		Str *path = str_from("tests");
@@ -197,9 +197,9 @@ int main(int argc, char *const argv[]) {
 		str_free(path);
 	}
 
-	print_progress(passed_cnt, failed_cnt, tests->length);
+	print_progress(passed_cnt, failed_cnt, tests->len);
 
-	for (usize i = 0; i < tests->length; ++i) {
+	for (usize i = 0; i < tests->len; ++i) {
 		char *test = slist_get(tests, i)->data;
 
 		// Wait for this specific process to complete
@@ -218,7 +218,7 @@ int main(int argc, char *const argv[]) {
 			++failed_cnt;
 			printf("[tests/%s]: fail\n", test);
 		}
-		print_progress(passed_cnt, failed_cnt, tests->length);
+		print_progress(passed_cnt, failed_cnt, tests->len);
 
 		// Close handles for completed process
 		CloseHandle(pi_array[i].hProcess);
@@ -231,9 +231,9 @@ int main(int argc, char *const argv[]) {
 #else
 	char sem_name[] = "print";
 	sem_t *sem = sem_open(sem_name, O_CREAT, 0644, 1);
-	pid_t *pids = malloc(sizeof(pid_t) * tests->length);
+	pid_t *pids = malloc(sizeof(pid_t) * tests->len);
 
-	for (usize i = 0; i < tests->length; ++i) {
+	for (usize i = 0; i < tests->len; ++i) {
 		char *test = slist_get(tests, i)->data;
 		TimeVal t0 = time_now();
 		pid_t pid = fork();
@@ -330,14 +330,14 @@ int main(int argc, char *const argv[]) {
 		} else {
 			printf("[%s]: failed in %.3lfs\n", path->data, dt);
 		}
-		if (out_buffer->length) {
+		if (out_buffer->len) {
 			printf("[stdout]:\n");
 			printf("%s\n", out_buffer->data);
 		}
-		if (err_buffer->length) {
+		if (err_buffer->len) {
 			printf("[stderr]:\n");
 			printf("%s\n", err_buffer->data);
-		} else if (out_buffer->length == 0) {
+		} else if (out_buffer->len == 0) {
 			putchar('\n'); // for term_clear_line()
 		}
 		sem_post(sem);
@@ -353,7 +353,7 @@ int main(int argc, char *const argv[]) {
 		return ret;
 	}
 
-	for (usize i = 0; i < tests->length; ++i) {
+	for (usize i = 0; i < tests->len; ++i) {
 		int status;
 		pid_t pid = waitpid(-1, &status, WUNTRACED);
 		if (pid == -1) {
@@ -369,7 +369,7 @@ int main(int argc, char *const argv[]) {
 
 		sem_wait(sem);
 		term_clear_line();
-		print_progress(passed_cnt, failed_cnt, tests->length);
+		print_progress(passed_cnt, failed_cnt, tests->len);
 		sem_post(sem);
 	}
 

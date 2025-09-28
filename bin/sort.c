@@ -7,18 +7,18 @@ int main() {
 		Str *s = str_new();
 		str_readline(s, stdin);
 
-		if (s->length == 0) {
+		if (s->len == 0) {
 			break;
 		}
 
-		str_delete(s, s->length - 1);
+		str_delete(s, s->len - 1);
 
 		slist_push(list, s);
 	}
 
 	slist_qsort(list);
 
-	for (usize i = 0; i < list->length; ++i) {
+	for (usize i = 0; i < list->len; ++i) {
 		Str *s = slist_get(list, i);
 		printf("%s\n", s->data);
 	}

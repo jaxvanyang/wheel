@@ -49,7 +49,7 @@ char *bigint_display(const BigInt num) {
 
 	Str *buffer = str_new();
 
-	for (usize i = 0; i < num.data->length; ++i) {
+	for (usize i = 0; i < num.data->len; ++i) {
 		str_push(buffer, '0' + ilist_get(num.data, i));
 	}
 	if (num.sign) {
@@ -65,7 +65,7 @@ char *bigint_display(const BigInt num) {
 }
 
 bool bigint_is_zero(const BigInt num) {
-	return num.data->length == 1 && ilist_get(num.data, 0) == 0;
+	return num.data->len == 1 && ilist_get(num.data, 0) == 0;
 }
 
 bool bigint_equal(const BigInt a, const BigInt b) {
@@ -73,11 +73,11 @@ bool bigint_equal(const BigInt a, const BigInt b) {
 		return true;
 	}
 
-	if (a.sign != b.sign || a.data->length != b.data->length) {
+	if (a.sign != b.sign || a.data->len != b.data->len) {
 		return false;
 	}
 
-	for (usize i = 0; i < a.data->length; ++i) {
+	for (usize i = 0; i < a.data->len; ++i) {
 		if (ilist_get(a.data, i) != ilist_get(b.data, i)) {
 			return false;
 		}
@@ -96,10 +96,10 @@ bool bigint_lt(const BigInt a, const BigInt b) {
 	bool ret = false;
 
 	// compare absolute value first
-	if (a.data->length < b.data->length) {
+	if (a.data->len < b.data->len) {
 		ret = true;
-	} else if (a.data->length == b.data->length) {
-		for (isize i = a.data->length - 1; i >= 0; --i) {
+	} else if (a.data->len == b.data->len) {
+		for (isize i = a.data->len - 1; i >= 0; --i) {
 			if (ilist_get(a.data, i) < ilist_get(b.data, i)) {
 				ret = true;
 				break;
@@ -121,7 +121,7 @@ BigInt bigint_add(const BigInt a, const BigInt b) {
 	BigInt x, y;
 
 	// make len(x) >= y
-	if (a.data->length >= b.data->length) {
+	if (a.data->len >= b.data->len) {
 		x = a;
 		y = b;
 	} else {
@@ -137,13 +137,13 @@ BigInt bigint_add(const BigInt a, const BigInt b) {
 	BigInt ret = bigint_clone(x);
 	isize carry = 0;
 
-	for (usize i = 0; i < y.data->length; ++i) {
+	for (usize i = 0; i < y.data->len; ++i) {
 		ret.data->data[i] += carry + ilist_get(y.data, i);
 		carry = ilist_get(ret.data, i) / 10;
 		ret.data->data[i] %= 10;
 	}
 
-	for (usize i = y.data->length; i < x.data->length; ++i) {
+	for (usize i = y.data->len; i < x.data->len; ++i) {
 		ret.data->data[i] += carry;
 		carry = ilist_get(ret.data, i) / 10;
 		if (carry == 0) {
@@ -160,16 +160,16 @@ BigInt bigint_add(const BigInt a, const BigInt b) {
 }
 
 BigInt bigint_sub(const BigInt a, const BigInt b) {
-	assert(a.data->length > 0);
-	assert(b.data->length > 0);
+	assert(a.data->len > 0);
+	assert(b.data->len > 0);
 
 	BigInt x, y;
 
 	// make |x| >= |y|, if not the same sign, use the original order
-	if (a.sign != b.sign || a.data->length > b.data->length) {
+	if (a.sign != b.sign || a.data->len > b.data->len) {
 		x = a;
 		y = b;
-	} else if (a.data->length < b.data->length) {
+	} else if (a.data->len < b.data->len) {
 		x = b;
 		x.sign = !x.sign;
 		y = a;
@@ -177,7 +177,7 @@ BigInt bigint_sub(const BigInt a, const BigInt b) {
 	} else {
 		bool is_equal = true;
 
-		for (isize i = a.data->length - 1; i >= 0; --i) {
+		for (isize i = a.data->len - 1; i >= 0; --i) {
 			if (ilist_get(a.data, i) > ilist_get(b.data, i)) {
 				x = a;
 				y = b;
@@ -207,7 +207,7 @@ BigInt bigint_sub(const BigInt a, const BigInt b) {
 	BigInt ret = bigint_clone(x);
 	isize borrow = 0;
 
-	for (usize i = 0; i < y.data->length; ++i) {
+	for (usize i = 0; i < y.data->len; ++i) {
 		ret.data->data[i] -= borrow + ilist_get(y.data, i);
 		if (ilist_get(ret.data, i) >= 0) {
 			borrow = 0;
@@ -217,7 +217,7 @@ BigInt bigint_sub(const BigInt a, const BigInt b) {
 		}
 	}
 
-	for (usize i = y.data->length; i < x.data->length; ++i) {
+	for (usize i = y.data->len; i < x.data->len; ++i) {
 		ret.data->data[i] -= borrow;
 		if (ilist_get(ret.data, i) >= 0) {
 			borrow = 0;
@@ -229,7 +229,7 @@ BigInt bigint_sub(const BigInt a, const BigInt b) {
 
 	assert(borrow == 0);
 
-	for (usize i = ret.data->length - 1; i > 0; --i) {
+	for (usize i = ret.data->len - 1; i > 0; --i) {
 		if (ilist_get(ret.data, i) == 0) {
 			ilist_pop(ret.data);
 		} else {

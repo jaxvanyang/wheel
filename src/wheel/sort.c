@@ -27,7 +27,7 @@ void _ulist_qsort(Ulist *list, usize begin, usize end) {
 
 void ulist_qsort(Ulist *list) {
 	ulist_shuffle(list);
-	_ulist_qsort(list, 0, list->length);
+	_ulist_qsort(list, 0, list->len);
 }
 
 void _ilist_qsort(Ilist *list, usize begin, usize end) {
@@ -55,7 +55,7 @@ void _ilist_qsort(Ilist *list, usize begin, usize end) {
 
 void ilist_qsort(Ilist *list) {
 	ilist_shuffle(list);
-	_ilist_qsort(list, 0, list->length);
+	_ilist_qsort(list, 0, list->len);
 }
 
 void _slist_qsort(Slist *list, usize begin, usize end) {
@@ -83,5 +83,5 @@ void _slist_qsort(Slist *list, usize begin, usize end) {
 
 void slist_qsort(Slist *list) {
 	slist_shuffle(list);
-	_slist_qsort(list, 0, list->length);
+	_slist_qsort(list, 0, list->len);
 }

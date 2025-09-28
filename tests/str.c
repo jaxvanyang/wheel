@@ -5,7 +5,7 @@
 int main() {
 	{
 		Str *s = str_from("hello");
-		assert(s->length == 5);
+		assert(s->len == 5);
 
 		str_push_str(s, " world");
 		assert(strcmp(s->data, "hello world") == 0);

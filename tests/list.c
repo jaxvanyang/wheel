@@ -43,11 +43,11 @@ int main() {
 		Ulist *list = ulist_from(array, size);
 
 		ulist_insert(list, 0, 0);
-		for (usize i = 0; i < list->length; ++i) {
+		for (usize i = 0; i < list->len; ++i) {
 			assert(ulist_get(list, i) == i);
 		}
 
-		for (usize len = list->length, i = 0; i < len; ++i) {
+		for (usize len = list->len, i = 0; i < len; ++i) {
 			assert(ulist_delete(list, 0) == i);
 		}
 

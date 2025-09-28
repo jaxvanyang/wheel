@@ -12,7 +12,7 @@ int main() {
 		ulist_shuffle(list);
 
 		ulist_qsort(list);
-		for (usize i = 0; i < list->length; ++i) {
+		for (usize i = 0; i < list->len; ++i) {
 			assert(ulist_get(list, i) == i);
 		}
 	}
@@ -27,7 +27,7 @@ int main() {
 		ilist_shuffle(list);
 
 		ilist_qsort(list);
-		for (usize i = 0; i < list->length; ++i) {
+		for (usize i = 0; i < list->len; ++i) {
 			assert(ilist_get(list, i) == (isize)i);
 		}
 	}
