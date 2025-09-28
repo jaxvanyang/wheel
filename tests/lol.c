@@ -14,7 +14,9 @@ static void *log_thread(void *arg)
     char tid_str[32];
     snprintf(tid_str, sizeof(tid_str), "%lu", (unsigned long)tid);
 
-    lol_init(tid_str, tid % 6 + 1, NULL, LOL_NONE);
+    // FIXME: pthread_t is pointer on macOS, so difference between tids may not
+    // be 1
+    lol_init(tid_str, (unsigned long)tid % 6 + 1, NULL, LOL_NONE);
 
     for (int i = 0; i < *(int *)arg; i++) {
         lol_fatal2(tid_str, "");
@@ -77,10 +79,10 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
     if (thr_cnt <= 0) {
-        thr_cnt = THREAD_CNT;
+        thr_cnt = 4;
     }
     if (log_cnt <= 0) {
-        log_cnt = THREAD_LOG_CNT;
+        log_cnt = 4;
     }
 
     pthread_t threads[THREAD_CNT];
