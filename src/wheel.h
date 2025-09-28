@@ -4,6 +4,7 @@
 #include "wheel/deque.h"
 #include "wheel/float.h"
 #include "wheel/list.h"
+#include "wheel/lol.h"
 #include "wheel/math.h"
 #include "wheel/net.h"
 #include "wheel/path.h"
