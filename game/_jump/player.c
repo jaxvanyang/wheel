@@ -15,7 +15,7 @@ const char *state_string(PlayerState state) {
 	case DEATH:
 		return "death";
 	default:
-		error("unexpected player state: %d\n", state);
+		lol_term("unexpected player state: %d\n", state);
 	}
 }
 
