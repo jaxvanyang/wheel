@@ -113,6 +113,7 @@ typedef struct {
 	usize cur; // current player's seat number
 	usize dealer;
 	usize pot;
+	usize slider;
 } Game;
 
 Card card_from_num(u8 num);
@@ -169,4 +170,5 @@ void draw_player(
 );
 void draw_kind(Kind kind, i32 x, i32 y, i32 font_size);
 void draw_selection(const ResManager *manager, const Selection *selection);
+void draw_slider(usize slider);
 void draw(const Game *game);

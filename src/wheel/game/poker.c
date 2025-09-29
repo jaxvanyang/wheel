@@ -370,7 +370,7 @@ ResManager new_res_manager() {
 const char *format_player_state(PlayerState state) {
 	switch (state) {
 	case STATE_THINKING:
-		return TextFormat("...");
+		return TextFormat("......");
 	case STATE_CHECK:
 		return TextFormat("Check");
 	case STATE_CALL:
@@ -405,6 +405,7 @@ Game new_game() {
 		.cur = 0,
 		.dealer = SEAT_CNT - 3, // make myself after BB
 		.pot = 0,
+		.slider = 0,
 	};
 
 	// FIXME: this is for testing
@@ -488,6 +489,22 @@ void handle_input(Game *game) {
 
 		game->cur = get_next_player(game, game->cur);
 		game->players[game->cur].state = STATE_THINKING;
+	}
+
+	if (game->cur == game->my_seat) {
+		usize chips = min(game->players[game->my_seat].chips, 100);
+		game->slider = min(game->slider, chips);
+
+		// FIXME: update when key down
+		if (IsKeyPressed(KEY_LEFT) && game->slider > 0) {
+			--game->slider;
+		} else if (IsKeyPressed(KEY_RIGHT) && game->slider < chips) {
+			++game->slider;
+		} else if (IsKeyPressed(KEY_UP)) {
+			game->slider = min(game->slider + 10, chips);
+		} else if (IsKeyPressed(KEY_DOWN)) {
+			game->slider = max(0, (isize)game->slider - 10);
+		}
 	}
 }
 
@@ -608,25 +625,32 @@ void draw_button(const ResManager *manager, i32 x, i32 y) {
 	DrawTexture(manager->button, x, y, WHITE);
 }
 
+static Rectangle get_pub_widget() {
+	i32 width = GetScreenWidth();
+	i32 height = GetScreenHeight();
+
+	i32 margin = 5;
+	i32 pub_width = margin * 8 + (CARD_WIDTH + 2 * margin) * 5;
+	i32 pub_height = CARD_HEIGHT + 6 * margin;
+	Rectangle ret = {
+		.x = (width - pub_width) / 2.0,
+		.y = (height - pub_height) / 2.0,
+		.width = pub_width,
+		.height = pub_height
+	};
+
+	return ret;
+}
+
 void draw_table() {
 	Color trans_brown = DARKBROWN;
 	trans_brown.a = 0xa0;
 	Color trans_gray = BLACK;
 	trans_gray.a = 0x20;
 
-	i32 width = GetScreenWidth();
-	i32 height = GetScreenHeight();
-
 	i32 margin = 5;
 	f32 thick = 5;
-	i32 pub_width = margin * 8 + (CARD_WIDTH + 2 * margin) * 5;
-	i32 pub_height = CARD_HEIGHT + 6 * margin;
-	Rectangle pub_rect = {
-		.x = (width - pub_width) / 2.0,
-		.y = (height - pub_height) / 2.0,
-		.width = pub_width,
-		.height = pub_height
-	};
+	Rectangle pub_rect = get_pub_widget();
 
 	DrawRectangleLinesEx(pub_rect, thick, trans_brown);
 
@@ -644,22 +668,15 @@ void draw_table() {
 void draw_pub_cards(const ResManager *manager, const PubCards *cards) {
 	assert(cards->len <= 5);
 
-	i32 width = GetScreenWidth();
-	i32 height = GetScreenHeight();
 	i32 margin = 5;
-	i32 pub_width = margin * 8 + (CARD_WIDTH + 2 * margin) * 5;
-	i32 pub_height = CARD_HEIGHT + 6 * margin;
-	Vector2 pub_pos = {
-		.x = (width - pub_width) / 2.0,
-		.y = (height - pub_height) / 2.0,
-	};
+	Rectangle widget = get_pub_widget();
 
 	for (usize i = 0; i < cards->len; ++i) {
 		draw_card(
 			manager,
 			cards->cards[i],
-			(Vector2){pub_pos.x + 3 * margin + i * (CARD_WIDTH + 3 * margin),
-								pub_pos.y + 3 * margin}
+			(Vector2){widget.x + 3 * margin + i * (CARD_WIDTH + 3 * margin),
+								widget.y + 3 * margin}
 		);
 	}
 }
@@ -764,6 +781,30 @@ void draw_selection(const ResManager *manager, const Selection *selection) {
 	}
 }
 
+void draw_slider(usize slider) {
+	Rectangle pub = get_pub_widget();
+	Vector2 screen_size = get_screen_size();
+
+	f32 slider_width = 5;
+	f32 slider_height = 20;
+	f32 margin = 40;
+	f32 number_width = 60;
+	f32 line_width = pub.width - number_width;
+	f32 line_thick = 5;
+	f32 number_x = pub.x + line_width;
+	f32 line_y = screen_size.y - margin;
+	f32 slider_x = pub.x + (f32)slider / 100 * line_width;
+	f32 slider_y = line_y - slider_height / 2;
+
+	DrawLineEx(
+		(Vector2){pub.x, line_y}, (Vector2){pub.x + line_width, line_y}, line_thick, BLACK
+	);
+	DrawRectangle(slider_x, slider_y, slider_width, slider_height, RAYWHITE);
+	draw_text_center(
+		TextFormat("%" USIZE_FMT, slider), number_x + number_width / 2, line_y, 15, RAYWHITE
+	);
+}
+
 void draw(const Game *game) {
 	ResManager m = game->manager;
 
@@ -784,6 +825,10 @@ void draw(const Game *game) {
 		Selection sel =
 			get_best_selection(&game->pub_cards, &game->players[game->my_seat].hand);
 		draw_selection(&m, &sel);
+	}
+
+	if (game->cur == game->my_seat) {
+		draw_slider(game->slider);
 	}
 
 	DrawFPS(5, 5);
