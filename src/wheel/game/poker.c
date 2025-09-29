@@ -509,7 +509,7 @@ Rectangle get_player_widget(usize seat) {
 	switch (seat) {
 	case 0:
 		ret.x = screen_size.x / 2 - (CHIP_WIDTH + large_margin + (f32)card_width / 2);
-		ret.y = screen_size.y - small_margin * 10 - height;
+		ret.y = screen_size.y - large_margin * 3 - height;
 		break;
 	case 1:
 		ret.x = large_margin;
@@ -723,6 +723,10 @@ void draw_player(
 		.width = CARD_WIDTH * 2 + small_margin,
 		.height = font_size * 2,
 	};
+	if (seat == 0) {
+		dialogue.x = hand_pos.x + (CARD_WIDTH + small_margin) * 2;
+		dialogue.y = hand_pos.y + (CARD_HEIGHT - dialogue.height) / 2;
+	}
 	const char *text = format_player_state(player->state);
 	if (strlen(text) != 0) {
 		draw_dialogue(text, dialogue, font_size, BLACK, RAYWHITE);
