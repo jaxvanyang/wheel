@@ -556,6 +556,18 @@ void draw_back(const ResManager *manager, u8 color, u8 style, Vector2 pos) {
 	draw_texture_rec_scale(manager->cards, source, pos, WHITE, CARD_SCALE);
 }
 
+static u8 get_amount(usize chips) {
+	if (chips >= 100) {
+		return 3;
+	} else if (chips >= 50) {
+		return 2;
+	} else if (chips >= 20) {
+		return 1;
+	}
+
+	return 0;
+}
+
 void draw_chip(const ResManager *manager, u8 color, u8 amount, Vector2 pos) {
 	assert(color < 8);
 	assert(amount < 4);
@@ -580,15 +592,7 @@ void draw_pot(const ResManager *manager, usize pot) {
 		.x = (screen_size.x - CHIP_WIDTH) / 2,
 		.y = 100,
 	};
-	u8 amount = 0;
-
-	if (pot >= 100) {
-		amount = 3;
-	} else if (pot >= 50) {
-		amount = 2;
-	} else if (pot >= 20) {
-		amount = 1;
-	}
+	u8 amount = get_amount(pot);
 
 	draw_chip(manager, 0, amount, pos);
 	draw_text_center(
@@ -707,7 +711,9 @@ void draw_player(
 	// FIXME: this is beyond the widget box
 	draw_text_center(player->name, name_x, widget.y, font_size, RAYWHITE);
 
-	draw_chip(manager, 0, 3, chip_pos);
+	if (player->chips != 0) {
+		draw_chip(manager, 0, get_amount(player->chips), chip_pos);
+	}
 	draw_text_center(
 		TextFormat("%" USIZE_FMT, player->chips),
 		chip_pos.x + (f32)CHIP_WIDTH / 2,
