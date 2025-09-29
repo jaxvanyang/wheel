@@ -85,12 +85,24 @@ typedef struct {
 	Texture2D button;
 } ResManager;
 
+typedef enum {
+	STATE_STANDBY, // waiting to join the game
+	STATE_WAITING, // waiting in the game
+	STATE_THINKING,
+	STATE_FOLD,
+	STATE_CHECK,
+	STATE_CALL,
+	STATE_RAISE,
+	STATE_ALLIN,
+} PlayerState;
+
 typedef struct {
 	Hand hand;
 	const char *name;
 	usize chips;
 	usize bet;
 	bool is_valid;
+	PlayerState state;
 } Player;
 
 typedef struct {
@@ -129,6 +141,8 @@ void print_selection(const Selection *selection);
 
 ResManager new_res_manager();
 
+// Return a one-time string of the player's state.
+const char *format_player_state(PlayerState state);
 Player new_player(const char *name, usize chips, bool is_valid);
 
 Game new_game();

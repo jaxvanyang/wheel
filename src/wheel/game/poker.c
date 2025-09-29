@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <string.h>
 
 #include "../../wheel/lol.h"
 #include "poker.h"
@@ -366,12 +367,30 @@ ResManager new_res_manager() {
 	return manager;
 }
 
+const char *format_player_state(PlayerState state) {
+	switch (state) {
+	case STATE_THINKING:
+		return TextFormat("...");
+	case STATE_CHECK:
+		return TextFormat("Check");
+	case STATE_CALL:
+		return TextFormat("Call");
+	case STATE_RAISE:
+		return TextFormat("Raise");
+	case STATE_ALLIN:
+		return TextFormat("All in!");
+	default:
+		return TextFormat("");
+	}
+}
+
 Player new_player(const char *name, usize chips, bool is_valid) {
 	return (Player){
 		.name = name,
 		.chips = chips,
 		.hand = new_empty_hand(),
 		.is_valid = is_valid,
+		.state = STATE_STANDBY,
 	};
 }
 
@@ -410,6 +429,9 @@ void refresh(Game *game) {
 	}
 
 	for (usize i = 0; i < SEAT_CNT; ++i) {
+		assert(game->players[i].chips >= 2);
+
+		game->players[i].state = STATE_WAITING;
 		game->players[i].bet = 0;
 
 		if (i == game->my_seat) {
@@ -423,22 +445,23 @@ void refresh(Game *game) {
 
 	usize sb = get_next_player(game, game->dealer);
 	usize bb = get_next_player(game, sb);
-
-	assert(game->players[sb].chips >= 1);
-	assert(game->players[bb].chips >= 2);
+	usize utg = get_next_player(game, bb);
 
 	game->players[sb].chips -= 1;
 	game->players[sb].bet = 1;
 	game->players[bb].chips -= 2;
 	game->players[bb].bet = 2;
 	game->pot = 3;
+
+	game->players[utg].state = STATE_THINKING;
+	game->cur = utg;
 }
 
 void handle_input(Game *game) {
 	if (IsKeyPressed(KEY_SPACE)) {
-		refresh(game);
+		game->dealer = get_next_player(game, game->dealer);
 
-		game->dealer = (game->dealer + 1) % SEAT_CNT;
+		refresh(game);
 	}
 
 	if (IsKeyPressed(KEY_D)) {
@@ -460,8 +483,11 @@ void handle_input(Game *game) {
 		assert(game->players[game->cur].chips >= 2);
 		game->players[game->cur].chips -= 2;
 		game->players[game->cur].bet += 2;
+		game->players[game->cur].state = STATE_CALL;
 		game->pot += 2;
+
 		game->cur = get_next_player(game, game->cur);
+		game->players[game->cur].state = STATE_THINKING;
 	}
 }
 
@@ -689,6 +715,18 @@ void draw_player(
 		font_size,
 		RAYWHITE
 	);
+
+	// dialogue is outside the widget, this is by design
+	Rectangle dialogue = {
+		.x = hand_pos.x + (f32)small_margin / 2,
+		.y = widget.y + widget.height + small_margin,
+		.width = CARD_WIDTH * 2 + small_margin,
+		.height = font_size * 2,
+	};
+	const char *text = format_player_state(player->state);
+	if (strlen(text) != 0) {
+		draw_dialogue(text, dialogue, font_size, BLACK, RAYWHITE);
+	}
 }
 
 void draw_kind(Kind kind, i32 x, i32 y, i32 font_size) {
