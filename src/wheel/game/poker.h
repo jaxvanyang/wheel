@@ -122,7 +122,9 @@ u8 card_to_num(Card card);
 // NOTE: need to be freed
 char *card_debug(Card card);
 Deck new_deck();
+Card deck_pop(Deck *deck);
 Hand new_empty_hand();
+void deal_pub_cards(Deck *deck, PubCards *pub);
 void deal_hand(Deck *deck, Hand *hand);
 // Return next player's seat number.
 usize get_next_player(const Game *game, usize seat);

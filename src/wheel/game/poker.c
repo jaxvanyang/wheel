@@ -83,16 +83,24 @@ Deck new_deck() {
 	return deck;
 }
 
+Card deck_pop(Deck *deck) { return deck->cards[--deck->len]; }
+
 Hand new_empty_hand() {
 	return (Hand){
 		.mask = {false, false},
 	};
 }
 
+void deal_pub_cards(Deck *deck, PubCards *pub) {
+	for (usize i = 0; i < 5; ++i) {
+		pub->cards[i] = deck_pop(deck);
+	}
+}
+
 void deal_hand(Deck *deck, Hand *hand) {
 	assert(deck->len >= 2);
-	hand->cards[0] = deck->cards[--deck->len];
-	hand->cards[1] = deck->cards[--deck->len];
+	hand->cards[0] = deck_pop(deck);
+	hand->cards[1] = deck_pop(deck);
 }
 
 usize get_next_player(const Game *game, usize seat) {
@@ -399,17 +407,14 @@ Game new_game() {
 		.manager = new_res_manager(),
 		.pub_cards =
 			{
-				.len = 5,
+				.len = 0,
 			},
 		.my_seat = 0,
 		.cur = 0,
-		.dealer = SEAT_CNT - 3, // make myself after BB
+		.dealer = SEAT_CNT - 3, // make myself UTG
 		.pot = 0,
 		.slider = 0,
 	};
-
-	// FIXME: this is for testing
-	SetRandomSeed(0);
 
 	for (usize i = 0; i < SEAT_CNT; ++i) {
 		char *name = malloc(sizeof(char) * 32);
@@ -425,9 +430,8 @@ Game new_game() {
 void refresh(Game *game) {
 	Deck deck = new_deck();
 
-	for (usize i = 0; i < 5; ++i) {
-		game->pub_cards.cards[i] = deck.cards[--deck.len];
-	}
+	game->pub_cards.len = 0;
+	deal_pub_cards(&deck, &game->pub_cards);
 
 	for (usize i = 0; i < SEAT_CNT; ++i) {
 		assert(game->players[i].chips >= 2);
