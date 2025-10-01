@@ -29,6 +29,39 @@ usize usize_log2(usize n) {
 	return c;
 }
 
+f64 factorial(usize n) {
+	if (n == 0) {
+		return 1;
+	}
+
+	return n * factorial(n - 1);
+}
+
+f64 binomial(usize n, usize k) {
+	if (n == k) {
+		return 1;
+	}
+
+	if (k == 0) {
+		return 1;
+	}
+
+	return binomial(n - 1, k - 1) + binomial(n - 1, k);
+}
+
+f64 arrangement(usize n, usize k) {
+	if (k > n) {
+		return 0;
+	}
+
+	f64 ret = 1;
+	for (usize i = 0; i < k; ++i) {
+		ret *= (n - k);
+	}
+
+	return ret;
+}
+
 Vec vec(usize size, const f32 *data) {
 	Vec v = {size, malloc(sizeof(f32) * size)};
 	memcpy(v.data, data, sizeof(f32) * size);
