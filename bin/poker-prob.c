@@ -4,6 +4,7 @@
  * poker-prob [n]
  */
 
+#include <time.h>
 #include <wheel.h>
 #include <wheel/game/poker.h>
 
