@@ -30,7 +30,7 @@ void hit_and_correct(Game *game) {
 
 		if (game->player.v.y > 0) {
 			height = game->player.entity.hitbox.y + game->player.entity.hitbox.height -
-							 p->value.hitbox.y;
+				p->value.hitbox.y;
 		} else if (game->player.v.y < 0) {
 			height =
 				p->value.hitbox.y + p->value.hitbox.height - game->player.entity.hitbox.y;
@@ -38,7 +38,7 @@ void hit_and_correct(Game *game) {
 
 		if (game->player.v.x > 0) {
 			width = game->player.entity.hitbox.x + game->player.entity.hitbox.width -
-							p->value.hitbox.x;
+				p->value.hitbox.x;
 		} else if (game->player.v.x < 0) {
 			width = p->value.hitbox.x + p->value.hitbox.width - game->player.entity.hitbox.x;
 		}

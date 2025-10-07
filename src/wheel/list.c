@@ -66,8 +66,7 @@ const usize LIST_MAX_INCREASE = 1024;
 		} \
 \
 		if (list->size <= list->len) { \
-			usize new_size = \
-				list->size + \
+			usize new_size = list->size + \
 				(list->size < LIST_MAX_INCREASE ? list->size : LIST_MAX_INCREASE); \
 			T *new_data = malloc(new_size * sizeof(T)); \
 			memcpy(new_data, list->data, list->size * sizeof(T)); \

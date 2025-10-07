@@ -9,3 +9,4 @@ BinPackArguments: false
 AlignEscapedNewlines: DontAlign
 AlignTrailingComments:
   Kind: Never
+AlignOperands: DontAlign

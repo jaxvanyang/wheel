@@ -129,7 +129,7 @@ void handle_input(Game *game) {
 		f32 alpha = acosf(cos_alpha);
 		f32 beta = atan2f(-diff.y, diff.x) + PI / 2;
 		f32 cos_gamma = (a->length * a->length + b->length * b->length - d * d) / 2 /
-										a->length / b->length;
+			a->length / b->length;
 		f32 gamma = acosf(cos_gamma);
 
 		a->theta = beta - alpha;
@@ -295,8 +295,8 @@ void update_draw_info(Game *game) {
 
 	f32 t1 = 0.5 * a.mass * powf(a.length * a.w, 2.0);
 	f32 t2 = 0.5 * b.mass *
-					 (powf(a.length * a.w, 2.0) + powf(b.length * b.w, 2.0) +
-						2.0 * a.length * b.length * a.theta * b.theta * cos_delta_theta);
+		(powf(a.length * a.w, 2.0) + powf(b.length * b.w, 2.0) +
+		 2.0 * a.length * b.length * a.theta * b.theta * cos_delta_theta);
 	f32 t = t1 + t2;
 
 	f32 v1 = -a.mass * GRAVITY * a.length * cosf(a.theta);

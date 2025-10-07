@@ -191,7 +191,7 @@ bool snake_contains(Snake *snake, Position position) {
 
 bool position_out_of_screen(Position position) {
 	return position.x < 0 || position.x + UNIT > WIDTH || position.y < 0 ||
-				 position.y + UNIT > HEIGHT;
+		position.y + UNIT > HEIGHT;
 }
 
 Position random_fruit(Snake *snake) {
