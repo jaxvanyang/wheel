@@ -1,5 +1,6 @@
 *.a
 *.dSYM
+*.db
 *.o
 *.so
 compile_commands.json

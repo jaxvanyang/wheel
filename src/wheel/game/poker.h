@@ -131,8 +131,9 @@ usize get_next_player(const Game *game, usize seat);
 
 // Return a - b, ACE is higher than KING
 i8 cmp_rank(Rank a, Rank b);
-// Sort cards from highest to lowest
+// Sort cards from highest to lowest, ACE to 2
 void sort_cards(Card *cards, usize len);
+// NOTE: cards must have been sorted
 Selection new_selection(const Card cards[5]);
 // Return negative if a < b, 0 if a == b, positive if a > b
 i8 cmp_selection(const Selection *a, const Selection *b);

@@ -173,28 +173,21 @@ Selection new_selection(const Card cards[5]) {
 		if (cards[i].suit != cards[i + 1].suit) {
 			is_flush = false;
 		}
-		if (!(cards[i].rank == ACE && cards[i + 1].rank == KING) &&
-				cards[i].rank - 1 != cards[i + 1].rank) {
+
+		// special case: A 5 4 3 2
+		// if A is in the middle, is_straight would be set before
+		if ((cards[i].rank != ACE || cards[i + 1].rank != FIVE) &&
+				cmp_rank(cards[i].rank, cards[i + 1].rank) != 1) {
 			is_straight = false;
 		}
 	}
 
-	if (cards[0].rank == ACE && cards[1].rank == FIVE) {
-		is_straight = true;
-		for (usize i = 1; i < 4; ++i) {
-			if (cards[i].rank - 1 != cards[i + 1].rank) {
-				is_straight = false;
-				break;
-			}
+	// A 5 4 3 2 -> 5 4 3 2 A
+	if (is_straight && cards[0].rank == ACE && cards[1].rank == FIVE) {
+		for (usize i = 0; i < 4; ++i) {
+			ret.cards[i] = cards[i + 1];
 		}
-
-		// A 5 4 3 2 -> 5 4 3 2 A
-		if (is_straight) {
-			for (usize i = 0; i < 4; ++i) {
-				ret.cards[i] = cards[i + 1];
-			}
-			ret.cards[0] = cards[0];
-		}
+		ret.cards[4] = cards[0];
 	}
 
 	if (is_straight && is_flush) {
@@ -305,7 +298,6 @@ Selection get_best_selection(const PubCards *pub, const Hand *hand) {
 	for (usize i = 0; i < 5; ++i) {
 		cards[i] = all[i];
 	}
-	// this must be initialized after sorted
 	Selection ret = new_selection(cards);
 
 	// iterate all combinations
