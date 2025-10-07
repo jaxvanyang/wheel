@@ -37,7 +37,7 @@ f64 factorial(usize n) {
 	return n * factorial(n - 1);
 }
 
-f64 binomial(usize n, usize k) {
+f64 binom(usize n, usize k) {
 	if (n == k) {
 		return 1;
 	}
@@ -46,7 +46,7 @@ f64 binomial(usize n, usize k) {
 		return 1;
 	}
 
-	return binomial(n - 1, k - 1) + binomial(n - 1, k);
+	return binom(n - 1, k - 1) + binom(n - 1, k);
 }
 
 f64 arrangement(usize n, usize k) {

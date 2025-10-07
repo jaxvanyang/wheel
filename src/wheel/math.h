@@ -23,7 +23,7 @@ bool f64_equal(f64 x, f64 y);
 usize usize_log2(usize n);
 
 f64 factorial(usize n);
-f64 binomial(usize n, usize k);
+f64 binom(usize n, usize k);
 f64 arrangement(usize n, usize k);
 
 // NOTE: returned vector needs to be unloaded.
