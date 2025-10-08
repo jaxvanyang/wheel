@@ -38,8 +38,8 @@ int main(const int argc, const char *argv[]) {
 		sscanf(argv[1], "%" USIZE_FMT, &n);
 	}
 
-	// calc();
-	iterate();
+	calc();
+	// iterate();
 	simulate(n);
 
 	// clang-format off
@@ -83,43 +83,24 @@ int main(const int argc, const char *argv[]) {
 void calc() {
 	theory_cnts[10] = binom(52, 7);
 
-	// 0.003%
 	theory_cnts[ROYAL_FLUSH] = 4 * binom(47, 2);
-	// 0.027%
 	theory_cnts[STRAIGHT_FLUSH] =
 		4 * (2 * binom(46, 2) + 8 * binom(45, 2) + 2 * 45 + 7 * 44 + 8) -
 		theory_cnts[ROYAL_FLUSH];
-	// 0.168%
 	theory_cnts[FOUR_OF_A_KIND] = 13 * binom(48, 3);
-	// 2.59%
 	theory_cnts[FULL_HOUSE] = binom(13, 2) * pow(4, 3) * 11 +
 		13 * (4 * binom(12, 2) * pow(6, 2) + pow(4, 3) * 12 * binom(4, 2) * binom(11, 2));
-	// 3.025%
 	theory_cnts[FLUSH] =
 		4 * (binom(13, 5) * binom(39, 2) + binom(13, 6) * 39 + binom(13, 7)) -
 		theory_cnts[ROYAL_FLUSH] - theory_cnts[STRAIGHT_FLUSH];
-	// 4.619%
-	theory_cnts[STRAIGHT] = pow(4, 5) * (2 * binom(28, 2) + 8 * binom(24, 2)) +
-		pow(4, 4) * binom(4, 2) * 5 * (2 * 28 + 8 * 24) +
-		pow(4, 3) * pow(6, 2) * binom(5, 2) * 10 + pow(4, 5) * 5 * 10 +
-		pow(4, 6) * (2 * 24 + 7 * 20) + pow(4, 5) * binom(4, 2) * 6 * 9 + pow(4, 7) * 8 -
-		theory_cnts[ROYAL_FLUSH] - theory_cnts[STRAIGHT_FLUSH];
-	// 4.829%
-	theory_cnts[THREE_OF_A_KIND] = binom(13, 5) * 5 * 4 * pow(4, 4) -
-		binom(13, 5) * 4 * 3 - 10 * 5 * 4 * pow(4, 4) + 10 * 4 * 4 * 3;
-	// 23.495%
-	theory_cnts[TWO_PAIRS] = binom(13, 4) * 4 * pow(binom(4, 2), 3) * 4 -
-		binom(13, 4) * 4 * 4 +
-		binom(13, 5) * binom(5, 2) * pow(binom(4, 2), 2) * pow(4, 3) -
-		binom(13, 5) * binom(5, 2) * 4 -
-		10 * binom(5, 2) * pow(binom(4, 2), 2) * pow(4, 2) +
-		10 * binom(5, 2) * 4 * pow(3, 2);
-	// FIXME: this includes straight & flush
-	// 43.822%
-	theory_cnts[PAIR] = binom(13, 1) * binom(4, 2) * binom(12, 5) * pow(binom(4, 1), 5);
-	// FIXME: this includes straight & flush
-	// 17.141%
-	theory_cnts[HIGH_CARD] = binom(13, 7) * pow(binom(4, 1), 7);
+	theory_cnts[STRAIGHT] = 6180020;
+	theory_cnts[THREE_OF_A_KIND] =
+		pow(4, 5) * (13 * binom(12, 4) - 10 * 5) - 12 * (13 * binom(12, 4) - 10 * 5);
+	theory_cnts[TWO_PAIRS] = binom(13, 3) * pow(6, 3) * 10 * 4 +
+		binom(13, 2) * binom(11, 3) * (pow(6, 2) * pow(4, 3) - 4 * pow(3, 2)) -
+		pow(10, 2) * (pow(6, 2) * pow(4, 3) - 4 * pow(3, 2));
+	theory_cnts[PAIR] = 58627800;
+	theory_cnts[HIGH_CARD] = 23294460;
 
 	for (Kind i = 0; i < 10; ++i) {
 		theory_probs[i] = (f32)theory_cnts[i] / (f32)theory_cnts[10] * 100;
