@@ -78,6 +78,20 @@ int main(const int argc, const char *argv[]) {
 	// clang-format off
 	printf("-----------------------------------------------------------------------------------|\n");
 	// clang-format on
+
+	printf("\nRatios:\n\n");
+
+	for (Kind i = 0; i < 10; ++i) {
+		Fraction n = {
+			.dividend = theory_cnts[i],
+			.divisor = theory_cnts[10],
+		};
+		n = simplify_fraction(n);
+
+		printf(
+			"%s: %" ISIZE_FMT "/%" ISIZE_FMT "\n", kind_display(i), n.dividend, n.divisor
+		);
+	}
 }
 
 void calc() {
