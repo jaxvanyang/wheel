@@ -7,7 +7,7 @@
 
 typedef struct {
 	u64 n;
-	u64 divider;
+	u64 divisor;
 	u64 rem;
 	u64 *cnt;
 	f32 *max_det;
@@ -32,7 +32,7 @@ void *calc(void *argument) {
 	f32 max_det = *arg->max_det;
 	pthread_mutex_unlock(arg->lock);
 
-	for (u64 flags = arg->rem; flags < max_cnt; flags += arg->divider) {
+	for (u64 flags = arg->rem; flags < max_cnt; flags += arg->divisor) {
 		for (usize i = 0; i < n; ++i) {
 			for (usize j = 0; j < n; ++j) {
 				bool is_one = (flags >> (i * n + j)) & 1;
@@ -96,18 +96,18 @@ int main(int argc, const char *argv[]) {
 	u64 n;
 	sscanf(argv[1], "%lld", &n);
 
-	u64 divider = 8;
+	u64 divisor = 8;
 	pthread_mutex_t lock;
 	pthread_mutex_init(&lock, NULL);
-	pthread_t *threads = malloc(sizeof(pthread_t) * divider);
-	Arg *args = malloc(sizeof(Arg) * divider);
+	pthread_t *threads = malloc(sizeof(pthread_t) * divisor);
+	Arg *args = malloc(sizeof(Arg) * divisor);
 
 	u64 max_cnt = 1ull << (n * n);
 	print_progress(cnt, max_cnt);
 
-	for (u64 i = 0; i < divider; ++i) {
+	for (u64 i = 0; i < divisor; ++i) {
 		args[i].n = n;
-		args[i].divider = divider;
+		args[i].divisor = divisor;
 		args[i].rem = i;
 		args[i].cnt = &cnt;
 		args[i].max_det = &max_det;
@@ -125,7 +125,7 @@ int main(int argc, const char *argv[]) {
 		sleep(1);
 	}
 
-	for (u64 i = 0; i < divider; ++i) {
+	for (u64 i = 0; i < divisor; ++i) {
 		pthread_join(threads[i], NULL);
 	}
 

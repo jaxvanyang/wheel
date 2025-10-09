@@ -12,7 +12,7 @@
 #include <wheel/game/poker.h>
 
 typedef struct {
-	usize divider;
+	usize divisor;
 	usize rem;
 } Filter;
 
@@ -122,7 +122,7 @@ void iterate() {
 	pthread_mutex_init(&iterate_lock, NULL);
 
 	for (usize i = 0; i < n_thread; ++i) {
-		args[i].divider = n_thread;
+		args[i].divisor = n_thread;
 		args[i].rem = i;
 
 		pthread_create(threads + i, NULL, iterate_thread, args + i);
@@ -161,7 +161,7 @@ void *iterate_thread(void *arg) {
 	usize cnts[11] = {};
 
 	for (usize a = 0; a < 52; ++a) {
-		if (a % filter.divider != filter.rem) {
+		if (a % filter.divisor != filter.rem) {
 			continue;
 		}
 		for (usize b = a + 1; b < 52; ++b) {
