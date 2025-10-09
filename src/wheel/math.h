@@ -17,6 +17,11 @@ typedef struct {
 	f32 *data;
 } Mat;
 
+typedef struct {
+	isize dividend;
+	isize divisor;
+} Fraction;
+
 // Check whether two given floats are almost equal
 bool f32_equal(f32 x, f32 y);
 bool f64_equal(f64 x, f64 y);
@@ -25,6 +30,11 @@ usize usize_log2(usize n);
 f64 factorial(usize n);
 f64 binom(usize n, usize k);
 f64 arrangement(usize n, usize k);
+
+// Return the greatest common divisor of a and b. If a == b == 0, return 0.
+isize gcd(isize a, isize b);
+
+Fraction simplify_fraction(Fraction n);
 
 // NOTE: returned vector needs to be unloaded.
 Vec vec(usize size, const f32 *data);

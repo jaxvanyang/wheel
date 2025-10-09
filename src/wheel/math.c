@@ -62,6 +62,35 @@ f64 arrangement(usize n, usize k) {
 	return ret;
 }
 
+isize gcd(isize a, isize b) {
+	if (a < 0) {
+		a = -a;
+	}
+
+	if (b < 0) {
+		b = -b;
+	}
+
+	if (a < b) {
+		memswap(&a, &b, sizeof(a));
+	}
+
+	if (b == 0 || a == b) {
+		return a;
+	}
+
+	return gcd(b, a % b);
+}
+
+Fraction simplify_fraction(Fraction n) {
+	isize divisor = gcd(n.divisor, n.dividend);
+
+	return (Fraction){
+		.dividend = n.dividend / divisor,
+		.divisor = n.divisor / divisor,
+	};
+}
+
 Vec vec(usize size, const f32 *data) {
 	Vec v = {size, malloc(sizeof(f32) * size)};
 	memcpy(v.data, data, sizeof(f32) * size);
