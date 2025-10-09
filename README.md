@@ -12,5 +12,5 @@ Thanks for all the creators! <3
 Note of `assets/poker`: `button.png` is built upon `fiches_addon.png`.
 
 [Brackeys' Platformer Bundle]: https://brackeysgames.itch.io/brackeys-platformer-bundle
-[(Pixel) Poker Cards]: https://ivoryred.itch.io/pixel-poker-cards
+[(Pixel) Poker Cards by IvoryRed]: https://ivoryred.itch.io/pixel-poker-cards
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0
