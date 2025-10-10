@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "../../wheel/lol.h"
 #include "../../wheel/str.h"
@@ -163,6 +164,22 @@ isize get_next_player(const Game *game, usize seat) {
 			return ret;
 		}
 	}
+}
+
+usize get_player_count(const Game *game) {
+	usize ret = 0;
+
+	for (usize i = 0; i < SEAT_CNT; ++i) {
+		if (!game->players[i].is_valid || game->players[i].state == STATE_STANDBY) {
+			continue;
+		}
+
+		if (game->players[i].state != STATE_FOLD) {
+			++ret;
+		}
+	}
+
+	return ret;
 }
 
 i8 cmp_rank(Rank a, Rank b) {
@@ -441,6 +458,20 @@ Player new_player(usize chips, bool is_valid) {
 	};
 }
 
+bool is_player_on_table(const Player *player) {
+	if (!player->is_valid) {
+		return false;
+	}
+
+	switch (player->state) {
+	case STATE_STANDBY:
+	case STATE_FOLD:
+		return false;
+	default:
+		return true;
+	}
+}
+
 Game new_game() {
 	Game game = {
 		.manager = new_res_manager(),
@@ -481,6 +512,7 @@ void refresh(Game *game) {
 
 		game->players[i].state = STATE_WAITING;
 		game->players[i].bet = 0;
+		game->players[i].gain = 0;
 
 		if (i == game->my_seat) {
 			for (usize j = 0; j < 2; ++j) {
@@ -509,12 +541,39 @@ void refresh(Game *game) {
 	game->cur = utg;
 }
 
+static void *sleep_thread(void *arg) {
+	usize s = (usize)arg;
+
+	sleep(s);
+
+	return NULL;
+}
+
+void wait_for_new_game(Game *game) {
+	lol_info("the game finished, waiting for the next game to start");
+
+	game->is_freezing = true;
+
+	pthread_create(&game->countdown_thread, NULL, sleep_thread, (void *)5);
+}
+
+void start_new_game(Game *game) {
+	for (usize i = 0; i < SEAT_CNT; ++i) {
+		// standby players also get started
+		if (game->players[i].is_valid) {
+			game->players[i].state = STATE_WAITING;
+		}
+	}
+
+	game->dealer = get_next_player(game, game->dealer);
+
+	refresh(game);
+}
+
 void handle_input(Game *game) {
 	// These codes are for testing.
 	if (IsKeyPressed(KEY_SPACE)) {
-		game->dealer = get_next_player(game, game->dealer);
-
-		refresh(game);
+		start_new_game(game);
 	}
 
 	if (IsKeyPressed(KEY_D)) {
@@ -637,6 +696,7 @@ void manual_update(Game *game) {
 		}
 		break;
 	case STATE_ALLIN:
+		// FIXME: only allow up to 100 chips in a single bet
 		player->bet += player->chips;
 		game->pot += player->chips;
 		player->chips = 0;
@@ -669,44 +729,81 @@ void update(Game *game) {
 	if (next != -1) {
 		game->players[next].state = STATE_THINKING;
 		game->cur = next;
-	} else {
+		return;
+	}
 
-		switch (game->pub_cards.len) {
-		case 0: {
-			Str *tmp = str_new();
-			for (usize i = 0; i < 3; ++i) {
-				char *s = card_display(game->pub_cards.cards[i]);
-				str_push_str(tmp, TextFormat(" %s", s));
-				FREE(s);
+	// all other players have folded
+	if (get_player_count(game) == 1) {
+		for (usize i = 0; i < SEAT_CNT; ++i) {
+			if (!game->players[i].is_valid || game->players[i].state == STATE_STANDBY) {
+				continue;
 			}
-			lol_info("deal preflop:%s", tmp->data);
-			str_free(tmp);
 
-			game->pub_cards.len = 3;
-			break;
+			if (game->players[i].state != STATE_FOLD) {
+				game->players[i].gain = game->pot - game->players[i].bet;
+				game->players[i].chips += game->pot;
+
+				wait_for_new_game(game);
+				return;
+			}
 		}
-		case 3: {
-			char *s = card_display(game->pub_cards.cards[3]);
-			lol_info("deal turn: %s", s);
+
+		error("unreachable");
+	}
+
+	// refresh players' states because we need to start a new round
+	for (usize i = 0; i < SEAT_CNT; ++i) {
+		if (game->players[i].state != STATE_ALLIN &&
+				is_player_on_table(game->players + i)) {
+			game->players[i].state = STATE_WAITING;
+		}
+	}
+
+	game->cur = get_next_player(game, game->cur);
+	game->players[game->cur].state = STATE_THINKING;
+
+	switch (game->pub_cards.len) {
+	case 0: {
+		Str *tmp = str_new();
+		for (usize i = 0; i < 3; ++i) {
+			char *s = card_display(game->pub_cards.cards[i]);
+			str_push_str(tmp, TextFormat(" %s", s));
 			FREE(s);
+		}
+		lol_info("deal flop:%s", tmp->data);
+		str_free(tmp);
 
-			game->pub_cards.len = 4;
-			break;
-		}
-		case 4: {
-			char *s = card_display(game->pub_cards.cards[4]);
-			lol_info("deal river: %s", s);
-			FREE(s);
+		game->pub_cards.len = 3;
+		break;
+	}
+	case 3: {
+		char *s = card_display(game->pub_cards.cards[3]);
+		lol_info("deal turn: %s", s);
+		FREE(s);
 
-			game->pub_cards.len = 5;
-			break;
+		game->pub_cards.len = 4;
+		break;
+	}
+	case 4: {
+		char *s = card_display(game->pub_cards.cards[4]);
+		lol_info("deal river: %s", s);
+		FREE(s);
+
+		game->pub_cards.len = 5;
+		break;
+	}
+	case 5:
+		for (usize i = 0; i < SEAT_CNT; ++i) {
+			if (!is_player_on_table(game->players + i)) {
+				continue;
+			}
+			game->players[i].hand.mask[0] = true;
+			game->players[i].hand.mask[1] = true;
 		}
-		case 5:
-			todo("compute game result");
-			break;
-		default:
-			error("expected len in {0, 3, 4, 5}");
-		}
+		todo("compute game result");
+		break;
+	default:
+		error("expected len = %" USIZE_FMT " in {0, 3, 4, 5}", game->pub_cards.len);
 	}
 }
 
@@ -936,11 +1033,13 @@ void draw_player(
 	// FIXME: this is beyond the widget box
 	draw_text_center(player->name, name_x, widget.y, font_size, RAYWHITE);
 
+	isize diff = player->gain == 0 ? -(isize)player->bet : player->gain;
+
 	if (player->chips != 0) {
 		draw_chip(manager, 0, get_amount(player->chips), chip_pos);
 	}
 	draw_text_center(
-		TextFormat("-%" USIZE_FMT "/%" USIZE_FMT, player->bet, player->chips),
+		TextFormat("%+" ISIZE_FMT "/%" USIZE_FMT, diff, player->chips),
 		chip_pos.x + (f32)CHIP_WIDTH / 2,
 		chip_pos.y - small_margin - font_size,
 		font_size,

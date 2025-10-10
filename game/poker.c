@@ -9,9 +9,17 @@
 void main_loop(void *arg) {
 	Game *game = arg;
 
-	handle_input(game);
+	if (game->is_freezing) {
+		// TODO: do not block
+		pthread_join(game->countdown_thread, NULL);
+		game->is_freezing = false;
 
-	update(game);
+		start_new_game(game);
+	} else {
+		handle_input(game);
+
+		update(game);
+	}
 
 	draw(game);
 }
