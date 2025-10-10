@@ -16,7 +16,9 @@
 #define error(...) \
 	eprint("%s:%d: ", __FILE__, __LINE__); \
 	eprintln(__VA_ARGS__); \
-	exit(1)
+	exit(EXIT_FAILURE)
+
+#define todo(...) error("TODO: " __VA_ARGS__)
 
 // Free a pointer, and set it to NULL.
 #define FREE(p) \
