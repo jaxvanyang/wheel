@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <string.h>
+#include <wheel/list.h>
 #include <wheel/str.h>
 
 int main() {
@@ -33,5 +34,19 @@ int main() {
 		assert(strcmp(s, "d") == 0);
 		str_remove_postfix(s, "x");
 		assert(strcmp(s, "d") == 0);
+	}
+
+	{
+		Str *s = str_from("    a ab \t abc \n abcd   ");
+		Slist *list = str_split(s);
+
+		assert(list->len == 4);
+		assert(strcmp(slist_get(list, 0)->data, "a") == 0);
+		assert(strcmp(slist_get(list, 1)->data, "ab") == 0);
+		assert(strcmp(slist_get(list, 2)->data, "abc") == 0);
+		assert(strcmp(slist_get(list, 3)->data, "abcd") == 0);
+
+		SLIST_FREE(list);
+		str_free(s);
 	}
 }

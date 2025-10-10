@@ -25,10 +25,15 @@ void str_insert_str(Str *s, const usize i, const char *t);
 void str_push(Str *s, const char c);
 void str_push_str(Str *s, const char *t);
 char str_delete(Str *s, const usize i);
+char str_pop(Str *s);
 void str_reverse(Str *s);
+void str_clear(Str *s);
+
+// Split the string by white spaces into a list.
+Slist *str_split(const Str *s);
 
 /// Read a line from the file to the string.
-/// NOTE: this overrides the string.
+/// NOTE: this overrides the string, and newline is preserved.
 void str_readline(Str *s, FILE *f);
 /// Read the whole file from the file descriptor to the string.
 /// NOTE: this overrides the string.

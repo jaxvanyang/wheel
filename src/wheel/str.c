@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
@@ -230,10 +231,50 @@ char str_delete(Str *s, usize i) {
 	return ret;
 }
 
+char str_pop(Str *s) {
+	if (s->len == 0) {
+		error("expected an non-empty string");
+	}
+
+	return str_delete(s, s->len - 1);
+}
+
 void str_reverse(Str *s) {
 	for (usize i = 0; i * 2 < s->len; ++i) {
 		memswap(s->data + i, s->data + s->len - 1 - i, sizeof(char));
 	}
+}
+
+void str_clear(Str *s) {
+	memset(s->data, 0, sizeof(char) * s->size);
+	s->len = 0;
+}
+
+Slist *str_split(const Str *s) {
+	Slist *list = slist_new();
+
+	usize i = 0;
+
+	while (i < s->len && isspace(s->data[i])) {
+		++i;
+	}
+
+	while (i < s->len) {
+		Str *t = str_new();
+
+		while (i < s->len && !isspace(s->data[i])) {
+			str_push(t, s->data[i]);
+			++i;
+		}
+
+		slist_push(list, t);
+
+		while (i < s->len && isspace(s->data[i])) {
+			++i;
+		}
+	}
+
+	return list;
 }
 
 void str_readline(Str *s, FILE *f) {
