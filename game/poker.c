@@ -11,10 +11,14 @@ void main_loop(void *arg) {
 
 	handle_input(game);
 
+	update(game);
+
 	draw(game);
 }
 
 int main() {
+	lol_init("poker", LOL_DEBUG, NULL, LOL_NONE);
+
 	InitWindow(1280, 720, "Poker");
 	Game game = new_game();
 
