@@ -55,6 +55,7 @@ typedef enum {
 #define lol_likely(v) v
 #define lol_unlikely(v) v
 #endif
+
 /* API */
 /**
  * initialize lol with custom settings
@@ -64,6 +65,7 @@ typedef enum {
 LOL_PUBLIC int lol_init(
 	const char *domain, lol_level_e std_level, const char *file, lol_level_e file_level
 );
+
 /**
  * initialize lol with default settings
  */

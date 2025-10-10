@@ -9,12 +9,24 @@
 void main_loop(void *arg) {
 	Game *game = arg;
 
-	handle_input(game);
+	if (game->is_freezing) {
+		// TODO: do not block
+		pthread_join(game->countdown_thread, NULL);
+		game->is_freezing = false;
+
+		start_new_game(game);
+	} else {
+		handle_input(game);
+
+		update(game);
+	}
 
 	draw(game);
 }
 
 int main() {
+	lol_init("poker", LOL_DEBUG, NULL, LOL_NONE);
+
 	InitWindow(1280, 720, "Poker");
 	Game game = new_game();
 
