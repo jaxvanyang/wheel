@@ -112,8 +112,9 @@ typedef struct {
 	usize my_seat;
 	usize cur; // current player's seat number
 	usize dealer;
+	usize bet;
 	usize pot;
-	usize slider;
+	usize slider; // must guarantee it is <= min(chips, 100)
 } Game;
 
 Card card_from_num(u8 num);
@@ -126,8 +127,9 @@ Card deck_pop(Deck *deck);
 Hand new_empty_hand();
 void deal_pub_cards(Deck *deck, PubCards *pub);
 void deal_hand(Deck *deck, Hand *hand);
-// Return next player's seat number.
-usize get_next_player(const Game *game, usize seat);
+// Return next player's seat number. Only consider players that need action.
+// Return -1 if no such players.
+isize get_next_player(const Game *game, usize seat);
 
 // Return a - b, ACE is higher than KING
 i8 cmp_rank(Rank a, Rank b);
@@ -153,6 +155,8 @@ Game new_game();
 void refresh(Game *game);
 
 void handle_input(Game *game);
+
+void update(Game *game);
 
 // NOTE: the seat is relative to my seat
 Rectangle get_player_widget(usize seat);

@@ -103,19 +103,19 @@ void deal_hand(Deck *deck, Hand *hand) {
 	hand->cards[1] = deck_pop(deck);
 }
 
-usize get_next_player(const Game *game, usize seat) {
-	usize ret = seat;
+isize get_next_player(const Game *game, usize seat) {
+	isize ret = seat;
 
 	while (true) {
 		ret = (seat + 1) % SEAT_CNT;
-		if (ret == seat) {
-			lol_term("expected another valid player");
-		}
-		if (!game->players[ret].is_valid) {
-			continue;
+
+		if (ret == (isize)seat) {
+			return -1;
 		}
 
-		return ret;
+		if (game->players[ret].is_valid && game->players[ret].state == STATE_WAITING) {
+			return ret;
+		}
 	}
 }
 
@@ -370,17 +370,19 @@ ResManager new_res_manager() {
 const char *format_player_state(PlayerState state) {
 	switch (state) {
 	case STATE_THINKING:
-		return TextFormat("......");
+		return "......";
+	case STATE_FOLD:
+		return "Fold";
 	case STATE_CHECK:
-		return TextFormat("Check");
+		return "Check";
 	case STATE_CALL:
-		return TextFormat("Call");
+		return "Call";
 	case STATE_RAISE:
-		return TextFormat("Raise");
+		return "Raise";
 	case STATE_ALLIN:
-		return TextFormat("All in!");
+		return "All in!";
 	default:
-		return TextFormat("");
+		return "";
 	}
 }
 
@@ -404,6 +406,7 @@ Game new_game() {
 		.my_seat = 0,
 		.cur = 0,
 		.dealer = SEAT_CNT - 3, // make myself UTG
+		.bet = 0,
 		.pot = 0,
 		.slider = 0,
 	};
@@ -428,6 +431,10 @@ void refresh(Game *game) {
 	for (usize i = 0; i < SEAT_CNT; ++i) {
 		assert(game->players[i].chips >= 2);
 
+		if (!game->players[i].is_valid) {
+			continue;
+		}
+
 		game->players[i].state = STATE_WAITING;
 		game->players[i].bet = 0;
 
@@ -444,10 +451,14 @@ void refresh(Game *game) {
 	usize bb = get_next_player(game, sb);
 	usize utg = get_next_player(game, bb);
 
+	assert(game->players[sb].chips >= 1);
+	assert(game->players[bb].chips >= 2);
+
 	game->players[sb].chips -= 1;
 	game->players[sb].bet = 1;
 	game->players[bb].chips -= 2;
 	game->players[bb].bet = 2;
+	game->bet = 2;
 	game->pot = 3;
 
 	game->players[utg].state = STATE_THINKING;
@@ -455,6 +466,7 @@ void refresh(Game *game) {
 }
 
 void handle_input(Game *game) {
+	// These codes are for testing.
 	if (IsKeyPressed(KEY_SPACE)) {
 		game->dealer = get_next_player(game, game->dealer);
 
@@ -476,31 +488,108 @@ void handle_input(Game *game) {
 		}
 	}
 
-	if (IsKeyPressed(KEY_A)) {
-		assert(game->players[game->cur].chips >= 2);
-		game->players[game->cur].chips -= 2;
-		game->players[game->cur].bet += 2;
-		game->players[game->cur].state = STATE_CALL;
-		game->pot += 2;
-
-		game->cur = get_next_player(game, game->cur);
-		game->players[game->cur].state = STATE_THINKING;
+	if (game->cur != game->my_seat) {
+		return;
 	}
 
-	if (game->cur == game->my_seat) {
-		usize chips = min(game->players[game->my_seat].chips, 100);
-		game->slider = min(game->slider, chips);
+	usize chips = min(game->players[game->my_seat].chips, 100);
+	game->slider = min(game->slider, chips);
 
-		// FIXME: update when key down
-		if (IsKeyPressed(KEY_LEFT) && game->slider > 0) {
-			--game->slider;
-		} else if (IsKeyPressed(KEY_RIGHT) && game->slider < chips) {
-			++game->slider;
-		} else if (IsKeyPressed(KEY_UP)) {
-			game->slider = min(game->slider + 10, chips);
-		} else if (IsKeyPressed(KEY_DOWN)) {
-			game->slider = max(0, (isize)game->slider - 10);
+	// FIXME: update when key down to make it smooth
+	if (IsKeyPressed(KEY_LEFT) && game->slider > 0) {
+		--game->slider;
+	} else if (IsKeyPressed(KEY_RIGHT) && game->slider < chips) {
+		++game->slider;
+	} else if (IsKeyPressed(KEY_UP)) {
+		game->slider = min(game->slider + 10, chips);
+	} else if (IsKeyPressed(KEY_DOWN)) {
+		game->slider = max(0, (isize)game->slider - 10);
+	}
+
+	if (IsKeyPressed(KEY_F)) {
+		game->players[game->my_seat].state = STATE_FOLD;
+	} else if (IsKeyPressed(KEY_K)) {
+		game->players[game->my_seat].state = STATE_CHECK;
+	} else if (IsKeyPressed(KEY_C)) {
+		game->players[game->my_seat].state = STATE_CALL;
+	} else if (IsKeyPressed(KEY_ENTER)) {
+		game->players[game->my_seat].state = STATE_RAISE;
+	} else if (IsKeyPressed(KEY_A)) {
+		game->players[game->my_seat].state = STATE_ALLIN;
+	}
+}
+
+void update(Game *game) {
+	if (game->cur != game->my_seat) {
+		return;
+	}
+
+	Player *me = &game->players[game->my_seat];
+
+	// correct state and pass round
+	switch (me->state) {
+	case STATE_FOLD:
+		break;
+	case STATE_CHECK:
+		if (me->bet != game->bet) {
+			lol_debug("change state from check to thinking because of bet is not enough");
+			me->state = STATE_THINKING;
+			return;
 		}
+		break;
+	case STATE_CALL:
+		if (me->bet + me->chips < game->bet) {
+			lol_debug("change state from call to thinking because of no enough chips");
+			me->state = STATE_THINKING;
+			return;
+		} else {
+			usize diff = game->bet - me->bet;
+			me->chips -= diff;
+			me->bet = game->bet;
+			game->pot += diff;
+
+			if (me->chips == 0) {
+				me->state = STATE_ALLIN;
+			}
+		}
+		break;
+	case STATE_RAISE:
+		if (me->bet + game->slider < game->bet) {
+			lol_debug("change state from raise to thinking because of slider not big enough");
+			me->state = STATE_THINKING;
+			return;
+		} else {
+			me->chips -= game->slider;
+			me->bet += game->slider;
+			game->pot += game->slider;
+
+			if (me->bet == game->bet) {
+				me->state = STATE_CALL;
+			} else {
+				game->bet = me->bet;
+			}
+
+			if (me->chips == 0) {
+				me->state = STATE_ALLIN;
+			}
+		}
+		break;
+	case STATE_ALLIN:
+		me->bet += me->chips;
+		game->pot += me->chips;
+		me->chips = 0;
+		game->bet = max(game->bet, me->bet);
+		break;
+	default:
+		return;
+	}
+
+	isize next = get_next_player(game, game->cur);
+	if (next != -1) {
+		game->cur = next;
+		game->players[next].state = STATE_THINKING;
+	} else {
+		// TODO: advance game round
 	}
 }
 
@@ -694,6 +783,10 @@ void draw_player(
 	const ResManager *manager, const Player *player, usize seat, bool card_on_left,
 	bool is_dealer
 ) {
+	if (!player->is_valid) {
+		return;
+	}
+
 	Rectangle widget = get_player_widget(seat);
 	i32 small_margin = 5;
 	i32 large_margin = small_margin * 5;
@@ -720,7 +813,9 @@ void draw_player(
 		draw_button(manager, hand_pos.x, widget.y - (f32)font_size / 2);
 	}
 
-	draw_hand(manager, &player->hand, hand_pos);
+	if (player->state != STATE_STANDBY) {
+		draw_hand(manager, &player->hand, hand_pos);
+	}
 	// FIXME: this is beyond the widget box
 	draw_text_center(player->name, name_x, widget.y, font_size, RAYWHITE);
 
@@ -728,7 +823,7 @@ void draw_player(
 		draw_chip(manager, 0, get_amount(player->chips), chip_pos);
 	}
 	draw_text_center(
-		TextFormat("%" USIZE_FMT, player->chips),
+		TextFormat("-%" USIZE_FMT "/%" USIZE_FMT, player->bet, player->chips),
 		chip_pos.x + (f32)CHIP_WIDTH / 2,
 		chip_pos.y - small_margin - font_size,
 		font_size,
