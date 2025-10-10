@@ -45,7 +45,6 @@ jobs:
 
     - name: Setup Environment
       run: |
-        sudo apt-get update -qq
         sudo apt-get install -y --no-install-recommends just libsqlite3-dev
         curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.tar.gz"
         tar xvf "$RAYLIB_PATH.tar.gz"
