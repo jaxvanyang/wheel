@@ -119,6 +119,7 @@ int main(int argc, char *const argv[]) {
 
 	usize failed_cnt = 0, passed_cnt = 0;
 	Slist *tests = slist_new();
+	Str *failed_tests = str_new();
 
 	if (argc == 1) {
 #ifdef _WIN32
@@ -217,6 +218,8 @@ int main(int argc, char *const argv[]) {
 		} else {
 			++failed_cnt;
 			printf("[tests/%s]: fail\n", test);
+			str_push(failed_tests, ' ');
+			str_push_str(failed_tests, test);
 		}
 		print_progress(passed_cnt, failed_cnt, tests->len);
 
@@ -360,11 +363,14 @@ int main(int argc, char *const argv[]) {
 			lol_error_e("wait failed");
 			return EXIT_FAILURE;
 		}
+		char *test = find_test_by_pid(tests, pids, pid);
 
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
 			++passed_cnt;
 		} else {
 			++failed_cnt;
+			str_push(failed_tests, ' ');
+			str_push_str(failed_tests, test);
 		}
 
 		sem_wait(sem);
@@ -376,9 +382,14 @@ int main(int argc, char *const argv[]) {
 	FREE(pids);
 	sem_close(sem);
 	sem_unlink(sem_name);
-#endif
+#endif // _WIN32
 
-	slist_free(tests);
+	if (failed_cnt) {
+		printf("Failed tests (%" USIZE_FMT "):%s\n", failed_cnt, failed_tests->data);
+	}
+
+	str_free(failed_tests);
+	SLIST_FREE(tests);
 
 	if (failed_cnt) {
 		return EXIT_FAILURE;
