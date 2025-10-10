@@ -329,8 +329,8 @@ init_lol(lol_t *log, lol_level_e std_level, const char *file, lol_level_e file_l
 	log->print.color = 1;
 	log->print.timestamp = 1;
 	log->print.level = 1;
-	log->print.fileline = 1;
-	log->print.function = 1;
+	log->print.fileline = 0;
+	log->print.function = 0;
 	log->print.linefeed = 1;
 }
 
