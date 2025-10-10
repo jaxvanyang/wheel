@@ -53,5 +53,14 @@ bool slist_is_empty(Slist *list);
 Slist *slist_from(Str **array, usize size);
 // NOTE: this function is implemented but should not be used
 // bool slist_equal(Slist *a, Slist *b);
+
+// NOTE: strings in the list should be freed first. See also SLIST_FREE().
 void slist_free(Slist *list);
 void slist_shuffle(Slist *list);
+// Empty the list and free the strings.
+void slist_clear(Slist *list);
+
+#define SLIST_FREE(list) \
+	slist_clear(list); \
+	slist_free(list); \
+	list = NULL;

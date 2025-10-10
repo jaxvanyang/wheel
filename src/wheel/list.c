@@ -183,3 +183,12 @@ void ilist_print(Ilist *list) {
 }
 
 VECTOR_IMPLEMENTATION(Str *, Slist, slist)
+
+void slist_clear(Slist *list) {
+	for (usize i = 0; i < list->len; ++i) {
+		str_free(list->data[i]);
+		list->data[i] = NULL;
+	}
+
+	list->len = 0;
+}
