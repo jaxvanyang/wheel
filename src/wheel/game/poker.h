@@ -97,8 +97,8 @@ typedef enum {
 } PlayerState;
 
 typedef struct {
+	char name[32];
 	Hand hand;
-	const char *name;
 	usize chips;
 	usize bet;
 	bool is_valid;
@@ -122,6 +122,9 @@ u8 card_to_num(Card card);
 // Return a debug string representation of the card
 // NOTE: need to be freed
 char *card_debug(Card card);
+// Return a string representation of the card
+// NOTE: need to be freed
+char *card_display(Card card);
 Deck new_deck();
 Card deck_pop(Deck *deck);
 Hand new_empty_hand();
@@ -147,15 +150,19 @@ void print_selection(const Selection *selection);
 
 ResManager new_res_manager();
 
-// Return a one-time string of the player's state.
+// Return a static string of the player's state.
 const char *format_player_state(PlayerState state);
-Player new_player(const char *name, usize chips, bool is_valid);
+Player new_player(usize chips, bool is_valid);
 
 Game new_game();
 void refresh(Game *game);
 
 void handle_input(Game *game);
 
+// Choose action as a bot for current player.
+void bot_update(Game *game);
+// Choose action based on the input for myself.
+void manual_update(Game *game);
 void update(Game *game);
 
 // NOTE: the seat is relative to my seat
