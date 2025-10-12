@@ -1,4 +1,3 @@
-#include <ctype.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
@@ -6,7 +5,7 @@
 #include "list.h"
 #include "str.h"
 
-Ilist *build_next(char *t) {
+Ilist *build_next(const char *t) {
 	usize len = strlen(t);
 	Ilist *next = ilist_new();
 
@@ -27,7 +26,7 @@ Ilist *build_next(char *t) {
 	return next;
 }
 
-Ilist *build_nextval(char *t) {
+Ilist *build_nextval(const char *t) {
 	usize len = strlen(t);
 	Ilist *nextval = ilist_new();
 
@@ -53,7 +52,7 @@ Ilist *build_nextval(char *t) {
 	return nextval;
 }
 
-isize kmp(char *s, char *t) {
+isize kmp(const char *s, const char *t) {
 	isize slen = strlen(s);
 	isize tlen = strlen(t);
 
@@ -66,6 +65,7 @@ isize kmp(char *s, char *t) {
 			++i, ++j;
 
 			if (j == tlen) {
+				ilist_free(next);
 				return i - tlen;
 			}
 		} else {
@@ -73,6 +73,7 @@ isize kmp(char *s, char *t) {
 		}
 	}
 
+	ilist_free(next);
 	return -1;
 }
 
@@ -250,31 +251,61 @@ void str_clear(Str *s) {
 	s->len = 0;
 }
 
-Slist *str_split(const Str *s) {
+bool is_char_in(char c, const char *s) {
+	while (*s != '\0') {
+		if (*s == c) {
+			return true;
+		}
+		++s;
+	}
+
+	return false;
+}
+
+Slist *_str_split(const Str *s, SplitArg arg) {
+	const char *seps = arg.seps == NULL ? "\t\n\v\f\r " : arg.seps;
 	Slist *list = slist_new();
 
 	usize i = 0;
 
-	while (i < s->len && isspace(s->data[i])) {
+	while (i < s->len && is_char_in(s->data[i], seps)) {
 		++i;
 	}
 
 	while (i < s->len) {
 		Str *t = str_new();
 
-		while (i < s->len && !isspace(s->data[i])) {
+		while (i < s->len && !is_char_in(s->data[i], seps)) {
 			str_push(t, s->data[i]);
 			++i;
 		}
 
 		slist_push(list, t);
 
-		while (i < s->len && isspace(s->data[i])) {
+		while (i < s->len && is_char_in(s->data[i], seps)) {
 			++i;
 		}
 	}
 
 	return list;
+}
+
+char *str_join(const Slist *list, const char *sep) {
+	Str *s = str_new();
+
+	if (list->len > 0) {
+		str_push_str(s, list->data[0]->data);
+	}
+
+	for (usize i = 1; i < list->len; ++i) {
+		str_push_str(s, sep);
+		str_push_str(s, list->data[i]->data);
+	}
+
+	char *ret = s->data;
+	FREE(s);
+
+	return ret;
 }
 
 void str_readline(Str *s, FILE *f) {

@@ -4,9 +4,10 @@
 #include "list/types.h"
 #include "str/types.h"
 
-Ilist *build_next(char *t);
-Ilist *build_nextval(char *t);
-isize kmp(char *s, char *t);
+Ilist *build_next(const char *t);
+Ilist *build_nextval(const char *t);
+// Return first occurrence of t in s, return -1 if not found.
+isize kmp(const char *s, const char *t);
 
 bool str_start_with(const char *s, const char *pattern);
 bool str_end_with(const char *s, const char *pattern);
@@ -29,8 +30,18 @@ char str_pop(Str *s);
 void str_reverse(Str *s);
 void str_clear(Str *s);
 
-// Split the string by white spaces into a list.
-Slist *str_split(const Str *s);
+// Return whether c is in the string s.
+bool is_char_in(char c, const char *s);
+
+typedef struct {
+	const char *seps;
+} SplitArg;
+
+// Split the string by white spaces into a list. If optional .seps given, split
+// by characters in them.
+#define str_split(s, ...) _str_split(s, (SplitArg){__VA_ARGS__})
+Slist *_str_split(const Str *s, SplitArg arg);
+char *str_join(const Slist *list, const char *sep);
 
 /// Read a line from the file to the string.
 /// NOTE: this overrides the string, and newline is preserved.
