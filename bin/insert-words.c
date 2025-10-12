@@ -11,7 +11,7 @@ void main() {}
 #include <stdio.h>
 #include <wheel.h>
 
-#define BUF_SIZE 128
+#define BUF_SIZE 1024
 
 void list_words(sqlite3 *db);
 int print_words(void *_, int cols, char **row, char **col_names);
