@@ -5,7 +5,7 @@ build-debug:
 	CFLAGS='-g -O0' make
 
 run bin *args:
-	make bin/{{bin}}
+	make bin/{{bin}} >&2
 	bin/{{bin}} {{args}}
 
 # run game (force rebuild)
