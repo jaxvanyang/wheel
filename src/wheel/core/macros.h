@@ -1,5 +1,23 @@
 #pragma once
 
+#include <stdio.h>
+#include <stdlib.h>
+
+#define println(...) \
+	printf(__VA_ARGS__); \
+	putchar('\n')
+
+#define eprint(...) fprintf(stderr, __VA_ARGS__)
+
+#define eprintln(...) \
+	eprint(__VA_ARGS__); \
+	eprint("\n")
+
+#define error(...) \
+	eprint("%s:%d: ", __FILE__, __LINE__); \
+	eprintln(__VA_ARGS__); \
+	exit(1)
+
 // Free a pointer, and set it to NULL.
 #define FREE(p) \
 	free(p); \

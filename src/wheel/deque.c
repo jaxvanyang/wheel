@@ -1,7 +1,5 @@
 #include "deque.h"
 
-#include "wheel/core/error.h"
-
 DequeNode *deque_node_new(isize value) {
 	DequeNode *node = malloc(sizeof(DequeNode));
 	node->value = value;
