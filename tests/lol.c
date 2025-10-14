@@ -18,12 +18,12 @@ static void *log_thread(void *arg) {
 	lol_init(tid_str, (unsigned long)tid % 6 + 1, NULL, LOL_NONE);
 
 	for (int i = 0; i < *(int *)arg; i++) {
-		lol_fatal2(tid_str, "");
-		lol_error2(tid_str, "");
-		lol_warn2(tid_str, "");
-		lol_info2(tid_str, "");
-		lol_debug2(tid_str, "");
-		lol_trace2(tid_str, "");
+		lol_fatal2(tid_str, "this is a fatal message");
+		lol_error2(tid_str, "this is an error message");
+		lol_warn2(tid_str, "this is a warn message");
+		lol_info2(tid_str, "this is an info message");
+		lol_debug2(tid_str, "this is a debug message");
+		lol_trace2(tid_str, "this is a trace message");
 	}
 
 	return arg;
@@ -31,11 +31,12 @@ static void *log_thread(void *arg) {
 
 static void test_errno() {
 	lol_init("errno", LOL_INFO, NULL, LOL_NONE);
-	FILE *f = fopen("nonexist", "r");
-	// perror("");
-	lol_error_e("");
-	lol_error_e2(errno, "");
-	lol_error_de("errno", errno, "");
+	char f_path[] = "nonexist";
+	FILE *f = fopen(f_path, "r");
+
+	lol_error_e("open %s failed", f_path);
+	lol_error_e2(errno, "open %s failed", f_path);
+	lol_error_de("errno", errno, "open %s failed", f_path);
 	if (f) {
 		fclose(f);
 	}
