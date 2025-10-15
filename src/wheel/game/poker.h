@@ -1,5 +1,6 @@
 #pragma once
 
+#include <pthread.h>
 #include <raylib.h>
 
 #include "../core.h"
@@ -97,10 +98,11 @@ typedef enum {
 } PlayerState;
 
 typedef struct {
+	char name[32];
 	Hand hand;
-	const char *name;
 	usize chips;
 	usize bet;
+	usize gain;
 	bool is_valid;
 	PlayerState state;
 } Player;
@@ -109,11 +111,14 @@ typedef struct {
 	ResManager manager;
 	PubCards pub_cards;
 	Player players[SEAT_CNT];
+	pthread_t countdown_thread;
 	usize my_seat;
 	usize cur; // current player's seat number
 	usize dealer;
+	usize bet;
 	usize pot;
-	usize slider;
+	usize slider; // must guarantee it is <= min(chips, 100)
+	bool is_freezing;
 } Game;
 
 Card card_from_num(u8 num);
@@ -121,13 +126,19 @@ u8 card_to_num(Card card);
 // Return a debug string representation of the card
 // NOTE: need to be freed
 char *card_debug(Card card);
+// Return a string representation of the card
+// NOTE: need to be freed
+char *card_display(Card card);
 Deck new_deck();
 Card deck_pop(Deck *deck);
 Hand new_empty_hand();
 void deal_pub_cards(Deck *deck, PubCards *pub);
 void deal_hand(Deck *deck, Hand *hand);
-// Return next player's seat number.
-usize get_next_player(const Game *game, usize seat);
+// Return next player's seat number. Only consider players that need to take action in
+// this round. Return -1 if no such players.
+isize get_next_player(const Game *game, usize seat);
+// Return count of players that didn't fold.
+usize get_player_count(const Game *game);
 
 // Return a - b, ACE is higher than KING
 i8 cmp_rank(Rank a, Rank b);
@@ -145,14 +156,23 @@ void print_selection(const Selection *selection);
 
 ResManager new_res_manager();
 
-// Return a one-time string of the player's state.
+// Return a static string of the player's state.
 const char *format_player_state(PlayerState state);
-Player new_player(const char *name, usize chips, bool is_valid);
+Player new_player(usize chips, bool is_valid);
+bool is_player_on_table(const Player *player);
 
 Game new_game();
 void refresh(Game *game);
+void wait_for_new_game(Game *game);
+void start_new_game(Game *game);
 
 void handle_input(Game *game);
+
+// Choose action as a bot for current player.
+void bot_update(Game *game);
+// Choose action based on the input for myself.
+void manual_update(Game *game);
+void update(Game *game);
 
 // NOTE: the seat is relative to my seat
 Rectangle get_player_widget(usize seat);

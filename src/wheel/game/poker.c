@@ -1,7 +1,9 @@
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "../../wheel/lol.h"
+#include "../../wheel/str.h"
 #include "poker.h"
 
 const f32 CARD_SCALE = 2;
@@ -64,6 +66,42 @@ char *card_debug(Card card) {
 	return ret;
 }
 
+char *card_display(Card card) {
+	assert(card.suit < 4);
+	assert(card.rank < 13);
+
+	Str *tmp = str_new();
+
+	if (card.suit == HEART) {
+		str_push_str(tmp, "♥️ ");
+	} else if (card.suit == DIAMOND) {
+		str_push_str(tmp, "♦️ ");
+	} else if (card.suit == CLUB) {
+		str_push_str(tmp, "♠️ ");
+	} else {
+		str_push_str(tmp, "♣️ ");
+	}
+
+	if (card.rank == ACE) {
+		str_push(tmp, 'A');
+	} else if (card.rank == KING) {
+		str_push(tmp, 'K');
+	} else if (card.rank == QUEEN) {
+		str_push(tmp, 'Q');
+	} else if (card.rank == JACK) {
+		str_push(tmp, 'J');
+	} else if (card.rank == TEN) {
+		str_push(tmp, 'T');
+	} else {
+		str_push(tmp, '1' + card.rank);
+	}
+
+	char *ret = tmp->data;
+	free(tmp);
+
+	return ret;
+}
+
 Deck new_deck() {
 	Deck deck = {
 		.cards = {},
@@ -103,20 +141,45 @@ void deal_hand(Deck *deck, Hand *hand) {
 	hand->cards[1] = deck_pop(deck);
 }
 
-usize get_next_player(const Game *game, usize seat) {
-	usize ret = seat;
+isize get_next_player(const Game *game, usize seat) {
+	isize ret = seat;
 
 	while (true) {
-		ret = (seat + 1) % SEAT_CNT;
-		if (ret == seat) {
-			lol_term("expected another valid player");
+		ret = (ret + 1) % SEAT_CNT;
+
+		if (ret == (isize)seat) {
+			return -1;
 		}
-		if (!game->players[ret].is_valid) {
+
+		if (!game->players[ret].is_valid || game->players[ret].state == STATE_STANDBY ||
+				game->players[ret].state == STATE_ALLIN ||
+				game->players[ret].state == STATE_FOLD) {
 			continue;
 		}
 
-		return ret;
+		assert(game->players[ret].state != STATE_THINKING);
+
+		if (game->players[ret].state == STATE_WAITING ||
+				game->players[ret].bet < game->bet) {
+			return ret;
+		}
 	}
+}
+
+usize get_player_count(const Game *game) {
+	usize ret = 0;
+
+	for (usize i = 0; i < SEAT_CNT; ++i) {
+		if (!game->players[i].is_valid || game->players[i].state == STATE_STANDBY) {
+			continue;
+		}
+
+		if (game->players[i].state != STATE_FOLD) {
+			++ret;
+		}
+	}
+
+	return ret;
 }
 
 i8 cmp_rank(Rank a, Rank b) {
@@ -370,28 +433,43 @@ ResManager new_res_manager() {
 const char *format_player_state(PlayerState state) {
 	switch (state) {
 	case STATE_THINKING:
-		return TextFormat("......");
+		return "......";
+	case STATE_FOLD:
+		return "Fold";
 	case STATE_CHECK:
-		return TextFormat("Check");
+		return "Check";
 	case STATE_CALL:
-		return TextFormat("Call");
+		return "Call";
 	case STATE_RAISE:
-		return TextFormat("Raise");
+		return "Raise";
 	case STATE_ALLIN:
-		return TextFormat("All in!");
+		return "All in!";
 	default:
-		return TextFormat("");
+		return "";
 	}
 }
 
-Player new_player(const char *name, usize chips, bool is_valid) {
+Player new_player(usize chips, bool is_valid) {
 	return (Player){
-		.name = name,
 		.chips = chips,
 		.hand = new_empty_hand(),
 		.is_valid = is_valid,
 		.state = STATE_STANDBY,
 	};
+}
+
+bool is_player_on_table(const Player *player) {
+	if (!player->is_valid) {
+		return false;
+	}
+
+	switch (player->state) {
+	case STATE_STANDBY:
+	case STATE_FOLD:
+		return false;
+	default:
+		return true;
+	}
 }
 
 Game new_game() {
@@ -404,14 +482,14 @@ Game new_game() {
 		.my_seat = 0,
 		.cur = 0,
 		.dealer = SEAT_CNT - 3, // make myself UTG
+		.bet = 0,
 		.pot = 0,
 		.slider = 0,
 	};
 
 	for (usize i = 0; i < SEAT_CNT; ++i) {
-		char *name = malloc(sizeof(char) * 32);
-		sprintf(name, "P%d", (int)i + 1);
-		game.players[i] = new_player(name, 100, true);
+		game.players[i] = new_player(100, true);
+		sprintf(game.players[i].name, "P%d", (int)i + 1);
 	}
 
 	refresh(&game);
@@ -428,8 +506,13 @@ void refresh(Game *game) {
 	for (usize i = 0; i < SEAT_CNT; ++i) {
 		assert(game->players[i].chips >= 2);
 
+		if (!game->players[i].is_valid) {
+			continue;
+		}
+
 		game->players[i].state = STATE_WAITING;
 		game->players[i].bet = 0;
+		game->players[i].gain = 0;
 
 		if (i == game->my_seat) {
 			for (usize j = 0; j < 2; ++j) {
@@ -444,21 +527,53 @@ void refresh(Game *game) {
 	usize bb = get_next_player(game, sb);
 	usize utg = get_next_player(game, bb);
 
+	assert(game->players[sb].chips >= 1);
+	assert(game->players[bb].chips >= 2);
+
 	game->players[sb].chips -= 1;
 	game->players[sb].bet = 1;
 	game->players[bb].chips -= 2;
 	game->players[bb].bet = 2;
+	game->bet = 2;
 	game->pot = 3;
 
 	game->players[utg].state = STATE_THINKING;
 	game->cur = utg;
 }
 
-void handle_input(Game *game) {
-	if (IsKeyPressed(KEY_SPACE)) {
-		game->dealer = get_next_player(game, game->dealer);
+static void *sleep_thread(void *arg) {
+	usize s = (usize)arg;
 
-		refresh(game);
+	sleep(s);
+
+	return NULL;
+}
+
+void wait_for_new_game(Game *game) {
+	lol_info("the game finished, waiting for the next game to start");
+
+	game->is_freezing = true;
+
+	pthread_create(&game->countdown_thread, NULL, sleep_thread, (void *)5);
+}
+
+void start_new_game(Game *game) {
+	for (usize i = 0; i < SEAT_CNT; ++i) {
+		// standby players also get started
+		if (game->players[i].is_valid) {
+			game->players[i].state = STATE_WAITING;
+		}
+	}
+
+	game->dealer = get_next_player(game, game->dealer);
+
+	refresh(game);
+}
+
+void handle_input(Game *game) {
+	// These codes are for testing.
+	if (IsKeyPressed(KEY_SPACE)) {
+		start_new_game(game);
 	}
 
 	if (IsKeyPressed(KEY_D)) {
@@ -476,31 +591,219 @@ void handle_input(Game *game) {
 		}
 	}
 
-	if (IsKeyPressed(KEY_A)) {
-		assert(game->players[game->cur].chips >= 2);
-		game->players[game->cur].chips -= 2;
-		game->players[game->cur].bet += 2;
-		game->players[game->cur].state = STATE_CALL;
-		game->pot += 2;
-
-		game->cur = get_next_player(game, game->cur);
-		game->players[game->cur].state = STATE_THINKING;
+	if (game->cur != game->my_seat) {
+		return;
 	}
 
-	if (game->cur == game->my_seat) {
-		usize chips = min(game->players[game->my_seat].chips, 100);
-		game->slider = min(game->slider, chips);
+	usize chips = min(game->players[game->my_seat].chips, 100);
+	game->slider = min(game->slider, chips);
 
-		// FIXME: update when key down
-		if (IsKeyPressed(KEY_LEFT) && game->slider > 0) {
-			--game->slider;
-		} else if (IsKeyPressed(KEY_RIGHT) && game->slider < chips) {
-			++game->slider;
-		} else if (IsKeyPressed(KEY_UP)) {
-			game->slider = min(game->slider + 10, chips);
-		} else if (IsKeyPressed(KEY_DOWN)) {
-			game->slider = max(0, (isize)game->slider - 10);
+	// FIXME: update when key down to make it smooth
+	if (IsKeyPressed(KEY_LEFT) && game->slider > 0) {
+		--game->slider;
+	} else if (IsKeyPressed(KEY_RIGHT) && game->slider < chips) {
+		++game->slider;
+	} else if (IsKeyPressed(KEY_UP)) {
+		game->slider = min(game->slider + 10, chips);
+	} else if (IsKeyPressed(KEY_DOWN)) {
+		game->slider = max(0, (isize)game->slider - 10);
+	}
+
+	if (IsKeyPressed(KEY_F)) {
+		game->players[game->my_seat].state = STATE_FOLD;
+	} else if (IsKeyPressed(KEY_K)) {
+		game->players[game->my_seat].state = STATE_CHECK;
+	} else if (IsKeyPressed(KEY_C)) {
+		game->players[game->my_seat].state = STATE_CALL;
+	} else if (IsKeyPressed(KEY_ENTER)) {
+		game->players[game->my_seat].state = STATE_RAISE;
+	} else if (IsKeyPressed(KEY_A)) {
+		game->players[game->my_seat].state = STATE_ALLIN;
+	}
+}
+
+void bot_update(Game *game) {
+	Player *bot = &game->players[game->cur];
+	usize bet = GetRandomValue(0, min(bot->chips, 100));
+
+	if (bet == bot->chips) {
+		bot->state = STATE_ALLIN;
+		bot->bet += bot->chips;
+		game->pot += bot->chips;
+		bot->chips = 0;
+		game->bet = max(game->bet, bot->bet);
+	} else if (bot->bet + bet < game->bet) {
+		bot->state = STATE_FOLD;
+	} else if (bet == 0) {
+		bot->state = STATE_CHECK;
+	} else {
+		bot->chips -= bet;
+		bot->bet += bet;
+		game->pot += bet;
+
+		if (bot->bet == game->bet) {
+			bot->state = STATE_CALL;
+		} else {
+			game->bet = bot->bet;
+			bot->state = STATE_RAISE;
 		}
+	}
+}
+
+void manual_update(Game *game) {
+	Player *player = &game->players[game->my_seat];
+
+	switch (player->state) {
+	case STATE_CHECK:
+		if (player->bet != game->bet) {
+			lol_debug("change state from check to thinking because of bet is not enough");
+			player->state = STATE_THINKING;
+		}
+		break;
+	case STATE_CALL:
+		if (player->bet + player->chips < game->bet) {
+			lol_debug("change state from call to thinking because of no enough chips");
+			player->state = STATE_THINKING;
+		} else {
+			usize diff = game->bet - player->bet;
+			player->chips -= diff;
+			player->bet = game->bet;
+			game->pot += diff;
+
+			if (player->chips == 0) {
+				player->state = STATE_ALLIN;
+			}
+		}
+		break;
+	case STATE_RAISE:
+		if (player->bet + game->slider < game->bet) {
+			lol_debug("change state from raise to thinking because of slider not big enough");
+			player->state = STATE_THINKING;
+		} else {
+			player->chips -= game->slider;
+			player->bet += game->slider;
+			game->pot += game->slider;
+
+			if (player->bet == game->bet) {
+				player->state = STATE_CALL;
+			} else {
+				game->bet = player->bet;
+			}
+
+			if (player->chips == 0) {
+				player->state = STATE_ALLIN;
+			}
+		}
+		break;
+	case STATE_ALLIN:
+		// FIXME: only allow up to 100 chips in a single bet
+		player->bet += player->chips;
+		game->pot += player->chips;
+		player->chips = 0;
+		game->bet = max(game->bet, player->bet);
+		break;
+	default:
+		break;
+	}
+}
+
+void update(Game *game) {
+	if (game->cur != game->my_seat) {
+		bot_update(game);
+	} else {
+		manual_update(game);
+	}
+
+	if (game->players[game->cur].state == STATE_THINKING) {
+		return;
+	}
+
+	lol_info(
+		"%s chose to %s, total bet: %" USIZE_FMT,
+		game->players[game->cur],
+		format_player_state(game->players[game->cur].state),
+		game->players[game->cur].bet
+	);
+
+	isize next = get_next_player(game, game->cur);
+	if (next != -1) {
+		game->players[next].state = STATE_THINKING;
+		game->cur = next;
+		return;
+	}
+
+	// all other players have folded
+	if (get_player_count(game) == 1) {
+		for (usize i = 0; i < SEAT_CNT; ++i) {
+			if (!game->players[i].is_valid || game->players[i].state == STATE_STANDBY) {
+				continue;
+			}
+
+			if (game->players[i].state != STATE_FOLD) {
+				game->players[i].gain = game->pot - game->players[i].bet;
+				game->players[i].chips += game->pot;
+
+				wait_for_new_game(game);
+				return;
+			}
+		}
+
+		error("unreachable");
+	}
+
+	// refresh players' states because we need to start a new round
+	for (usize i = 0; i < SEAT_CNT; ++i) {
+		if (game->players[i].state != STATE_ALLIN &&
+				is_player_on_table(game->players + i)) {
+			game->players[i].state = STATE_WAITING;
+		}
+	}
+
+	game->cur = get_next_player(game, game->cur);
+	game->players[game->cur].state = STATE_THINKING;
+
+	switch (game->pub_cards.len) {
+	case 0: {
+		Str *tmp = str_new();
+		for (usize i = 0; i < 3; ++i) {
+			char *s = card_display(game->pub_cards.cards[i]);
+			str_push_str(tmp, TextFormat(" %s", s));
+			FREE(s);
+		}
+		lol_info("deal flop:%s", tmp->data);
+		str_free(tmp);
+
+		game->pub_cards.len = 3;
+		break;
+	}
+	case 3: {
+		char *s = card_display(game->pub_cards.cards[3]);
+		lol_info("deal turn: %s", s);
+		FREE(s);
+
+		game->pub_cards.len = 4;
+		break;
+	}
+	case 4: {
+		char *s = card_display(game->pub_cards.cards[4]);
+		lol_info("deal river: %s", s);
+		FREE(s);
+
+		game->pub_cards.len = 5;
+		break;
+	}
+	case 5:
+		for (usize i = 0; i < SEAT_CNT; ++i) {
+			if (!is_player_on_table(game->players + i)) {
+				continue;
+			}
+			game->players[i].hand.mask[0] = true;
+			game->players[i].hand.mask[1] = true;
+		}
+		todo("compute game result");
+		break;
+	default:
+		error("expected len = %" USIZE_FMT " in {0, 3, 4, 5}", game->pub_cards.len);
 	}
 }
 
@@ -694,6 +997,10 @@ void draw_player(
 	const ResManager *manager, const Player *player, usize seat, bool card_on_left,
 	bool is_dealer
 ) {
+	if (!player->is_valid) {
+		return;
+	}
+
 	Rectangle widget = get_player_widget(seat);
 	i32 small_margin = 5;
 	i32 large_margin = small_margin * 5;
@@ -720,15 +1027,19 @@ void draw_player(
 		draw_button(manager, hand_pos.x, widget.y - (f32)font_size / 2);
 	}
 
-	draw_hand(manager, &player->hand, hand_pos);
+	if (player->state != STATE_STANDBY && player->state != STATE_FOLD) {
+		draw_hand(manager, &player->hand, hand_pos);
+	}
 	// FIXME: this is beyond the widget box
 	draw_text_center(player->name, name_x, widget.y, font_size, RAYWHITE);
+
+	isize diff = player->gain == 0 ? -(isize)player->bet : player->gain;
 
 	if (player->chips != 0) {
 		draw_chip(manager, 0, get_amount(player->chips), chip_pos);
 	}
 	draw_text_center(
-		TextFormat("%" USIZE_FMT, player->chips),
+		TextFormat("%+" ISIZE_FMT "/%" USIZE_FMT, diff, player->chips),
 		chip_pos.x + (f32)CHIP_WIDTH / 2,
 		chip_pos.y - small_margin - font_size,
 		font_size,
