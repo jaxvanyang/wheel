@@ -7,6 +7,7 @@
 void main() {}
 #else
 
+#include <assert.h>
 #include <sqlite3.h>
 #include <stdio.h>
 #include <wheel.h>
@@ -15,6 +16,8 @@ void main() {}
 
 void list_words(sqlite3 *db);
 int print_words(void *_, int cols, char **row, char **col_names);
+void insert_word(sqlite3 *db, const char *word, const char *meaning);
+void delete_words(sqlite3 *db, const Slist *words);
 
 int main(int argc, const char *argv[]) {
 	if (argc != 2) {
@@ -59,22 +62,8 @@ int main(int argc, const char *argv[]) {
 		}
 
 		if (strcmp(slist_get(list, 0)->data, "delete") == 0) {
-			for (usize i = 1; i < list->len; ++i) {
-				snprintf(
-					sql,
-					sizeof(sql),
-					"delete from words where word = '%s'",
-					slist_get(list, i)->data
-				);
-
-				rc = sqlite3_exec(db, sql, NULL, NULL, &err_msg);
-				if (rc != SQLITE_OK) {
-					eprintln("ERROR: %s", err_msg);
-					sqlite3_free(err_msg);
-				} else {
-					eprintln("INFO: deleted: %d row affected", sqlite3_changes(db));
-				}
-			}
+			str_free(slist_delete(list, 0));
+			delete_words(db, list);
 
 			SLIST_FREE(list);
 			continue;
@@ -85,36 +74,17 @@ int main(int argc, const char *argv[]) {
 			continue;
 		}
 
-		if (list->len == 1) {
-			snprintf(
-				sql,
-				sizeof(sql),
-				"insert or replace into words (word) values ('%s')",
-				slist_get(list, 0)->data
-			);
+		Str *word = slist_delete(list, 0);
+		char *meaning = str_join(list, " ");
+
+		if (strlen(meaning) == 0) {
+			insert_word(db, word->data, NULL);
 		} else {
-			Str *word = slist_delete(list, 0);
-			char *translation = str_join(list, " ");
-
-			snprintf(
-				sql,
-				sizeof(sql),
-				"insert or replace into words (word, translation) values ('%s', '%s')",
-				word->data,
-				translation
-			);
-
-			FREE(translation);
-			str_free(word);
+			insert_word(db, word->data, meaning);
 		}
 
-		rc = sqlite3_exec(db, sql, NULL, NULL, &err_msg);
-		if (rc != SQLITE_OK) {
-			eprintln("ERROR: %s", err_msg);
-			sqlite3_free(err_msg);
-		} else {
-			eprintln("INFO: inserted: %d row affected", sqlite3_changes(db));
-		}
+		FREE(meaning);
+		str_free(word);
 
 		SLIST_FREE(list);
 	}
@@ -129,9 +99,8 @@ int main(int argc, const char *argv[]) {
 
 void list_words(sqlite3 *db) {
 	char *err_msg = NULL;
-	int rc = sqlite3_exec(
-		db, "select word, translation from words", print_words, NULL, &err_msg
-	);
+	int rc =
+		sqlite3_exec(db, "select word, meaning from words", print_words, NULL, &err_msg);
 	if (rc != SQLITE_OK) {
 		eprintln("ERROR: %s", err_msg);
 		sqlite3_free(err_msg);
@@ -149,6 +118,62 @@ int print_words(void *_, int cols, char **row, char **col_names) {
 	}
 
 	return SQLITE_OK;
+}
+
+void insert_word(sqlite3 *db, const char *word, const char *meaning) {
+	assert(word != NULL);
+	assert(strlen(word) != 0);
+
+	int rc;
+	sqlite3_stmt *stmt;
+	const char *sql = "insert or replace into words (word, meaning) values (?, ?)";
+
+	rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+	if (rc != SQLITE_OK) {
+		eprintln("ERROR: prepare failed: %s", sqlite3_errmsg(db));
+	}
+
+	sqlite3_bind_text(stmt, 1, word, -1, SQLITE_STATIC);
+	if (meaning == NULL) {
+		sqlite3_bind_null(stmt, 2);
+	} else {
+		sqlite3_bind_text(stmt, 2, meaning, -1, SQLITE_STATIC);
+	}
+
+	rc = sqlite3_step(stmt);
+	if (rc != SQLITE_DONE) {
+		eprintln("ERROR: insert failed: %s", sqlite3_errmsg(db));
+	} else {
+		eprintln("INFO: inserted: %d row affected", sqlite3_changes(db));
+	}
+
+	sqlite3_finalize(stmt);
+}
+
+void delete_words(sqlite3 *db, const Slist *words) {
+	int rc;
+	sqlite3_stmt *stmt;
+	const char *sql = "delete from words where word = ?";
+
+	rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+	if (rc != SQLITE_OK) {
+		eprintln("ERROR: prepare failed: %s", sqlite3_errmsg(db));
+	}
+
+	for (usize i = 0; i < words->len; ++i) {
+		sqlite3_bind_text(stmt, 1, slist_get(words, i)->data, -1, SQLITE_STATIC);
+
+		rc = sqlite3_step(stmt);
+		if (rc != SQLITE_DONE) {
+			eprintln("ERROR: delete failed: %s", sqlite3_errmsg(db));
+		} else {
+			eprintln("INFO: deleted: %d row affected", sqlite3_changes(db));
+		}
+
+		sqlite3_reset(stmt);
+	}
+
+	sqlite3_finalize(stmt);
 }
 
 #endif // _WIN32
