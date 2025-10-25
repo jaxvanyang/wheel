@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
@@ -306,6 +307,37 @@ char *str_join(const Slist *list, const char *sep) {
 	FREE(s);
 
 	return ret;
+}
+
+void str_lstrip(Str *s) {
+	if (!isspace(*s->data)) {
+		return;
+	}
+
+	char *p = s->data;
+	while (isspace(*p)) {
+		++p;
+	}
+
+	char *q = s->data;
+	while (*p != '\0') {
+		*q++ = *p;
+		*p++ = '\0';
+	}
+	*q = '\0';
+
+	s->len = strlen(s->data);
+}
+
+void str_rstrip(Str *s) {
+	while (s->len > 0 && isspace(s->data[s->len - 1])) {
+		str_pop(s);
+	}
+}
+
+void str_strip(Str *s) {
+	str_lstrip(s);
+	str_rstrip(s);
 }
 
 void str_readline(Str *s, FILE *f) {

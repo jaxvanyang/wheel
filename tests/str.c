@@ -49,4 +49,49 @@ int main() {
 		SLIST_FREE(list);
 		str_free(s);
 	}
+
+	{
+		Str *s = str_from(" abc  ");
+		str_lstrip(s);
+
+		assert(strcmp(s->data, "abc  ") == 0);
+
+		str_free(s);
+	}
+
+	{
+		Str *s = str_from(" abc  ");
+		str_rstrip(s);
+
+		assert(strcmp(s->data, " abc") == 0);
+
+		str_free(s);
+	}
+
+	{
+		Str *s = str_from(" abc  ");
+		str_strip(s);
+
+		assert(strcmp(s->data, "abc") == 0);
+
+		str_free(s);
+	}
+
+	{
+		Str *s = str_from("      ");
+		str_strip(s);
+
+		assert(strcmp(s->data, "") == 0);
+
+		str_free(s);
+	}
+
+	{
+		Str *s = str_from("abc");
+		str_strip(s);
+
+		assert(strcmp(s->data, "abc") == 0);
+
+		str_free(s);
+	}
 }
