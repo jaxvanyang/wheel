@@ -129,7 +129,7 @@ void iterate() {
 	usize n = binom(52, 7);
 	print_progress(0, n);
 
-	usize n_thread = nproc();
+	usize n_thread = get_nproc();
 	pthread_t *threads = malloc(sizeof(pthread_t) * n_thread);
 	Filter *args = malloc(sizeof(Filter) * n_thread);
 

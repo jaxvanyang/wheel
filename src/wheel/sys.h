@@ -13,4 +13,4 @@ typedef enum {
 OSType get_os();
 
 // Return logical processor count.
-usize nproc();
+usize get_nproc();

@@ -24,7 +24,7 @@ int main() {
 	}
 
 	{
-		usize n = nproc();
+		usize n = get_nproc();
 		printf("nproc: %" USIZE_FMT "\n", n);
 	}
 }

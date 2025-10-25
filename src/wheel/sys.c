@@ -20,7 +20,7 @@ OSType get_os() {
 #endif
 }
 
-usize nproc() {
+usize get_nproc() {
 #ifdef _WIN32
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo(&sysinfo);

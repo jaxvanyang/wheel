@@ -2,6 +2,6 @@
 #include <wheel/sys.h>
 
 int main() {
-	usize n = nproc();
+	usize n = get_nproc();
 	printf("%" USIZE_FMT "\n", n);
 }
