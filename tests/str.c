@@ -37,7 +37,7 @@ int main() {
 	}
 
 	{
-		Str *s = str_from("    a ab \t abc \n abcd   ");
+		const char *s = "    a ab \t abc \n abcd   ";
 		Slist *list = str_split(s);
 
 		assert(list->len == 4);
@@ -47,7 +47,6 @@ int main() {
 		assert(strcmp(slist_get(list, 3)->data, "abcd") == 0);
 
 		SLIST_FREE(list);
-		str_free(s);
 	}
 
 	{

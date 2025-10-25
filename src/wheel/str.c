@@ -263,27 +263,27 @@ bool is_char_in(char c, const char *s) {
 	return false;
 }
 
-Slist *_str_split(const Str *s, SplitArg arg) {
+Slist *_str_split(const char *s, SplitArg arg) {
 	const char *seps = arg.seps == NULL ? "\t\n\v\f\r " : arg.seps;
 	Slist *list = slist_new();
 
-	usize i = 0;
+	usize i = 0, len = strlen(s);
 
-	while (i < s->len && is_char_in(s->data[i], seps)) {
+	while (i < len && is_char_in(s[i], seps)) {
 		++i;
 	}
 
-	while (i < s->len) {
+	while (i < len) {
 		Str *t = str_new();
 
-		while (i < s->len && !is_char_in(s->data[i], seps)) {
-			str_push(t, s->data[i]);
+		while (i < len && !is_char_in(s[i], seps)) {
+			str_push(t, s[i]);
 			++i;
 		}
 
 		slist_push(list, t);
 
-		while (i < s->len && is_char_in(s->data[i], seps)) {
+		while (i < len && is_char_in(s[i], seps)) {
 			++i;
 		}
 	}
