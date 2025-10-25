@@ -808,7 +808,7 @@ void update(Game *game) {
 }
 
 Rectangle get_player_widget(usize seat) {
-	assert(seat < 5);
+	assert(seat < SEAT_CNT);
 
 	Vector2 screen_size = get_screen_size();
 	i32 small_margin = 5;
