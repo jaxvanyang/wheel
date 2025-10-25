@@ -17,7 +17,7 @@ void main() {}
 void list_words(sqlite3 *db);
 int print_words(void *_, int cols, char **row, char **col_names);
 void insert_word(sqlite3 *db, const char *word, const char *meaning);
-void delete_words(sqlite3 *db, const Slist *words);
+void delete_word(sqlite3 *db, const char *word);
 
 int main(int argc, const char *argv[]) {
 	if (argc != 2) {
@@ -25,7 +25,6 @@ int main(int argc, const char *argv[]) {
 	}
 
 	sqlite3 *db;
-	char *err_msg = NULL;
 	int rc;
 
 	rc = sqlite3_open(argv[1], &db);
@@ -35,61 +34,67 @@ int main(int argc, const char *argv[]) {
 
 	eprintln("INFO: database %s connected", argv[1]);
 
-	char sql[BUF_SIZE];
-	Str *words = str_new();
+	Str *input = str_new();
 
 	while (true) {
 		eprint("> ");
 
-		str_readline(words, stdin);
+		str_readline(input, stdin);
 
-		Slist *list = str_split(words, .seps = "\t\f\v\r\n :");
-
-		// words->len == 0 indicates EOF
-		if (words->len == 0) {
-			SLIST_FREE(list);
+		// len == 0 indicates EOF
+		if (input->len == 0) {
 			break;
 		}
 
-		if (list->len == 0) {
-			SLIST_FREE(list);
+		Str *command = str_new();
+		Str *arg = str_new();
+
+		bool has_colon = false;
+		for (usize i = 0; i < input->len; ++i) {
+			if (input->data[i] == ':') {
+				has_colon = true;
+				continue;
+			}
+
+			if (has_colon) {
+				str_push(arg, input->data[i]);
+			} else {
+				str_push(command, input->data[i]);
+			}
+		}
+
+		str_strip(command);
+		str_strip(arg);
+
+		if (command->len == 0) {
+			str_free(command);
+			str_free(arg);
 			continue;
 		}
 
-		if (strcmp(slist_get(list, 0)->data, "exit") == 0) {
-			SLIST_FREE(list);
+		if (strcmp(command->data, "exit") == 0) {
+			str_free(command);
+			str_free(arg);
 			break;
 		}
 
-		if (strcmp(slist_get(list, 0)->data, "delete") == 0) {
-			str_free(slist_delete(list, 0));
-			delete_words(db, list);
-
-			SLIST_FREE(list);
-			continue;
-		} else if (strcmp(slist_get(list, 0)->data, "list") == 0) {
+		if (strcmp(command->data, "delete") == 0) {
+			delete_word(db, arg->data);
+		} else if (strcmp(command->data, "list") == 0) {
 			list_words(db);
-
-			SLIST_FREE(list);
-			continue;
-		}
-
-		Str *word = slist_delete(list, 0);
-		char *meaning = str_join(list, " ");
-
-		if (strlen(meaning) == 0) {
-			insert_word(db, word->data, NULL);
 		} else {
-			insert_word(db, word->data, meaning);
+			if (arg->len == 0) {
+				insert_word(db, command->data, NULL);
+			} else {
+				insert_word(db, command->data, arg->data);
+			}
 		}
 
-		FREE(meaning);
-		str_free(word);
-
-		SLIST_FREE(list);
+		str_free(command);
+		str_free(arg);
 	}
 
-	FREE(words);
+	FREE(input);
 
 	rc = sqlite3_close(db);
 	if (rc != SQLITE_OK) {
@@ -150,7 +155,7 @@ void insert_word(sqlite3 *db, const char *word, const char *meaning) {
 	sqlite3_finalize(stmt);
 }
 
-void delete_words(sqlite3 *db, const Slist *words) {
+void delete_word(sqlite3 *db, const char *word) {
 	int rc;
 	sqlite3_stmt *stmt;
 	const char *sql = "delete from words where word = ?";
@@ -160,17 +165,13 @@ void delete_words(sqlite3 *db, const Slist *words) {
 		eprintln("ERROR: prepare failed: %s", sqlite3_errmsg(db));
 	}
 
-	for (usize i = 0; i < words->len; ++i) {
-		sqlite3_bind_text(stmt, 1, slist_get(words, i)->data, -1, SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 1, word, -1, SQLITE_STATIC);
 
-		rc = sqlite3_step(stmt);
-		if (rc != SQLITE_DONE) {
-			eprintln("ERROR: delete failed: %s", sqlite3_errmsg(db));
-		} else {
-			eprintln("INFO: deleted: %d row affected", sqlite3_changes(db));
-		}
-
-		sqlite3_reset(stmt);
+	rc = sqlite3_step(stmt);
+	if (rc != SQLITE_DONE) {
+		eprintln("ERROR: delete failed: %s", sqlite3_errmsg(db));
+	} else {
+		eprintln("INFO: deleted: %d row affected", sqlite3_changes(db));
 	}
 
 	sqlite3_finalize(stmt);
