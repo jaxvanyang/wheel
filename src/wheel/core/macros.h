@@ -20,6 +20,8 @@
 
 #define todo(...) error("TODO: " __VA_ARGS__)
 
+#define unimplemented(...) error("unimplemented: " __VA_ARGS__)
+
 // Free a pointer, and set it to NULL.
 #define FREE(p) \
 	free(p); \
