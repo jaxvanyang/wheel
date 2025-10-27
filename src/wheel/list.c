@@ -148,10 +148,10 @@ const usize LIST_MAX_INCREASE = 1024;
 	} \
 \
 	void prefix##_shuffle(Name *list) { \
-		for (usize i = 1; i < list->len; ++i) { \
+		for (usize i = 0; i + 1 < list->len; ++i) { \
 			usize j = random_range(i, list->len); \
-			T tmp = prefix##_get(list, i - 1); \
-			prefix##_set(list, i - 1, prefix##_get(list, j)); \
+			T tmp = prefix##_get(list, i); \
+			prefix##_set(list, i, prefix##_get(list, j)); \
 			prefix##_set(list, j, tmp); \
 		} \
 	}
