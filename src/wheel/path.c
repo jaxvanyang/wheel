@@ -1,4 +1,5 @@
 #include "path.h"
+#include "sys.h"
 #include <string.h>
 
 char *os_path(const char *path) {
@@ -27,4 +28,68 @@ void path_join(Str *path, const char *component) {
 	str_push(path, '/');
 #endif
 	str_push_str(path, component);
+}
+
+Str *get_home_dir() {
+	OSType os = get_os();
+
+	if (os == OS_WINDOWS) {
+		return str_from(getenv("FOLDERID_Profile"));
+	}
+
+	return str_from(getenv("HOME"));
+}
+
+Str *get_config_dir() {
+	OSType os = get_os();
+
+	if (os == OS_WINDOWS) {
+		return str_from(getenv("FOLDERID_RoamingAppData"));
+	}
+
+	Str *ret = get_home_dir();
+
+	if (os == OS_MACOS) {
+		path_join(ret, "Library/Application Support");
+	} else {
+		path_join(ret, ".config");
+	}
+
+	return ret;
+}
+
+Str *get_cache_dir() {
+	OSType os = get_os();
+
+	if (os == OS_WINDOWS) {
+		return str_from(getenv("FOLDERID_LocalAppData"));
+	}
+
+	Str *ret = get_home_dir();
+
+	if (os == OS_MACOS) {
+		path_join(ret, "Library/Caches");
+	} else {
+		path_join(ret, ".cache");
+	}
+
+	return ret;
+}
+
+Str *get_data_dir() {
+	OSType os = get_os();
+
+	if (os == OS_WINDOWS) {
+		return str_from(getenv("FOLDERID_RoamingAppData"));
+	}
+
+	Str *ret = get_home_dir();
+
+	if (os == OS_MACOS) {
+		path_join(ret, "Library/Application Support");
+	} else {
+		path_join(ret, ".local/share");
+	}
+
+	return ret;
 }

@@ -24,4 +24,21 @@ int main() {
 		assert(strcmp(path->data, "a/b") == 0);
 #endif
 	}
+
+	{
+		Str *home_dir = get_home_dir();
+		Str *config_dir = get_config_dir();
+		Str *cache_dir = get_cache_dir();
+		Str *data_dir = get_data_dir();
+
+		printf("home_dir: %s\n", home_dir->data);
+		printf("config_dir: %s\n", config_dir->data);
+		printf("cache_dir: %s\n", cache_dir->data);
+		printf("data_dir: %s\n", data_dir->data);
+
+		str_free(home_dir);
+		str_free(config_dir);
+		str_free(cache_dir);
+		str_free(data_dir);
+	}
 }
