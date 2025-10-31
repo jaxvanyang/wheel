@@ -25,6 +25,7 @@ int main() {
 #endif
 	}
 
+#ifndef _WIN32
 	{
 		Str *home_dir = get_home_dir();
 		Str *config_dir = get_config_dir();
@@ -41,4 +42,5 @@ int main() {
 		str_free(cache_dir);
 		str_free(data_dir);
 	}
+#endif // _WIN32
 }

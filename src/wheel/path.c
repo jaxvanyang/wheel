@@ -34,7 +34,7 @@ Str *get_home_dir() {
 	OSType os = get_os();
 
 	if (os == OS_WINDOWS) {
-		return str_from(getenv("FOLDERID_Profile"));
+		unimplemented();
 	}
 
 	return str_from(getenv("HOME"));
@@ -44,7 +44,7 @@ Str *get_config_dir() {
 	OSType os = get_os();
 
 	if (os == OS_WINDOWS) {
-		return str_from(getenv("FOLDERID_RoamingAppData"));
+		unimplemented();
 	}
 
 	Str *ret = get_home_dir();
@@ -62,7 +62,7 @@ Str *get_cache_dir() {
 	OSType os = get_os();
 
 	if (os == OS_WINDOWS) {
-		return str_from(getenv("FOLDERID_LocalAppData"));
+		unimplemented();
 	}
 
 	Str *ret = get_home_dir();
@@ -80,7 +80,7 @@ Str *get_data_dir() {
 	OSType os = get_os();
 
 	if (os == OS_WINDOWS) {
-		return str_from(getenv("FOLDERID_RoamingAppData"));
+		unimplemented();
 	}
 
 	Str *ret = get_home_dir();
