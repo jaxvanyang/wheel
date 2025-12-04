@@ -10,6 +10,8 @@
 const i32 WIDTH = 800, HEIGHT = 450;
 const i32 UNIT = 10;
 const i32 N_WIDTH = WIDTH / UNIT, N_HEIGHT = HEIGHT / UNIT;
+const i32 FPS = 60;
+static i32 TPS = 10;
 
 typedef enum {
 	UP = 0,
@@ -40,13 +42,13 @@ typedef struct {
 	Sounds sounds;
 	Music bgm;
 
+	i32 frame_counter;
+
 	bool is_over;
 	bool automatic;
 	bool paused;
 	bool fastforward;
 } Game;
-
-void update_draw();
 
 Snake *new_snake() {
 	Snake *snake = malloc(sizeof(Snake));
@@ -227,6 +229,7 @@ Game *new_game() {
 	Game *game = malloc(sizeof(Game));
 	game->snake = new_snake();
 	game->fruit = random_fruit(game->snake);
+	game->frame_counter = 0;
 	game->is_over = false;
 	game->automatic = false;
 	game->paused = false;
@@ -398,7 +401,7 @@ void toggle_music(Music music) {
 		PlayMusicStream(music);
 }
 
-void auto_update(Game *game) {
+void auto_input(Game *game) {
 	switch (GetKeyPressed()) {
 	case KEY_M:
 		game->automatic = false;
@@ -411,15 +414,7 @@ void auto_update(Game *game) {
 		break;
 	case KEY_F:
 		game->fastforward = !game->fastforward;
-#ifdef __EMSCRIPTEN__
-		if (game->fastforward) {
-			emscripten_set_main_loop_timing(EM_TIMING_RAF, 1);
-		} else {
-			emscripten_set_main_loop_timing(EM_TIMING_SETTIMEOUT, 100);
-		}
-#else
-		SetTargetFPS(game->fastforward ? 0 : 10);
-#endif // __EMSCRIPTEN__
+		TPS = TPS == 10 ? 60 : 10;
 		break;
 	case KEY_B:
 		toggle_music(game->bgm);
@@ -432,7 +427,7 @@ void auto_update(Game *game) {
 	game->snake->direction = search_path(game);
 }
 
-void manual_update(Game *game) {
+void manual_input(Game *game) {
 	switch (GetKeyPressed()) {
 	case KEY_UP:
 	case KEY_W:
@@ -465,7 +460,7 @@ void manual_update(Game *game) {
 		break;
 	case KEY_F:
 		game->fastforward = !game->fastforward;
-		SetTargetFPS(game->fastforward ? 0 : 10);
+		TPS = TPS == 10 ? 60 : 10;
 		break;
 	case KEY_B:
 		toggle_music(game->bgm);
@@ -473,13 +468,15 @@ void manual_update(Game *game) {
 	}
 }
 
-void update(Game *game) {
+void input(Game *game) {
 	if (game->automatic) {
-		auto_update(game);
+		auto_input(game);
 	} else {
-		manual_update(game);
+		manual_input(game);
 	}
+}
 
+void update(Game *game) {
 	if (game->is_over || game->paused)
 		return;
 
@@ -505,10 +502,18 @@ void update(Game *game) {
 
 static Game *game = NULL;
 
-void update_draw() {
+void main_loop() {
 	UpdateMusicStream(game->bgm);
 
-	update(game);
+	input(game);
+
+	i32 counter = game->frame_counter + 1;
+	i32 threshold = FPS / TPS;
+	if (counter == threshold) {
+		update(game);
+	}
+	game->frame_counter = counter % threshold;
+
 	draw(game);
 }
 
@@ -520,12 +525,12 @@ int main() {
 	PlayMusicStream(game->bgm);
 
 #ifdef __EMSCRIPTEN__
-	emscripten_set_main_loop(update_draw, 10, true);
+	emscripten_set_main_loop(main_loop, FPS, true);
 #else
-	SetTargetFPS(10);
+	SetTargetFPS(FPS);
 
 	while (!WindowShouldClose()) {
-		update_draw();
+		main_loop();
 	}
 #endif // __EMSCRIPTEN__
 
