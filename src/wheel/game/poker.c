@@ -425,6 +425,11 @@ ResManager new_res_manager() {
 		.minicards = load_texture("assets/poker/minicards.png"),
 		.chips = load_texture("assets/poker/fiches_addon.png"),
 		.button = load_texture("assets/poker/button.png"),
+		.bgm = load_music_stream(
+			"assets/brackeys_platformer_assets/music/time_for_adventure.mp3"
+		),
+		.sound_win = load_sound("assets/brackeys_platformer_assets/sounds/coin.wav"),
+		.sound_lose = load_sound("assets/brackeys_platformer_assets/sounds/hurt.wav"),
 	};
 
 	return manager;

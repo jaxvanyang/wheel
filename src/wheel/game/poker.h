@@ -84,6 +84,9 @@ typedef struct {
 	Texture2D minicards;
 	Texture2D chips;
 	Texture2D button;
+	Music bgm;
+	Sound sound_win;
+	Sound sound_lose;
 } ResManager;
 
 typedef enum {
