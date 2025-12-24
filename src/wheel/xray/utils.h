@@ -2,6 +2,8 @@
 
 #include "core.h"
 
+const char *version_text(Version version);
+
 Vector2 get_screen_size();
 
 // These functions act as the same as their raylib brothers, but convert the

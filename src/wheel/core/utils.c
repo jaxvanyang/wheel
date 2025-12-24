@@ -1,6 +1,15 @@
 #include "utils.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+bool is_version_compatible(Version a, Version b) {
+	return a.major == b.major && a.minor <= b.minor;
+}
+
+bool is_version_valid(Version version) {
+	return version.major != 0 || version.minor != 0 || version.patch != 0;
+}
 
 TimeVal time_now() {
 	TimeVal t;

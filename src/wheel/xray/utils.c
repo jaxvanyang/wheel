@@ -2,6 +2,10 @@
 #include "../path.h"
 #include <raymath.h>
 
+const char *version_text(Version version) {
+	return TextFormat("%u.%u.%u", version.major, version.minor, version.patch);
+}
+
 Vector2 get_screen_size() {
 	return (Vector2){
 		GetScreenWidth(),

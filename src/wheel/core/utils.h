@@ -4,7 +4,18 @@
 
 #include "./types.h"
 
+typedef struct {
+	unsigned int major;
+	unsigned int minor;
+	unsigned int patch;
+} Version;
+
 typedef struct timeval TimeVal;
+
+// Return whether a is compatible with b (a can use b).
+bool is_version_compatible(Version a, Version b);
+// Only "0.0.0" is invalid.
+bool is_version_valid(Version version);
 
 TimeVal time_now();
 
