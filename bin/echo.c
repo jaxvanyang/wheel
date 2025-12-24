@@ -107,8 +107,10 @@ void *handle_tcp(void *arg) {
 }
 
 int main(int argc, const char **argv) {
+	lol_init2();
 	if (argc != 2) {
-		lol_term("expected one and only one argument");
+		eprintln("usage: echo <port>");
+		return EXIT_FAILURE;
 	}
 
 	u16 port = 0;

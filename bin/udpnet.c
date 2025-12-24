@@ -7,7 +7,8 @@
 
 int main(int argc, const char **const argv) {
 	if (argc != 3) {
-		error("expected 3 and only 3 arguments");
+		eprintln("usage: udpnet <addr> <port>");
+		return EXIT_FAILURE;
 	}
 
 	u16 port;
