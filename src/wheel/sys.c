@@ -4,6 +4,8 @@
 #include <unistd.h>
 #endif
 
+#include <dirent.h>
+
 #include "sys.h"
 
 OSType get_os() {
@@ -29,4 +31,14 @@ usize get_nproc() {
 #else
 	return sysconf(_SC_NPROCESSORS_ONLN);
 #endif
+}
+
+bool is_dir(char *path) {
+	DIR *dir = opendir(path);
+	if (dir == NULL) {
+		return false;
+	}
+
+	closedir(dir);
+	return true;
 }

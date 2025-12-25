@@ -4,7 +4,7 @@
 
 #include <string.h>
 #ifdef _WIN32
-void main() {}
+int main() {}
 #else
 
 #include <assert.h>

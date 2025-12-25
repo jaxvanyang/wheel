@@ -1,32 +1,31 @@
 #pragma once
 
+// this module needs sqlite, we don't want to build sqlite for Web
+#ifndef PLATFORM_WEB
+
 #include <pthread.h>
+#include <sqlite3.h>
 
 #include "../core.h"
 #include "../net.h"
-
-#ifndef BUFFER_SIZE
-#define BUFFER_SIZE 1024
-#endif
+#include "command.h"
+#include "consts.h"
 
 typedef struct {
 	SockAddr sa;
 	int udp_sock;
+
 	pthread_t udp_thread;
+
+	sqlite3 *db;
 } Casino;
 
-typedef enum {
-	COMMAND_UNKNOWN,
-	COMMAND_VERSION,
-} CommandType;
+Casino new_casino(u32 ip, u16 port);
+void init_casino(Casino *casino);
+void close_casino(Casino *casino);
 
-typedef union {
-	Version version;
-} CommandArg;
+void init_db(const Casino *casino);
 
-typedef struct {
-	CommandType type;
-	CommandArg arg;
-} Command;
+void *handle_udp(void *arg);
 
-Command parse_command(const char *s);
+#endif // ifndef PLATFORM_WEB

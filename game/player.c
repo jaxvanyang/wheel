@@ -3,13 +3,13 @@
 #include <string.h>
 #include <wheel.h>
 #include <wheel/game/casino.h>
+#include <wheel/game/command.h>
+#include <wheel/game/consts.h>
 #include <wheel/xray.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
 #endif
-
-const Version VERSION = {0, 1, 0};
 
 typedef struct {
 	SockAddr server;
@@ -140,7 +140,7 @@ int main() {
 	InitWindow(1280, 720, "Poker");
 	InitAudioDevice();
 
-	Poker poker = new_poker(net_addr("127.0.0.1"), 8888);
+	Poker poker = new_poker(net_addr("127.0.0.1"), 1888);
 	init_poker(&poker);
 
 	PlayMusicStream(poker.bgm);

@@ -1,5 +1,6 @@
 # Define target platform: PLATFORM_DESKTOP, PLATFORM_WEB
 PLATFORM ?= PLATFORM_DESKTOP
+CFLAGS := -D$(PLATFORM) $(CFLAGS)
 
 # By default we suppose we are working on Windows
 PLATFORM_OS ?= WINDOWS
@@ -35,6 +36,7 @@ endif
 ifeq ($(PLATFORM),PLATFORM_WEB)
 	CC = emcc
 	AR = emar
+	CFLAGS := $(CFLAGS)
 	LDFLAGS := -static \
 		-s USE_GLFW=3 \
 		--shell-file src/minshell.html \
