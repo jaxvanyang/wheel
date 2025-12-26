@@ -2,7 +2,7 @@
 //
 // Usage: insert-words <sqlite3.db>
 
-#include <string.h>
+// cannot build with sqlite on MSYS2, see #20
 #ifdef _WIN32
 int main() {}
 #else
@@ -10,6 +10,7 @@ int main() {}
 #include <assert.h>
 #include <sqlite3.h>
 #include <stdio.h>
+#include <string.h>
 #include <wheel.h>
 
 #define BUF_SIZE 1024

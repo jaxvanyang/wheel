@@ -54,6 +54,7 @@ SQLITE3_LDFLAGS ?= $(shell pkg-config --libs sqlite3)
 
 	ifeq ($(PLATFORM_OS),WINDOWS)
 		# see https://github.com/raysan5/raylib/wiki/Working-on-Windows
+		# -pthread for working with sqlite
 		LDFLAGS := -lgdi32 -lwinmm -lws2_32 $(LDFLAGS)
 	endif
 	ifneq ($(PLATFORM_OS),OSX)
