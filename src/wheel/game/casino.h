@@ -26,6 +26,13 @@ void close_casino(Casino *casino);
 
 void init_db(const Casino *casino);
 
-void *handle_udp(void *arg);
+void *casino_service(void *arg);
+
+// DB interfaces
+
+// Create or update user. Return true on success, false otherwise.
+bool create_user(sqlite3 *db, int id, SockAddr addr);
+// Return an unused ID for new user. Return -1 on error.
+int get_new_user_id(sqlite3 *db);
 
 #endif // ifndef PLATFORM_WEB

@@ -36,9 +36,15 @@ static SockAddr from_os_sa(struct sockaddr sa) {
 	return ret;
 }
 
-char *format_sa(SockAddr sa) {
+const char *format_ip(u32 ip) {
+	SockAddr sa = {.ip = ip};
 	struct sockaddr os_sa = to_os_sa(sa);
-	char *addr = inet_ntoa(((struct sockaddr_in *)&os_sa)->sin_addr);
+
+	return inet_ntoa(((struct sockaddr_in *)&os_sa)->sin_addr);
+}
+
+char *format_sa(SockAddr sa) {
+	const char *addr = format_ip(sa.ip);
 
 	// max IPv4 socket address is 4 * 4 + 5 + 1 = 22
 	char *ret = malloc(24);

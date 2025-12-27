@@ -33,12 +33,22 @@ usize get_nproc() {
 #endif
 }
 
-bool is_dir(char *path) {
+bool is_dir(const char *path) {
 	DIR *dir = opendir(path);
 	if (dir == NULL) {
 		return false;
 	}
 
 	closedir(dir);
+	return true;
+}
+
+bool is_file(const char *path) {
+	FILE *f = fopen(path, "r");
+	if (f == NULL) {
+		return false;
+	}
+
+	fclose(f);
 	return true;
 }

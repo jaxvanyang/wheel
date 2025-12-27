@@ -8,14 +8,6 @@
 #include "../sys.h"
 #include "casino.h"
 
-#ifdef _WIN32
-// for _mkdir()
-#include <direct.h>
-#else
-// for mkdir()
-#include <sys/stat.h>
-#endif // _WIN32
-
 Casino new_casino(u32 ip, u16 port) {
 	Casino casino = {.sa = {.ip = ip, .port = port}};
 	return casino;
@@ -32,18 +24,10 @@ void init_casino(Casino *casino) {
 		lol_term_e("failed to bind the UDP socket");
 	}
 
-	if (pthread_create(&casino->udp_thread, NULL, handle_udp, &casino->udp_sock) != 0) {
-		lol_term_e("failed to create thread");
-	}
-
 	Str *db_path = get_data_dir();
 	path_join(db_path, "jaxvanyang");
 	if (!is_dir(db_path->data)) {
-#ifdef _WIN32
-		_mkdir(db_path->data);
-#else
-		mkdir(db_path->data, 0755);
-#endif // _WIN32
+		make_dir(db_path->data, 0755);
 	}
 	path_join(db_path, "casino.db");
 	int rc = sqlite3_open(db_path->data, &casino->db);
@@ -55,6 +39,11 @@ void init_casino(Casino *casino) {
 	str_free(db_path);
 
 	init_db(casino);
+
+	// start casino service
+	if (pthread_create(&casino->udp_thread, NULL, casino_service, casino) != 0) {
+		lol_term_e("failed to create service thread");
+	}
 }
 
 void close_casino(Casino *casino) {
@@ -68,7 +57,14 @@ void init_db(const Casino *casino) {
 	sprintf(
 		buffer,
 		"create table if not exists version (version text unique);"
-		"insert or ignore into version (version) values ('%u.%u.%u');",
+		"insert or ignore into version (version) values ('%u.%u.%u');"
+		"create table if not exists user ("
+		"	id integer primary key,"
+		"	ip text not null,"
+		"	port integer not null"
+		");"
+		// placeholder for get_largest_user_id()
+		"insert or ignore into user (id, ip, port) values (0, 0, 0);",
 		VERSION.major,
 		VERSION.minor,
 		VERSION.patch
@@ -81,8 +77,9 @@ void init_db(const Casino *casino) {
 	sqlite3_free(err_msg);
 }
 
-void *handle_udp(void *arg) {
-	int udp_sock = *(int *)arg;
+void *casino_service(void *arg) {
+	Casino *casino = arg;
+	int udp_sock = casino->udp_sock;
 	char buffer[BUFFER_SIZE];
 	char resp[BUFFER_SIZE];
 
@@ -114,6 +111,23 @@ void *handle_udp(void *arg) {
 			);
 			send_to(udp_sock, client, resp, strlen(resp), 0);
 			break;
+		case COMMAND_ID:
+			if (command.arg.id != 0) {
+				if (!create_user(casino->db, command.arg.id, client)) {
+					break;
+				}
+				sprintf(resp, "ok");
+			} else {
+				int id = get_new_user_id(casino->db);
+				if (id == 0 || !create_user(casino->db, id, client)) {
+					lol_error("failed to create user %d for %s", id, client_addr);
+					break;
+				}
+				sprintf(resp, "id %d", id);
+			}
+
+			send_to(udp_sock, client, resp, strlen(resp), 0);
+			break;
 		default:
 			snprintf(resp, sizeof(resp), "unknown");
 			send_to(udp_sock, client, resp, strlen(resp), 0);
@@ -124,6 +138,52 @@ void *handle_udp(void *arg) {
 	}
 
 	return NULL;
+}
+
+bool create_user(sqlite3 *db, int id, SockAddr addr) {
+	if (id <= 0) {
+		lol_warn("cannot create user: id <= 0 is invalid");
+		return false;
+	}
+
+	bool ret = true;
+
+	const char sql[] = "insert or replace into user (id, ip, port) values (?, ?, ?);";
+	const char *ip = format_ip(addr.ip);
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+	sqlite3_bind_int(stmt, 1, id);
+	sqlite3_bind_text(stmt, 2, ip, strlen(ip), SQLITE_TRANSIENT);
+	sqlite3_bind_int(stmt, 3, addr.port);
+
+	int rc = sqlite3_step(stmt);
+	if (rc != SQLITE_DONE) {
+		lol_error("failed to create user: %s", sqlite3_errstr(rc));
+		ret = false;
+	}
+
+	sqlite3_finalize(stmt);
+	return ret;
+}
+
+int get_new_user_id(sqlite3 *db) {
+	int ret = -1;
+
+	const char sql[] = "select id from user order by id desc limit 1;";
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+
+	int rc = sqlite3_step(stmt);
+	if (rc != SQLITE_ROW) {
+		lol_error("failed to get largest user id: %s", sqlite3_errstr(rc));
+	} else {
+		int id = sqlite3_column_int(stmt, 0);
+		ret = id + 1;
+	}
+
+	sqlite3_finalize(stmt);
+
+	return ret;
 }
 
 #endif // ifndef PLATFORM_WEB

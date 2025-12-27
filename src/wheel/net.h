@@ -35,6 +35,9 @@ typedef struct {
 	u16 port;
 } SockAddr;
 
+// Return a temporary string in format of "x.x.x.x".
+const char *format_ip(u32 ip);
+
 // Return a string in format of "address:port".
 // NOTE: the returned pointer should be freed.
 char *format_sa(SockAddr sa);
