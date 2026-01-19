@@ -21,10 +21,10 @@ int main(int argc, const char **argv) {
 	sscanf(argv[1], "%hu", &port);
 
 	Casino casino = new_casino(INADDR_ANY, port);
-	init_casino(&casino);
+	start_casino(&casino);
 
 	char *addr = format_sa(casino.sa);
-	lol_info("created casino at %s", addr);
+	lol_info("SERVICE: running casino on %s", addr);
 	FREE(addr);
 
 	close_casino(&casino);

@@ -21,6 +21,8 @@ TimeVal time_now();
 
 // elapsed time in micro seconds
 f64 elapsed(TimeVal t0);
+// elapsed time in seconds
+double elapsed_sec(TimeVal t0);
 
 #ifndef max
 #define max(a, b) (a > b ? a : b)

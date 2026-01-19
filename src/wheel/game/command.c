@@ -20,6 +20,20 @@ Command parse_command(const char *s) {
 	} else if (str_start_with(s, "id")) {
 		command.type = COMMAND_ID;
 		sscanf(s, "id %d", &command.arg.id);
+	} else if (str_start_with(s, "rooms")) {
+		command.type = COMMAND_ROOMS;
+		sscanf(
+			s,
+			"rooms %d %d %d %d %d %d %d %d",
+			&command.arg.rooms[0],
+			&command.arg.rooms[1],
+			&command.arg.rooms[2],
+			&command.arg.rooms[3],
+			&command.arg.rooms[4],
+			&command.arg.rooms[5],
+			&command.arg.rooms[6],
+			&command.arg.rooms[7]
+		);
 	}
 
 	return command;

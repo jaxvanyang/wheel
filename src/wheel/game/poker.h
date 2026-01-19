@@ -90,6 +90,8 @@ typedef struct {
 } ResManager;
 
 typedef enum {
+	STATE_OFFLINE,
+	STATE_LOGGED, // logged but not joined any room
 	STATE_STANDBY, // waiting to join the game
 	STATE_WAITING, // waiting in the game
 	STATE_THINKING,

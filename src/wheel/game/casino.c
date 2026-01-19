@@ -13,7 +13,7 @@ Casino new_casino(u32 ip, u16 port) {
 	return casino;
 }
 
-void init_casino(Casino *casino) {
+void start_casino(Casino *casino) {
 	casino->udp_sock = new_udp_socket();
 
 	if (casino->udp_sock == -1) {
@@ -54,27 +54,68 @@ void close_casino(Casino *casino) {
 
 void init_db(const Casino *casino) {
 	char buffer[BUFFER_SIZE];
+	char *err_msg = NULL;
+	int rc;
+
+	// TODO: wrap exec
 	sprintf(
 		buffer,
 		"create table if not exists version (version text unique);"
 		"insert or ignore into version (version) values ('%u.%u.%u');"
 		"create table if not exists user ("
-		"	id integer primary key,"
+		"	id integer primary key autoincrement,"
 		"	ip text not null,"
-		"	port integer not null"
+		"	port integer not null,"
+		"	unique (ip, port) on conflict replace"
 		");"
-		// placeholder for get_largest_user_id()
+		// placeholder to retrieve the largest user ID easily
 		"insert or ignore into user (id, ip, port) values (0, 0, 0);",
 		VERSION.major,
 		VERSION.minor,
 		VERSION.patch
 	);
-	char *err_msg = NULL;
-	int rc = sqlite3_exec(casino->db, buffer, NULL, NULL, &err_msg);
+	rc = sqlite3_exec(casino->db, buffer, NULL, NULL, &err_msg);
 	if (rc) {
-		lol_term("failed to init DB: %s", err_msg);
+		lol_term("DB: failed to initialize table version or user: %s", err_msg);
 	}
 	sqlite3_free(err_msg);
+
+	rc = sqlite3_exec(
+		casino->db,
+		"create table if not exists room ("
+		"	id integer not null check (id > 1),"
+		"	seat_number integer not null check (seat_number between 1 and 5),"
+		"	user_id integer references user (id) unique check (user_id != 0),"
+		"	unique (id, seat_number),"
+		"	unique (id, user_id)"
+		");",
+		NULL,
+		NULL,
+		&err_msg
+	);
+	if (rc) {
+		lol_term("DB: failed to create table room: %s", err_msg);
+	}
+	sqlite3_free(err_msg);
+
+	lol_info("DB: initialized");
+}
+
+int get_room_usage(sqlite3 *db, int id) {
+	const char sql[] = "select count(*) from room where id = ?;";
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+	sqlite3_bind_int(stmt, 1, id);
+
+	int ret = 0;
+	int rc = sqlite3_step(stmt);
+	if (rc != SQLITE_ROW) {
+		lol_error("DB: failed to get room usage for %d: %s", id, sqlite3_errstr(rc));
+	} else {
+		ret = sqlite3_column_int(stmt, 0);
+	}
+
+	return ret;
 }
 
 void *casino_service(void *arg) {
@@ -118,6 +159,7 @@ void *casino_service(void *arg) {
 				}
 				sprintf(resp, "ok");
 			} else {
+				// TODO: use autoincrement
 				int id = get_new_user_id(casino->db);
 				if (id == 0 || !create_user(casino->db, id, client)) {
 					lol_error("failed to create user %d for %s", id, client_addr);
@@ -126,6 +168,25 @@ void *casino_service(void *arg) {
 				sprintf(resp, "id %d", id);
 			}
 
+			send_to(udp_sock, client, resp, strlen(resp), 0);
+			break;
+		case COMMAND_ROOMS:
+			int rooms[ROOM_CNT] = {};
+			for (int i = 0; i < ROOM_CNT; ++i) {
+				rooms[i] = get_room_usage(casino->db, i + 1);
+			}
+			sprintf(
+				resp,
+				"rooms %d %d %d %d %d %d %d %d",
+				rooms[0],
+				rooms[1],
+				rooms[2],
+				rooms[3],
+				rooms[4],
+				rooms[5],
+				rooms[6],
+				rooms[7]
+			);
 			send_to(udp_sock, client, resp, strlen(resp), 0);
 			break;
 		default:
