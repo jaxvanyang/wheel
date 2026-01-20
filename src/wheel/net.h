@@ -6,6 +6,7 @@
 // And wrap them with new names.
 
 #include "core.h"
+#include "str.h"
 
 // For more information: https://en.wikipedia.org/wiki/Berkeley_sockets
 
@@ -73,3 +74,12 @@ isize send(Socket socket, const void *buffer, usize buffer_size, int flags);
 // For more information, see sendto()
 isize send_to(Socket socket, SockAddr dest, void *buffer, usize buffer_size, int flags);
 int shutdown(Socket socket, int how);
+
+// Wrapper of net_recv(), return NULL on error.
+Str *recv_str(Socket socket, usize buffer_size, int flags);
+// Wrapper of recv_from(), return NULL on error.
+Str *recv_str_from(Socket socket, SockAddr *src, usize buffer_size, int flags);
+// Wrapper of send().
+isize send_str(Socket socket, const char *str, int flags);
+// Wrapper of send_to().
+isize send_str_to(Socket socket, SockAddr dest, const char *str, int flags);

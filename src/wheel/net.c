@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <string.h>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -101,4 +102,40 @@ isize send_to(
 	isize ret = sendto(socket, buffer, buffer_size, flags, &sa, sizeof(sa));
 
 	return ret;
+}
+
+Str *recv_str(Socket socket, usize buffer_size, int flags) {
+	Str *buffer = str_new_with_size(buffer_size + 1);
+	isize len = net_recv(socket, buffer->data, buffer_size, flags);
+	if (len < 0) {
+		str_free(buffer);
+		return NULL;
+	}
+	buffer->len = len;
+	buffer->data[len] = '\0';
+
+	return buffer;
+}
+
+Str *recv_str_from(Socket socket, SockAddr *src, usize buffer_size, int flags) {
+	Str *buffer = str_new_with_size(buffer_size + 1);
+	isize len = recv_from(socket, src, buffer->data, buffer_size, flags);
+	if (len < 0) {
+		str_free(buffer);
+		return NULL;
+	}
+	buffer->len = len;
+	buffer->data[len] = '\0';
+
+	return buffer;
+}
+
+isize send_str(Socket socket, const char *str, int flags) {
+	usize len = strlen(str);
+	return send(socket, str, len, flags);
+}
+
+isize send_str_to(Socket socket, SockAddr dest, const char *str, int flags) {
+	usize len = strlen(str);
+	return send_to(socket, dest, (void *)str, len, flags);
 }

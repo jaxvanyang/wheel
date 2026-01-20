@@ -4,11 +4,14 @@
 #include "consts.h"
 
 typedef enum {
-	COMMAND_UNKNOWN,
-	COMMAND_VERSION,
-	COMMAND_OK,
-	COMMAND_ID,
-	COMMAND_ROOMS,
+	COMMAND_INVALID, // command or parameter is invalid
+	COMMAND_UNKNOWN, // command is unknown
+	COMMAND_ERROR, // command failed
+	COMMAND_OK, // command succeed
+	COMMAND_VERSION, // get server version
+	COMMAND_ID, // login with ID
+	COMMAND_ROOMS, // get room usage
+	COMMAND_JOIN, // join the room
 } CommandType;
 
 typedef union {

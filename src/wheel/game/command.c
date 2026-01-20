@@ -34,6 +34,13 @@ Command parse_command(const char *s) {
 			&command.arg.rooms[6],
 			&command.arg.rooms[7]
 		);
+	} else if (str_start_with(s, "join")) {
+		sscanf(s, "join %d", &command.arg.id);
+		if (command.arg.id < 1 || command.arg.id > ROOM_CNT) {
+			command.type = COMMAND_INVALID;
+		} else {
+			command.type = COMMAND_JOIN;
+		}
 	}
 
 	return command;

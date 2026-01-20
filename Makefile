@@ -66,7 +66,7 @@ endif
 CC ?= cc
 AR ?= ar
 CFLAGS := $(RAYLIB_CFLAGS) $(SQLITE3_CFLAGS) $(CFLAGS)
-CFLAGS := -Os -Wall -Wextra -Wno-comment -Wno-initializer-overrides -Wno-override-init -Isrc $(CFLAGS)
+CFLAGS := -Os -Wall -Wextra -Wno-comment -Wno-initializer-overrides -Wno-override-init -Wno-c23-extensions -Isrc $(CFLAGS)
 LDFLAGS := -Lsrc -lwheel $(RAYLIB_LDFLAGS) $(SQLITE3_LDFLAGS) -lm $(LDFLAGS)
 
 WHEEL := src/wheel
