@@ -458,7 +458,6 @@ Poker new_poker(u32 server_ip, u16 server_port, int id) {
 		.server = {.ip = server_ip, .port = server_port},
 		.id = id,
 		.room_id = -1,
-		.last_refresh = time_now(),
 	};
 
 	return poker;
@@ -510,7 +509,7 @@ bool poker_send_str(Poker *poker, const char *str) {
 
 // Return NULL if failed.
 Str *poker_recv_str(Poker *poker) {
-	Str *str = recv_str_from(poker->socket, NULL, BUFFER_SIZE, 0);
+	Str *str = recv_str_from(poker->socket, NULL, PACKET_BUFSIZ, 0);
 	poker->latency = elapsed(poker->t0);
 
 	if (str != NULL) {
@@ -528,21 +527,21 @@ void *login(void *arg) {
 		return NULL;
 	}
 
-	Str *response = poker_recv_str(poker);
-	if (response == NULL) {
+	Str *resp = poker_recv_str(poker);
+	if (resp == NULL) {
 		lol_error_e("LOGIN: failed to receive response for version");
 		return NULL;
 	}
 
 	lol_info("server latency: %lfms", poker->latency);
 
-	Command command = parse_command(response->data);
+	Command command = parse_command(resp->data);
 	if (command.type != COMMAND_VERSION) {
-		lol_warn("unexpected command: %s", response->data);
-		str_free(response);
+		lol_warn("unexpected command: %s", resp->data);
+		str_free(resp);
 		return NULL;
 	}
-	str_free(response);
+	str_free(resp);
 
 	poker->server_version = command.arg.version;
 
@@ -552,37 +551,37 @@ void *login(void *arg) {
 			return NULL;
 		}
 
-		Str *response = poker_recv_str(poker);
-		if (response == NULL) {
+		Str *resp = poker_recv_str(poker);
+		if (resp == NULL) {
 			lol_error_e("LOGIN: failed to receive response for: id ?");
 			return NULL;
 		}
 
-		Command command = parse_command(response->data);
+		Command command = parse_command(resp->data);
 		if (command.type != COMMAND_OK) {
-			lol_warn("login failed: %s", response->data);
-			str_free(response);
+			lol_warn("login failed: %s", resp->data);
+			str_free(resp);
 			return NULL;
 		}
-		str_free(response);
+		str_free(resp);
 	} else {
 		if (!poker_send_str(poker, "id")) {
 			return NULL;
 		}
 
-		Str *response = poker_recv_str(poker);
-		if (response == NULL) {
+		Str *resp = poker_recv_str(poker);
+		if (resp == NULL) {
 			lol_error_e("LOGIN: failed to receive response for: id");
 			return NULL;
 		}
 
-		Command command = parse_command(response->data);
+		Command command = parse_command(resp->data);
 		if (command.type != COMMAND_ID) {
-			lol_warn("login failed: %s", response->data);
-			str_free(response);
+			lol_warn("login failed: %s", resp->data);
+			str_free(resp);
 			return NULL;
 		}
-		str_free(response);
+		str_free(resp);
 
 		FILE *config_file = open_config("w");
 		if (config_file == NULL) {
@@ -600,14 +599,6 @@ void *login(void *arg) {
 	return NULL;
 }
 
-void *join(void *arg) {
-	Poker *poker = arg;
-
-	todo();
-
-	return NULL;
-}
-
 void *refresh_rooms(void *arg) {
 	Poker *poker = arg;
 
@@ -615,25 +606,58 @@ void *refresh_rooms(void *arg) {
 		return NULL;
 	}
 
-	Str *response = poker_recv_str(poker);
-	if (response == NULL) {
-		lol_error_e("REFRESH_ROOMS: failed to receive response for rooms");
+	Str *resp = poker_recv_str(poker);
+	if (resp == NULL) {
+		lol_error_e("REFRESH_ROOMS: failed to receive response");
 		return NULL;
 	}
 
-	Command command = parse_command(response->data);
+	Command command = parse_command(resp->data);
 	if (command.type != COMMAND_ROOMS) {
-		lol_warn("unexpected command: %s", response->data);
-		str_free(response);
+		lol_warn("unexpected command: %s", resp->data);
+		str_free(resp);
 		return NULL;
 	}
-	str_free(response);
+	str_free(resp);
 
 	for (int i = 0; i < ROOM_CNT; ++i) {
 		poker->rooms[i] = command.arg.rooms[i];
 	}
 
 	poker->last_refresh = time_now();
+
+	return NULL;
+}
+
+void *join(void *arg) {
+	Poker *poker = arg;
+
+	if (poker->room_id < 1 || poker->room_id > ROOM_CNT) {
+		lol_error("JOIN: invalid room ID: %d", poker->room_id);
+		poker->room_id = -1;
+	}
+
+	char req[COMMAND_BUFSIZ];
+	sprintf(req, "join %d", poker->room_id);
+	if (!poker_send_str(poker, req)) {
+		return NULL;
+	}
+
+	Str *resp = poker_recv_str(poker);
+	if (resp == NULL) {
+		lol_error_e("JOIN: failed to receive response");
+		return NULL;
+	}
+
+	Command command = parse_command(resp->data);
+	if (command.type != COMMAND_OK) {
+		lol_warn("JOIN: failed to join room %d: %s", poker->room_id, resp->data);
+		poker->room_id = -1;
+		str_free(resp);
+		return NULL;
+	}
+
+	poker->is_seated = true;
 
 	return NULL;
 }
@@ -657,6 +681,9 @@ void poker_update(Poker *poker) {
 	// create a new task
 
 	poker->task_timer = TASK_TIMEOUT;
+	// TODO: control all task interval, do not send request too frequent
+
+	// state: not login
 
 	if (!poker->is_logged) {
 		if (pthread_create(&poker->task, NULL, login, poker) != 0) {
@@ -665,6 +692,10 @@ void poker_update(Poker *poker) {
 		lol_info("TASK: login started");
 		return;
 	}
+
+	// TODO: sync at first
+
+	// state: outside room
 
 	if (poker->room_id == -1) {
 		if (elapsed_sec(poker->last_refresh) < TASK_TIMEOUT) {
@@ -678,6 +709,8 @@ void poker_update(Poker *poker) {
 		return;
 	}
 
+	// state: selected a room but not entered
+
 	if (poker->room_id != -1 && !poker->is_seated) {
 		if (pthread_create(&poker->task, NULL, join, poker) != 0) {
 			lol_error_e("TASK: failed to create join task");
@@ -685,6 +718,10 @@ void poker_update(Poker *poker) {
 		lol_info("TASK: join started");
 		return;
 	}
+
+	// state: in the room
+
+	todo();
 }
 
 void poker_input(Poker *poker) {
@@ -1117,7 +1154,7 @@ void poker_draw(const Poker *poker) {
 		float center_y = rect.y + rect.height / 2;
 		DrawRectangleLinesEx(rect, line_thick, WHITE);
 		draw_text_center(
-			TextFormat("%d/5", poker->rooms[i]), center_x, center_y, 40, RAYWHITE
+			TextFormat("%d/5", poker->rooms[i - 1]), center_x, center_y, 40, RAYWHITE
 		);
 		draw_text_center(TextFormat("%03d", i), center_x, rect.y + 20, 20, RAYWHITE);
 	}

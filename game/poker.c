@@ -26,7 +26,7 @@ int main(int argc, const char **argv) {
 		sscanf(argv[1], "%d", &id);
 	}
 
-	lol_init2();
+	lol_init(NULL, LOL_DEBUG, NULL, LOL_NONE);
 	InitWindow(1280, 720, "Poker");
 	InitAudioDevice();
 

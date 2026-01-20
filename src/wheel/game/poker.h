@@ -128,8 +128,9 @@ Str *poker_recv_str(Poker *poker);
 // MODULE: task
 
 void *login(void *arg);
-void *join(void *arg);
 void *refresh_rooms(void *arg);
+void *join(void *arg);
+
 void poker_update(Poker *poker);
 
 // MODULE: input

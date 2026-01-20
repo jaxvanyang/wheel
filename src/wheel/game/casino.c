@@ -55,8 +55,8 @@ void close_casino(Casino *casino) {
 void *casino_service(void *arg) {
 	Casino *casino = arg;
 	int udp_sock = casino->udp_sock;
-	char buffer[BUFFER_SIZE];
-	char resp[BUFFER_SIZE];
+	char buffer[PACKET_BUFSIZ];
+	char resp[PACKET_BUFSIZ];
 
 	while (true) {
 		SockAddr client;
@@ -149,7 +149,7 @@ void *casino_service(void *arg) {
 }
 
 void init_db(const Casino *casino) {
-	char buffer[BUFFER_SIZE];
+	char buffer[PACKET_BUFSIZ];
 	char *err_msg = NULL;
 	int rc;
 
