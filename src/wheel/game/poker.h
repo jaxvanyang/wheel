@@ -4,8 +4,10 @@
 #include <raylib.h>
 
 #include "../core.h"
+#include "../net.h"
 #include "../xray.h"
 #include "card.h"
+#include "conf.h"
 #include "consts.h"
 
 extern const f32 CARD_SCALE;
@@ -63,6 +65,31 @@ typedef struct {
 	bool is_freezing;
 } Game;
 
+typedef struct {
+	SockAddr server;
+	Socket socket;
+
+	Version server_version;
+	TimeVal t0; // used to calculate latency
+	double latency;
+	// loss rate = 1 - received / sent
+	float packets_received;
+	float packets_sent;
+
+	// communication thread
+	pthread_t task;
+	float task_timer;
+	TimeVal last_refresh;
+
+	Music bgm;
+
+	int id; // user ID, which is only valid when > 0
+	bool is_logged;
+	bool is_seated;
+	int room_id; // default is -1, which indicates no room selected
+	int rooms[ROOM_CNT]; // player counts in rooms
+} Poker;
+
 // Return next player's seat number. Only consider players that need to take action in
 // this round. Return -1 if no such players.
 isize get_next_player(const Game *game, usize seat);
@@ -89,8 +116,31 @@ void bot_update(Game *game);
 void manual_update(Game *game);
 void update(Game *game);
 
+Poker new_poker(u32 server_ip, u16 server_port, int id);
+void init_poker(Poker *poker);
+
+// MODULE: net
+
+bool poker_send_str(Poker *poker, const char *str);
+// Return NULL if failed.
+Str *poker_recv_str(Poker *poker);
+
+// MODULE: task
+
+void *login(void *arg);
+void *join(void *arg);
+void *refresh_rooms(void *arg);
+void poker_update(Poker *poker);
+
+// MODULE: input
+
+void poker_input(Poker *poker);
+
+// MODULE: draw
+
 // NOTE: the seat is relative to my seat
 Rectangle get_player_widget(usize seat);
+Rectangle get_room_rect(int id);
 
 void draw_card(const ResManager *manager, Card card, Vector2 pos);
 void draw_minicard(const ResManager *manager, Card card, Vector2 pos);
@@ -110,3 +160,4 @@ void draw_kind(Kind kind, i32 x, i32 y, i32 font_size);
 void draw_selection(const ResManager *manager, const Selection *selection);
 void draw_slider(usize slider);
 void draw(const Game *game);
+void poker_draw(const Poker *poker);

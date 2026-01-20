@@ -7,36 +7,41 @@
 #endif
 
 void main_loop(void *arg) {
-	Game *game = arg;
+	Poker *poker = arg;
 
-	if (game->is_freezing) {
-		// TODO: do not block
-		pthread_join(game->countdown_thread, NULL);
-		game->is_freezing = false;
+	UpdateMusicStream(poker->bgm);
 
-		start_new_game(game);
-	} else {
-		handle_input(game);
+	poker_input(poker);
 
-		update(game);
-	}
+	poker_update(poker);
 
-	draw(game);
+	BeginDrawing();
+	poker_draw(poker);
+	EndDrawing();
 }
 
-int main() {
-	lol_init("poker", LOL_DEBUG, NULL, LOL_NONE);
+int main(int argc, const char **argv) {
+	int id = 0;
+	if (argc == 2) {
+		sscanf(argv[1], "%d", &id);
+	}
 
+	lol_init2();
 	InitWindow(1280, 720, "Poker");
-	Game game = new_game();
+	InitAudioDevice();
+
+	Poker poker = new_poker(net_addr("127.0.0.1"), 1888, id);
+	init_poker(&poker);
+
+	PlayMusicStream(poker.bgm);
 
 #ifdef __EMSCRIPTEN__
-	emscripten_set_main_loop_arg(main_loop, &game, 0, true);
+	emscripten_set_main_loop_arg(main_loop, &poker, 0, true);
 #else
 	SetTargetFPS(60);
 
 	while (!WindowShouldClose()) {
-		main_loop(&game);
+		main_loop(&poker);
 	}
 #endif
 

@@ -8,6 +8,8 @@
 #include <sys/stat.h>
 #endif // _WIN32
 
+#include <pthread.h>
+
 #include "core.h"
 
 #ifdef _WIN32
@@ -33,3 +35,5 @@ usize get_nproc();
 bool is_dir(const char *path);
 // Return whether path exists as a file.
 bool is_file(const char *path);
+
+bool is_thread_running(pthread_t thread);

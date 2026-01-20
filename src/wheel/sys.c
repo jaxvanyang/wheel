@@ -52,3 +52,5 @@ bool is_file(const char *path) {
 	fclose(f);
 	return true;
 }
+
+bool is_thread_running(pthread_t thread) { return pthread_kill(thread, 0) == 0; }
