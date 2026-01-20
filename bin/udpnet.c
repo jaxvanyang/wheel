@@ -20,6 +20,7 @@ int main(int argc, const char **const argv) {
 	FREE(addr);
 
 	char buffer[1024];
+	Str *input = str_new();
 
 	int sock = new_udp_socket();
 	if (sock == -1) {
@@ -29,11 +30,16 @@ int main(int argc, const char **const argv) {
 
 	while (true) {
 		printf("> ");
-		if (scanf("%s", buffer) == EOF || strcmp(buffer, "exit") == 0) {
+		str_readline(input, stdin);
+		if (input->len == 0 || strcmp(input->data, "exit") == 0) {
 			break;
 		}
 
-		isize bytes_sent = send_to(sock, server_sa, buffer, strlen(buffer), 0);
+		if (input->data[input->len - 1] == '\n') {
+			str_pop(input);
+		}
+
+		isize bytes_sent = send_to(sock, server_sa, input->data, strlen(input->data), 0);
 		if (bytes_sent < 0) {
 			printf("Error sending packet: %s\n", strerror(errno));
 			return EXIT_FAILURE;
@@ -51,4 +57,5 @@ int main(int argc, const char **const argv) {
 	}
 
 	close(sock);
+	str_free(input);
 }
