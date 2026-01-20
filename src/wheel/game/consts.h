@@ -7,5 +7,4 @@
 #define SEAT_CNT 5
 #define TASK_TIMEOUT 2.0
 
-
 extern const Version VERSION;

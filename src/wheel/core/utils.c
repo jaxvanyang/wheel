@@ -25,9 +25,7 @@ f64 elapsed(TimeVal t0) {
 	return dt;
 }
 
-double elapsed_sec(TimeVal t0) {
-	return elapsed(t0) * 1e-3;
-}
+double elapsed_sec(TimeVal t0) { return elapsed(t0) * 1e-3; }
 
 void memswap(void *a, void *b, usize size) {
 	if (size == 0) {

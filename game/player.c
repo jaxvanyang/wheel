@@ -99,7 +99,8 @@ void init_poker(Poker *poker) {
 }
 
 bool send_request(Poker *poker, const char *request) {
-	isize bytes_sent = send_to(poker->socket, poker->server, (void *)request, strlen(request), 0);
+	isize bytes_sent =
+		send_to(poker->socket, poker->server, (void *)request, strlen(request), 0);
 	++poker->packets_sent;
 
 	// NOTE: this is almost impossible to happen because UDP is connectionless
@@ -276,7 +277,9 @@ void poker_draw(const Poker *poker) {
 		LIME
 	);
 	draw_text_tr(
-		TextFormat("Packet loss: %.1f%%", 100 - poker->packets_received / poker->packets_sent * 100.0),
+		TextFormat(
+			"Packet loss: %.1f%%", 100 - poker->packets_received / poker->packets_sent * 100.0
+		),
 		GetScreenWidth() - 5,
 		30,
 		20,
