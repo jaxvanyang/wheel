@@ -1,5 +1,7 @@
 project('wheel', 'c')
 
+add_project_arguments('-Wno-initializer-overrides', language: 'c')
+
 subdir('src/wheel')
 includes = include_directories('src')
 raylib = dependency('raylib', version: '>=5.5')
@@ -13,4 +15,5 @@ wheel = library(
 )
 
 subdir('bin')
+subdir('game')
 subdir('tests')

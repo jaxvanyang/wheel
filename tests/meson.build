@@ -4,7 +4,6 @@ names = [
   'deque',
   'fib',
   'float',
-  'game',
   'hello',
   'kmp',
   'list',
