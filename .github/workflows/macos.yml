@@ -57,7 +57,7 @@ jobs:
       run: make -j3
 
     - name: Run tests
-      run: ./bin/test
+      run: ./bin/runtest
 
     - name: Generate Artifacts
       run: |

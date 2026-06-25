@@ -56,7 +56,7 @@ jobs:
         make -j "$(nproc)"
 
     - name: Run tests
-      run: ./bin/test
+      run: ./bin/runtest
 
     - name: Generate Artifacts
       run: |
