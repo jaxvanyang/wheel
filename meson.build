@@ -33,6 +33,7 @@ wheel = library(
   sources,
   include_directories: includes,
   dependencies: deps,
+  install: true,
 )
 
 subdir('bin')

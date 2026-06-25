@@ -14,5 +14,6 @@ foreach name: names
     include_directories: includes,
     dependencies: deps,
     link_with: wheel,
+    install: true,
   )
 endforeach
