@@ -52,8 +52,7 @@ int main(const int argc, const char *argv[]) {
 
 	for (Kind i = 0; i < 10; ++i) {
 		printf(
-			"| %-15s | %10" USIZE_FMT " | %9.5f%% | %10" USIZE_FMT
-			" | %9.5f%% | %+9.5f%% |\n",
+			"| %-15s | %10" USIZE_FMT " | %9.5f%% | %10" USIZE_FMT " | %9.5f%% | %+9.5f%% |\n",
 			kind_display(i),
 			theory_cnts[i],
 			theory_probs[i],
@@ -67,8 +66,7 @@ int main(const int argc, const char *argv[]) {
 	printf("+-----------------+------------+------------+------------+------------+------------+\n");
 	// clang-format on
 	printf(
-		"| Total           | %10" USIZE_FMT " | %9.5f%% | %10" USIZE_FMT
-		" | %9.5f%% | %+9.5f%% |\n",
+		"| Total           | %10" USIZE_FMT " | %9.5f%% | %10" USIZE_FMT " | %9.5f%% | %+9.5f%% |\n",
 		theory_cnts[10],
 		theory_probs[10],
 		n,
@@ -88,9 +86,7 @@ int main(const int argc, const char *argv[]) {
 		};
 		n = simplify_fraction(n);
 
-		printf(
-			"%s: %" ISIZE_FMT "/%" ISIZE_FMT "\n", kind_display(i), n.dividend, n.divisor
-		);
+		printf("%s: %" ISIZE_FMT "/%" ISIZE_FMT "\n", kind_display(i), n.dividend, n.divisor);
 	}
 }
 
@@ -99,13 +95,11 @@ void calc() {
 
 	theory_cnts[ROYAL_FLUSH] = 4 * binom(47, 2);
 	theory_cnts[STRAIGHT_FLUSH] =
-		4 * (2 * binom(46, 2) + 8 * binom(45, 2) + 2 * 45 + 7 * 44 + 8) -
-		theory_cnts[ROYAL_FLUSH];
+		4 * (2 * binom(46, 2) + 8 * binom(45, 2) + 2 * 45 + 7 * 44 + 8) - theory_cnts[ROYAL_FLUSH];
 	theory_cnts[FOUR_OF_A_KIND] = 13 * binom(48, 3);
 	theory_cnts[FULL_HOUSE] = binom(13, 2) * pow(4, 3) * 11 +
 		13 * (4 * binom(12, 2) * pow(6, 2) + pow(4, 3) * 12 * binom(4, 2) * binom(11, 2));
-	theory_cnts[FLUSH] =
-		4 * (binom(13, 5) * binom(39, 2) + binom(13, 6) * 39 + binom(13, 7)) -
+	theory_cnts[FLUSH] = 4 * (binom(13, 5) * binom(39, 2) + binom(13, 6) * 39 + binom(13, 7)) -
 		theory_cnts[ROYAL_FLUSH] - theory_cnts[STRAIGHT_FLUSH];
 	theory_cnts[STRAIGHT] = 6180020;
 	theory_cnts[THREE_OF_A_KIND] =

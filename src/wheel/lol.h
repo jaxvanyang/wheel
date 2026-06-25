@@ -62,9 +62,8 @@ typedef enum {
  *
  * it support multiple calls in multi-thread environment.
  */
-LOL_PUBLIC int lol_init(
-	const char *domain, lol_level_e std_level, const char *file, lol_level_e file_level
-);
+LOL_PUBLIC int
+lol_init(const char *domain, lol_level_e std_level, const char *file, lol_level_e file_level);
 
 /**
  * initialize lol with default settings
@@ -79,9 +78,8 @@ LOL_PUBLIC int lol_init(
  */
 LOL_PUBLIC void lol_fini();
 
-LOL_PUBLIC int lol_add_domain(
-	const char *domain, lol_level_e std_level, const char *file, lol_level_e file_level
-);
+LOL_PUBLIC int
+lol_add_domain(const char *domain, lol_level_e std_level, const char *file, lol_level_e file_level);
 
 LOL_PUBLIC lol_level_e lol_string_to_level(const char *level);
 
@@ -91,8 +89,8 @@ LOL_PUBLIC lol_level_e lol_string_to_level(const char *level);
 LOL_PUBLIC void *lol_get(const char *domain);
 
 LOL_PUBLIC void lol_printf(
-	lol_level_e level, void *log, const char *domain_id, int err, const char *file,
-	int line, const char *func, int content_only, const char *format, ...
+	lol_level_e level, void *log, const char *domain_id, int err, const char *file, int line,
+	const char *func, int content_only, const char *format, ...
 );
 
 #define lol_message(level, log, domain, errno, ...) \

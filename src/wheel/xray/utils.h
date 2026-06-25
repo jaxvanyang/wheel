@@ -18,15 +18,13 @@ float get_default_font_spacing(int font_size);
 void draw_text_tr(const char *text, int x, int y, int font_size, Color color);
 // Draw text using font and additional parameters (using top right position)
 void draw_text_ex_tr(
-	Font font, const char *text, Vector2 position, float font_size, float spacing,
-	Color tint
+	Font font, const char *text, Vector2 position, float font_size, float spacing, Color tint
 );
 // Draw text (using default font, using center position)
 void draw_text_center(const char *text, int x, int y, int font_size, Color color);
 // Draw text using font and additional parameters (using center position)
 void draw_text_ex_center(
-	Font font, const char *text, Vector2 position, float font_size, float spacing,
-	Color tint
+	Font font, const char *text, Vector2 position, float font_size, float spacing, Color tint
 );
 
 void draw_texture_rec_scale(

@@ -19,12 +19,7 @@ int main(int argc, char **argv) {
 		Float f = decode_f64(number);
 
 		printf(
-			"%" PRIx64 ": %hhd x %lf x 2^%" PRId64 " = %f\n",
-			*hex_number,
-			f.sign,
-			f.m,
-			f.exponent,
-			number
+			"%" PRIx64 ": %hhd x %lf x 2^%" PRId64 " = %f\n", *hex_number, f.sign, f.m, f.exponent, number
 		);
 	}
 }

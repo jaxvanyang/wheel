@@ -64,9 +64,7 @@ char *bigint_display(const BigInt num) {
 	return ret;
 }
 
-bool bigint_is_zero(const BigInt num) {
-	return num.data->len == 1 && ilist_get(num.data, 0) == 0;
-}
+bool bigint_is_zero(const BigInt num) { return num.data->len == 1 && ilist_get(num.data, 0) == 0; }
 
 bool bigint_equal(const BigInt a, const BigInt b) {
 	if (bigint_is_zero(a) && bigint_is_zero(b)) {
@@ -113,9 +111,7 @@ bool bigint_lt(const BigInt a, const BigInt b) {
 	return ret ^ a.sign;
 }
 
-bool bigint_gt(const BigInt a, const BigInt b) {
-	return !(bigint_equal(a, b) || bigint_lt(a, b));
-}
+bool bigint_gt(const BigInt a, const BigInt b) { return !(bigint_equal(a, b) || bigint_lt(a, b)); }
 
 BigInt bigint_add(const BigInt a, const BigInt b) {
 	BigInt x, y;

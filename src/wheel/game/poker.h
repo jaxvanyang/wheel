@@ -191,8 +191,7 @@ void draw_pub_cards(const ResManager *manager, const PubCards *cards);
 void draw_hand(const ResManager *manager, const Hand *hand, Vector2 pos);
 // NOTE: the seat is relative to my seat
 void draw_player(
-	const ResManager *manager, const Player *player, usize seat, bool card_on_left,
-	bool is_dealer
+	const ResManager *manager, const Player *player, usize seat, bool card_on_left, bool is_dealer
 );
 void draw_kind(Kind kind, i32 x, i32 y, i32 font_size);
 void draw_selection(const ResManager *manager, const Selection *selection);

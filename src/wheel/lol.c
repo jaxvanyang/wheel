@@ -151,9 +151,8 @@ static char *log_timestamp(char *buf, char *last, int use_color) {
 }
 
 static char *log_domain(char *buf, char *last, const char *name, int use_color) {
-	buf = lol_slprintf(
-		buf, last, "[%s%s%s] ", use_color ? FGC_YELLOW : "", name, use_color ? NOR : ""
-	);
+	buf =
+		lol_slprintf(buf, last, "[%s%s%s] ", use_color ? FGC_YELLOW : "", name, use_color ? NOR : "");
 
 	return buf;
 }
@@ -199,9 +198,8 @@ static char *log_linefeed(char *buf, char *last) {
 }
 
 static lol_inline void lol_compose_str(
-	lol_t *log, FILE *out, lol_level_e level, const char *domain_name, int err,
-	const char *file, int line, const char *func, int content_only, const char *format,
-	va_list ap
+	lol_t *log, FILE *out, lol_level_e level, const char *domain_name, int err, const char *file,
+	int line, const char *func, int content_only, const char *format, va_list ap
 ) {
 	char logstr[LOL_MAX_LEN];
 	char *p, *last;
@@ -245,8 +243,8 @@ static lol_inline void lol_compose_str(
 }
 
 static void lol_vprintf(
-	lol_level_e level, lol_t *log, const char *domain_name, int err, const char *file,
-	int line, const char *func, int content_only, const char *format, va_list ap
+	lol_level_e level, lol_t *log, const char *domain_name, int err, const char *file, int line,
+	const char *func, int content_only, const char *format, va_list ap
 ) {
 	if (!domain_name) {
 		log = lol_list;
@@ -281,17 +279,7 @@ static void lol_vprintf(
 		}
 		if ((log->target & LOL_TARGET_FILE) && log->file_level >= level) {
 			lol_compose_str(
-				log,
-				log->out,
-				level,
-				domain_name,
-				err,
-				file,
-				line,
-				func,
-				content_only,
-				format,
-				ap
+				log, log->out, level, domain_name, err, file, line, func, content_only, format, ap
 			);
 		}
 		break;
@@ -299,8 +287,8 @@ static void lol_vprintf(
 }
 
 LOL_PUBLIC void lol_printf(
-	lol_level_e level, void *log, const char *domain_id, int err, const char *file,
-	int line, const char *func, int content_only, const char *format, ...
+	lol_level_e level, void *log, const char *domain_id, int err, const char *file, int line,
+	const char *func, int content_only, const char *format, ...
 ) {
 	va_list args;
 
@@ -334,9 +322,8 @@ init_lol(lol_t *log, lol_level_e std_level, const char *file, lol_level_e file_l
 	log->print.linefeed = 1;
 }
 
-LOL_PUBLIC int lol_init(
-	const char *domain, lol_level_e std_level, const char *file, lol_level_e file_level
-) {
+LOL_PUBLIC int
+lol_init(const char *domain, lol_level_e std_level, const char *file, lol_level_e file_level) {
 	pthread_mutex_lock(&lol_mutex);
 	/* the lol only can be initialized once */
 	if (lol_list) {

@@ -209,9 +209,7 @@ Position random_fruit(Snake *snake) {
 	}
 }
 
-void draw_fruit(Position fruit) {
-	DrawRectangle(fruit.x, fruit.y, UNIT, UNIT, RAYWHITE);
-}
+void draw_fruit(Position fruit) { DrawRectangle(fruit.x, fruit.y, UNIT, UNIT, RAYWHITE); }
 
 void draw_fps() {
 	Color c = DARKGREEN;
@@ -235,11 +233,9 @@ Game *new_game() {
 	game->paused = false;
 	game->fastforward = false;
 
-	game->sounds.die =
-		load_sound("assets/brackeys_platformer_assets/sounds/explosion.wav");
+	game->sounds.die = load_sound("assets/brackeys_platformer_assets/sounds/explosion.wav");
 	game->sounds.eat = load_sound("assets/brackeys_platformer_assets/sounds/coin.wav");
-	game->bgm =
-		load_music_stream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
+	game->bgm = load_music_stream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
 
 	return game;
 }

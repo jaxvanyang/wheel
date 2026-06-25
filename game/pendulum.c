@@ -34,9 +34,7 @@ typedef struct {
 } Game;
 
 Vector2 pendulum_end(Pendulum pendulum) {
-	Vector2 diff = {
-		pendulum.length * sinf(pendulum.theta), pendulum.length * cosf(pendulum.theta)
-	};
+	Vector2 diff = {pendulum.length * sinf(pendulum.theta), pendulum.length * cosf(pendulum.theta)};
 	Vector2 end = Vector2Add(pendulum.position, diff);
 
 	return end;
@@ -50,12 +48,9 @@ void draw_pendulum(Pendulum pendulum, Color color) {
 	DrawCircle(end.x, end.y, thick * 2, color);
 }
 
-#define new_pendulum(x, y, length, ...) \
-	_new_pendulum(x, y, length, (PendulumArg){__VA_ARGS__})
+#define new_pendulum(x, y, length, ...) _new_pendulum(x, y, length, (PendulumArg){__VA_ARGS__})
 Pendulum _new_pendulum(f32 x, f32 y, f32 length, PendulumArg arg) {
-	return (Pendulum){
-		.position = (Vector2){x, y}, .length = length, .theta = arg.theta, .v = arg.v
-	};
+	return (Pendulum){.position = (Vector2){x, y}, .length = length, .theta = arg.theta, .v = arg.v};
 }
 
 void update_pendulum(Pendulum *pendulum) {
