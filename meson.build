@@ -7,7 +7,12 @@ project(
 
 fs = import('fs')
 
-add_project_arguments('-Wno-initializer-overrides', language: 'c')
+add_project_arguments(
+  '-Wno-comment',
+  '-Wno-initializer-overrides',
+  '-Wno-override-init',
+  language: 'c'
+)
 
 prefer_static = get_option('prefer_static')
 if host_machine.system() == 'darwin' and prefer_static

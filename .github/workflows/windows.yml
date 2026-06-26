@@ -34,24 +34,9 @@ jobs:
       PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_win_x64
       RAYLIB_VERSION: 5.5
       RAYLIB_PATH: raylib-5.5_win64_mingw-w64
-
-    defaults:
-      run:
-        shell: msys2 {0}
+      PKG_CONFIG_PATH: C:\vcpkg\packages\x64-windows\lib\pkgconfig
 
     steps:
-      - uses: msys2/setup-msys2@v2
-        with:
-          msystem: UCRT64
-          update: true
-          install: >-
-            libsqlite-devel
-            make
-            mingw-w64-ucrt-x86_64-gcc
-            mingw-w64-ucrt-x86_64-just
-            pkgconf
-            unzip
-
       - name: Checkout this repo
         uses: actions/checkout@master
 
@@ -62,25 +47,24 @@ jobs:
 
       - name: Setup Environment
         run: |
-          # use official build because MSYS2 uses external GLFW
+          vcpkg install sqlite3
+          pip install meson pkgconf
           curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
-          unzip "$RAYLIB_PATH.zip"
+          7z x "$RAYLIB_PATH.zip"
+        shell: bash
 
       - name: Build Product
         run: |
-          export PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
-          cc --version
-          make -j "$(nproc)"
+          meson setup build -D raylib_path=${{ env.RAYLIB_PATH }}
+          meson compile -C build -v
 
       - name: Run tests
-        run: ./bin/runtest
+        run: meson test -C build
 
       - name: Generate Artifacts
         run: |
-          mkdir ${{ env.PROJECT_RELEASE_PATH }}
-          make PREFIX=${{ env.PROJECT_RELEASE_PATH }} install
+          meson install -C build --destdir ..\${{ env.PROJECT_RELEASE_PATH }}
           7z a .\${{ env.PROJECT_RELEASE_PATH }}.zip .\${{ env.PROJECT_RELEASE_PATH }}
-        shell: cmd
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v7

@@ -47,7 +47,7 @@ jobs:
       run: brew install just raylib meson
 
     - name: Build Product
-      run: meson setup build && meson compile -C build
+      run: meson setup build && meson compile -C build -v
 
     - name: Run tests
       run: meson test -C build -v
