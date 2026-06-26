@@ -44,10 +44,15 @@ jobs:
       if: github.event_name == 'release' && github.event.action == 'published'
 
     - name: Setup Environment
-      run: sudo apt-get install -y --no-install-recommends meson just libsqlite3-dev libraylib-dev
+      run: |
+        sudo apt-get install -y --no-install-recommends meson just libsqlite3-dev
+        curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.tar.gz"
+        tar xvf "$RAYLIB_PATH.tar.gz"
 
     - name: Build Product
-      run: meson setup build && meson compile -C build
+      run: |
+        meson setup build -D raylib_path=${{ env.RAYLIB_PATH }}
+        meson compile -C build
 
     - name: Run tests
       run: meson test -C build
