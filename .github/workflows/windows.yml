@@ -32,8 +32,8 @@ jobs:
 
     env:
       PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_win_x64
-      RAYLIB_VERSION: 5.5
-      RAYLIB_PATH: raylib-5.5_win64_mingw-w64
+      RAYLIB_VERSION: '6.0'
+      RAYLIB_PATH: raylib-6.0_win64_mingw-w64
 
     steps:
       - name: Checkout this repo
