@@ -7,7 +7,6 @@ names = [
   'insert-words',
   'max-det',
   'nproc',
-  'poker-prob',
   'runtest',
   'sort',
   'udpnet',
@@ -18,8 +17,16 @@ foreach name: names
     name,
     name + '.c',
     include_directories: includes,
-    dependencies: deps,
     link_with: wheel,
     install: true,
   )
 endforeach
+
+executable(
+  'poker-prob',
+  'poker-prob.c',
+  include_directories: includes,
+  dependencies: raylib,
+  link_with: wheel,
+  install: true,
+)

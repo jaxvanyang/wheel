@@ -12,7 +12,7 @@ foreach name: names
     name,
     name + '.c',
     include_directories: includes,
-    dependencies: deps,
+    dependencies: raylib,
     link_with: wheel,
     install: true,
   )

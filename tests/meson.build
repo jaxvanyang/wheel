@@ -11,11 +11,23 @@ names = [
   'math',
   'net',
   'path',
-  'poker',
   'sort',
   'str',
   'sys',
   'tree',
+]
+foreach name: names
+  exe = executable(
+    name,
+    name + '.c',
+    include_directories: includes,
+    link_with: wheel,
+  )
+  test(name, exe)
+endforeach
+
+names = [
+  'poker',
   'xray',
 ]
 foreach name: names
@@ -23,7 +35,7 @@ foreach name: names
     name,
     name + '.c',
     include_directories: includes,
-    dependencies: deps,
+    dependencies: raylib,
     link_with: wheel,
   )
   test(name, exe)
