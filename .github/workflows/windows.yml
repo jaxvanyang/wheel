@@ -34,7 +34,6 @@ jobs:
       PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_win_x64
       RAYLIB_VERSION: 5.5
       RAYLIB_PATH: raylib-5.5_win64_mingw-w64
-      PKG_CONFIG_PATH: C:\vcpkg\packages\x64-windows\lib\pkgconfig
 
     steps:
       - name: Checkout this repo
@@ -47,7 +46,7 @@ jobs:
 
       - name: Setup Environment
         run: |
-          pip install meson pkgconf
+          pip install meson
           curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
           7z x "$RAYLIB_PATH.zip"
         shell: bash

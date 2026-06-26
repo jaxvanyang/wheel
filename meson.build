@@ -33,6 +33,9 @@ if host_machine.system() == 'darwin' and prefer_static
     language: 'c'
   )
 endif
+if host_machine.system() == 'windows'
+  add_project_link_arguments('-lgdi32', '-lwinmm', '-lws2_32', language: 'c')
+endif
 
 sqlite = dependency('sqlite3', version: '>=3')
 
@@ -70,9 +73,10 @@ else
   raylib = dependency('raylib', version: '>=5.5')
 endif
 
+deps = [raylib, sqlite]
+
 subdir('src/wheel')
 includes = include_directories('src')
-deps = [raylib, sqlite]
 wheel = library(
   'wheel',
   sources,
