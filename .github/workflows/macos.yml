@@ -44,7 +44,7 @@ jobs:
       if: github.event_name == 'release' && github.event.action == 'published'
 
     - name: Setup Environment
-      run: brew install just raylib meson
+      run: brew install raylib meson
 
     - name: Build Product
       run: meson setup build && meson compile -C build -v

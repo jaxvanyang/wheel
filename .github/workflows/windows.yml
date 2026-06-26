@@ -47,7 +47,6 @@ jobs:
 
       - name: Setup Environment
         run: |
-          vcpkg install sqlite3
           pip install meson pkgconf
           curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
           7z x "$RAYLIB_PATH.zip"
