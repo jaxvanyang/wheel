@@ -3,7 +3,6 @@ names = [
   'jump',
   'palette',
   'pendulum',
-  'player',
   'poker',
   'snake',
 ]
@@ -17,3 +16,12 @@ foreach name: names
     install: true,
   )
 endforeach
+
+executable(
+  'poker2',
+  'poker2.c',
+  include_directories: includes,
+  dependencies: deps,
+  link_with: wheel,
+  install: true,
+)
