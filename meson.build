@@ -14,31 +14,9 @@ add_project_arguments(
   language: 'c'
 )
 
-prefer_static = get_option('prefer_static')
-if host_machine.system() == 'darwin' and prefer_static
-  # TODO: use AppleFrameworks dependency
-  # for static linking on macOS
-  # https://github.com/raysan5/raylib/wiki/Working-on-macOS#without-xcode---building-statically
-  add_project_link_arguments(
-    '-framework',
-    'CoreVideo',
-    '-framework',
-    'IOKit',
-    '-framework',
-    'Cocoa',
-    '-framework',
-    'GLUT',
-    '-framework',
-    'OpenGL',
-    language: 'c'
-  )
-endif
-if host_machine.system() == 'windows'
-  add_project_link_arguments('-lgdi32', '-lwinmm', '-lws2_32', language: 'c')
-endif
-
 sqlite = dependency('sqlite3', version: '>=3')
 
+prefer_static = get_option('prefer_static')
 raylib_src_path = get_option('raylib_src_path')
 raylib_path = get_option('raylib_path')
 if raylib_src_path != ''
@@ -74,6 +52,12 @@ else
 endif
 
 deps = [raylib, sqlite]
+if host_machine.system() == 'darwin' and prefer_static
+  deps += dependency('appleframeworks', modules: ['CoreVideo', 'IOKit', 'Cocoa', 'GLUT', 'OpenGL'])
+endif
+if host_machine.system() == 'windows'
+  add_project_link_arguments('-lgdi32', '-lwinmm', '-lws2_32', language: 'c')
+endif
 
 subdir('src/wheel')
 includes = include_directories('src')
