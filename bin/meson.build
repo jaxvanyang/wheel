@@ -1,10 +1,8 @@
 names = [
-  'casino',
   'echo',
   'hex2double',
   'hex2float',
   'hilb',
-  'insert-words',
   'max-det',
   'nproc',
   'runtest',
@@ -17,6 +15,21 @@ foreach name: names
     name,
     name + '.c',
     include_directories: includes,
+    link_with: wheel,
+    install: true,
+  )
+endforeach
+
+names = [
+  'casino',
+  'insert-words',
+]
+foreach name: names
+  executable(
+    name,
+    name + '.c',
+    include_directories: includes,
+    dependencies: sqlite,
     link_with: wheel,
     install: true,
   )
