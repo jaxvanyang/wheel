@@ -39,7 +39,7 @@ jobs:
 
     - name: Build Product
       run: |
-        meson setup build -D raylib_path=${{ env.RAYLIB_PATH }}
+        meson setup build -D raylib_path=${{ env.RAYLIB_PATH }} -D prefix=/
         meson compile -C build -v --ninja-args '-k 0'
 
     - name: Run tests
@@ -48,18 +48,19 @@ jobs:
     - name: Generate Artifacts
       run: |
         meson install -C build --destdir ../${{ env.PROJECT_RELEASE_PATH }}
-        7z a ./${{ env.PROJECT_RELEASE_PATH }}.zip ./${{ env.PROJECT_RELEASE_PATH }}
+        tar cavf ${{ env.PROJECT_RELEASE_PATH }}.tar.xz ${{ env.PROJECT_RELEASE_PATH }}
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v7
       with:
-        name: ${{ env.PROJECT_RELEASE_PATH }}.zip
-        path: ./${{ env.PROJECT_RELEASE_PATH }}.zip
+        name: ${{ env.PROJECT_RELEASE_PATH }}.tar.xz
+        path: ${{ env.PROJECT_RELEASE_PATH }}.tar.xz
+        archive: false
 
     - name: Upload Artifact to Release
       uses: softprops/action-gh-release@v2
       with:
-        files: ${{ env.PROJECT_RELEASE_PATH }}.zip
+        files: ${{ env.PROJECT_RELEASE_PATH }}.tar.xz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       if: github.event_name == 'release' && github.event.action == 'published'

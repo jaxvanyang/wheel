@@ -76,6 +76,7 @@ jobs:
       with:
         name: ${{ env.PROJECT_RELEASE_PATH }}.zip
         path: ./${{ env.PROJECT_RELEASE_PATH }}.zip
+        archive: false
 
     - name: Upload Artifact to Release
       uses: softprops/action-gh-release@v2
@@ -108,8 +109,6 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: ${{ env.PROJECT_RELEASE_PATH }}.zip
-      - name: Decompress Artifacts
-        run: unzip ${{ env.PROJECT_RELEASE_PATH }}.zip
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:

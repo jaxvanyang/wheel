@@ -14,6 +14,7 @@ add_project_arguments(
 )
 
 fs = import('fs')
+pkg = import('pkgconfig')
 system = host_machine.system()
 prefer_static = get_option('prefer_static')
 raylib_src_path = get_option('raylib_src_path')
@@ -81,7 +82,7 @@ if system == 'windows'
 endif
 
 # Targets
-subdir('src/wheel')
+subdir('src')
 includes = include_directories('src')
 wheel = library(
   'wheel',
@@ -96,3 +97,7 @@ if system != 'emscripten'
   subdir('tests')
 endif
 subdir('game')
+
+# Install
+pkg.generate(wheel)
+install_subdir('assets', install_dir: 'share' / 'wheel')

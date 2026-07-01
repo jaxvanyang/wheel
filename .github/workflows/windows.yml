@@ -57,6 +57,7 @@ jobs:
         with:
           name: ${{ env.PROJECT_RELEASE_PATH }}.zip
           path: ./${{ env.PROJECT_RELEASE_PATH }}.zip
+          archive: false
 
       - name: Upload Artifact to Release
         uses: softprops/action-gh-release@v2
