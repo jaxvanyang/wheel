@@ -22,6 +22,8 @@ raylib_path = get_option('raylib_path')
 cc = meson.get_compiler('c')
 
 # Dependencies
+math = cc.find_library('m', required: false)
+
 if system == 'emscripten'
   # SQLite depends on pthread which causes problems on Web, see #24
   sqlite = dependency('', required: false)
@@ -88,7 +90,7 @@ wheel = library(
   'wheel',
   sources,
   include_directories: includes,
-  dependencies: [raylib, sqlite],
+  dependencies: [raylib, sqlite, math],
   install: true,
 )
 
