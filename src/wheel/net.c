@@ -80,9 +80,7 @@ isize net_recv(Socket socket, void *buffer, usize buffer_size, int flags) {
 	return recv_from(socket, NULL, buffer, buffer_size, flags);
 }
 
-isize recv_from(
-	Socket socket, SockAddr *src, void *buffer, usize buffer_size, int flags
-) {
+isize recv_from(Socket socket, SockAddr *src, void *buffer, usize buffer_size, int flags) {
 	struct sockaddr sa;
 	socklen_t len = sizeof(sa);
 	isize ret = recvfrom(socket, buffer, buffer_size, flags, &sa, &len);
@@ -94,9 +92,7 @@ isize recv_from(
 	return ret;
 }
 
-isize send_to(
-	Socket socket, SockAddr dest, void *buffer, usize buffer_size, int flags
-) {
+isize send_to(Socket socket, SockAddr dest, void *buffer, usize buffer_size, int flags) {
 	struct sockaddr sa = to_os_sa(dest);
 	isize ret = sendto(socket, buffer, buffer_size, flags, &sa, sizeof(sa));
 

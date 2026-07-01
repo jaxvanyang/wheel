@@ -12,12 +12,7 @@ void draw_hud(const Game *game) {
 
 	const char *score = TextFormat("%010u", game->score);
 	draw_text_ex_tr(
-		game->manager->pixel_operator8,
-		score,
-		(Vector2){WIDTH - 5, start_y + 5},
-		15,
-		1,
-		RAYWHITE
+		game->manager->pixel_operator8, score, (Vector2){WIDTH - 5, start_y + 5}, 15, 1, RAYWHITE
 	);
 }
 
@@ -30,10 +25,7 @@ void draw_debug_info(const Game *game) {
 
 	str_push_str(text, TextFormat("state: %s\n", state_string(game->player.state)));
 	str_push_str(
-		text,
-		TextFormat(
-			"pos: %.1f, %.1f\n", game->player.entity.dest.x, game->player.entity.dest.y
-		)
+		text, TextFormat("pos: %.1f, %.1f\n", game->player.entity.dest.x, game->player.entity.dest.y)
 	);
 	str_push_str(text, TextFormat("v: %.1f, %.1f\n", game->player.v.x, game->player.v.y));
 	str_push_str(text, TextFormat("camera Y offset: %.1f\n", game->camera.offset.y));

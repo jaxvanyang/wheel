@@ -61,9 +61,7 @@ int net_accept(Socket socket, SockAddr *sa);
 // For more information, see recv().
 isize net_recv(Socket socket, void *buffer, usize buffer_size, int flags);
 // For more information, see recvfrom()
-isize recv_from(
-	Socket socket, SockAddr *src, void *buffer, usize buffer_size, int flags
-);
+isize recv_from(Socket socket, SockAddr *src, void *buffer, usize buffer_size, int flags);
 #ifdef _WIN32
 int send(Socket socket, const char *buffer, int buffer_size, int flags);
 #else

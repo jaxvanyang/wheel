@@ -4,22 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - '**/*.c'
-      - '**/*.h'
-      - '**/*.html'
-      - '.github/workflows/webassembly.yml'
-      - 'Makefile'
-      - 'assets/**'
   pull_request:
     branches: [main]
-    paths:
-      - '**/*.c'
-      - '**/*.h'
-      - '**/*.html'
-      - '.github/workflows/webassembly.yml'
-      - 'Makefile'
-      - 'assets/**'
   release:
     types: [published]
 
@@ -30,7 +16,6 @@ env:
   PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_wasm
   RAYLIB_SRC_PATH: raylib/src
   PLATFORM: PLATFORM_WEB
-  EM_VERSION: 4.0.13
   EM_CACHE_FOLDER: 'emsdk-cache'
 
 jobs:
@@ -44,27 +29,29 @@ jobs:
       uses: actions/checkout@master
 
     - name: Checkout raylib repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@master
       with:
         repository: raysan5/raylib
         path: raylib
 
     - name: Setup cache
       id: cache-system-libraries
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{env.EM_CACHE_FOLDER}}
         key: ${{env.EM_VERSION}}-${{ runner.os }}
 
-    - uses: mymindstorm/setup-emsdk@v14
+    - uses: emscripten-core/setup-emsdk@v16
       with:
-        version: ${{env.EM_VERSION}}
         actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
 
     - name: Setup Release Paths
       run: |
         echo "PROJECT_RELEASE_PATH=${{ env.PROJECT_NAME }}_v${{ github.event.release.tag_name }}_wasm" >> "$GITHUB_ENV"
       if: github.event_name == 'release' && github.event.action == 'published'
+
+    - name: Setup Environment
+      run: pip install meson
 
     - name: Build raylib Library
       run: |
@@ -73,20 +60,23 @@ jobs:
         make RAYLIB_BUILD_MODE=RELEASE RAYLIB_LIBTYPE=STATIC RAYLIB_RELEASE_PATH=. -B -j "$(nproc)"
 
     - name: Build Product
-      run: make -B -j "$(nproc)" games
+      run: |
+        meson setup build -D raylib_src_path=${{ env.RAYLIB_SRC_PATH }} --cross-file wasm.ini
+        meson compile -C build -v --ninja-args '-k 0'
 
     - name: Generate Artifacts
       run: |
         mkdir -p ${{ env.PROJECT_RELEASE_PATH }}
         cp src/index.html ${{ env.PROJECT_RELEASE_PATH }}
-        cp game/*.html game/*.js game/*.wasm game/*.data ${{ env.PROJECT_RELEASE_PATH }}
+        cp build/game/*.{html,js,wasm,data} ${{ env.PROJECT_RELEASE_PATH }}
         7z a ./${{ env.PROJECT_RELEASE_PATH }}.zip ./${{ env.PROJECT_RELEASE_PATH }}
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ env.PROJECT_RELEASE_PATH }}.zip
         path: ./${{ env.PROJECT_RELEASE_PATH }}.zip
+        archive: false
 
     - name: Upload Artifact to Release
       uses: softprops/action-gh-release@v2
@@ -119,8 +109,6 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: ${{ env.PROJECT_RELEASE_PATH }}.zip
-      - name: Decompress Artifacts
-        run: unzip ${{ env.PROJECT_RELEASE_PATH }}.zip
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:

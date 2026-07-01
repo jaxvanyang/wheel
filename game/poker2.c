@@ -60,8 +60,7 @@ Poker new_poker(u32 server_ip, u16 server_port, int id) {
 
 void init_poker(Poker *poker) {
 	// load resources
-	poker->bgm =
-		load_music_stream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
+	poker->bgm = load_music_stream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
 
 	poker->socket = new_udp_socket();
 	if (poker->socket == -1) {
@@ -210,16 +209,10 @@ void draw(const Poker *poker) {
 		draw_text_tr(
 			TextFormat("Latency: %.0lfms", poker->latency), GetScreenWidth() - 5, 30, 20, LIME
 		);
-		draw_text_tr(
-			TextFormat("ID: %03d", poker->id), GetScreenWidth() - 5, 55, 20, RAYWHITE
-		);
+		draw_text_tr(TextFormat("ID: %03d", poker->id), GetScreenWidth() - 5, 55, 20, RAYWHITE);
 	} else {
 		draw_text_center(
-			"Connecting to server...",
-			GetScreenWidth() / 2,
-			GetScreenHeight() / 2,
-			50,
-			LIGHTGRAY
+			"Connecting to server...", GetScreenWidth() / 2, GetScreenHeight() / 2, 50, LIGHTGRAY
 		);
 	}
 

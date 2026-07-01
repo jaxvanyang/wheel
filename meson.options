@@ -1,0 +1,10 @@
+option(
+  'raylib_src_path',
+  type: 'string',
+  description: 'Path to the src folder of Raylib, i.e., raylib/src',
+)
+option(
+  'raylib_path',
+  type: 'string',
+  description: 'Path to pre-compiled Raylib, i.e., Raylib installation prefix',
+)

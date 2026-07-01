@@ -4,20 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - "**/*.c"
-      - "**/*.h"
-      - ".github/workflows/windows.yml"
-      - "Makefile"
-      - "assets/**"
   pull_request:
     branches: [main]
-    paths:
-      - "**/*.c"
-      - "**/*.h"
-      - ".github/workflows/windows.yml"
-      - "Makefile"
-      - "assets/**"
   release:
     types: [published]
 
@@ -32,26 +20,10 @@ jobs:
 
     env:
       PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_win_x64
-      RAYLIB_VERSION: 5.5
-      RAYLIB_PATH: raylib-5.5_win64_mingw-w64
-
-    defaults:
-      run:
-        shell: msys2 {0}
+      RAYLIB_VERSION: '6.0'
+      RAYLIB_PATH: raylib-6.0_win64_mingw-w64
 
     steps:
-      - uses: msys2/setup-msys2@v2
-        with:
-          msystem: UCRT64
-          update: true
-          install: >-
-            libsqlite-devel
-            make
-            mingw-w64-ucrt-x86_64-gcc
-            mingw-w64-ucrt-x86_64-just
-            pkgconf
-            unzip
-
       - name: Checkout this repo
         uses: actions/checkout@master
 
@@ -62,31 +34,30 @@ jobs:
 
       - name: Setup Environment
         run: |
-          # use official build because MSYS2 uses external GLFW
+          pip install meson
           curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.zip"
-          unzip "$RAYLIB_PATH.zip"
+          7z x "$RAYLIB_PATH.zip"
+        shell: bash
 
       - name: Build Product
         run: |
-          export PKG_CONFIG_PATH=/ucrt64/lib/pkgconfig
-          cc --version
-          make -j "$(nproc)"
+          meson setup build -D raylib_path=${{ env.RAYLIB_PATH }}
+          meson compile -C build -v --ninja-args '-k 0'
 
       - name: Run tests
-        run: ./bin/test
+        run: meson test -C build -v
 
       - name: Generate Artifacts
         run: |
-          mkdir ${{ env.PROJECT_RELEASE_PATH }}
-          make PREFIX=${{ env.PROJECT_RELEASE_PATH }} install
+          meson install -C build --destdir ..\${{ env.PROJECT_RELEASE_PATH }}
           7z a .\${{ env.PROJECT_RELEASE_PATH }}.zip .\${{ env.PROJECT_RELEASE_PATH }}
-        shell: cmd
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.PROJECT_RELEASE_PATH }}.zip
           path: ./${{ env.PROJECT_RELEASE_PATH }}.zip
+          archive: false
 
       - name: Upload Artifact to Release
         uses: softprops/action-gh-release@v2

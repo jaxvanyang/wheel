@@ -105,8 +105,7 @@ int main(int argc, const char *argv[]) {
 
 void list_words(sqlite3 *db) {
 	char *err_msg = NULL;
-	int rc =
-		sqlite3_exec(db, "select word, meaning from words", print_words, NULL, &err_msg);
+	int rc = sqlite3_exec(db, "select word, meaning from words", print_words, NULL, &err_msg);
 	if (rc != SQLITE_OK) {
 		eprintln("ERROR: %s", err_msg);
 		sqlite3_free(err_msg);

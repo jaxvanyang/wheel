@@ -1,3 +1,5 @@
+# NOTE: this is deprecated, please use Meson
+
 # Define target platform: PLATFORM_DESKTOP, PLATFORM_WEB
 PLATFORM ?= PLATFORM_DESKTOP
 CFLAGS := -D$(PLATFORM) $(CFLAGS)

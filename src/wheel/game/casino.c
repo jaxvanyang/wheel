@@ -1,4 +1,4 @@
-#ifndef PLATFORM_WEB
+#ifndef __EMSCRIPTEN__
 
 #include <string.h>
 
@@ -32,9 +32,7 @@ void init_casino(Casino *casino) {
 	path_join(db_path, "casino.db");
 	int rc = sqlite3_open(db_path->data, &casino->db);
 	if (rc) {
-		lol_term(
-			"failed to open the DB: %s: %s", db_path->data, sqlite3_errmsg(casino->db)
-		);
+		lol_term("failed to open the DB: %s: %s", db_path->data, sqlite3_errmsg(casino->db));
 	}
 	str_free(db_path);
 
@@ -101,14 +99,7 @@ void *casino_service(void *arg) {
 
 		switch (command.type) {
 		case COMMAND_VERSION:
-			snprintf(
-				resp,
-				sizeof(resp),
-				"version %u.%u.%u",
-				VERSION.major,
-				VERSION.minor,
-				VERSION.patch
-			);
+			snprintf(resp, sizeof(resp), "version %u.%u.%u", VERSION.major, VERSION.minor, VERSION.patch);
 			send_to(udp_sock, client, resp, strlen(resp), 0);
 			break;
 		case COMMAND_ID:
@@ -186,4 +177,4 @@ int get_new_user_id(sqlite3 *db) {
 	return ret;
 }
 
-#endif // ifndef PLATFORM_WEB
+#endif // ifndef __EMSCRIPTEN__

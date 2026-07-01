@@ -4,20 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - '**/*.c'
-      - '**/*.h'
-      - '.github/workflows/macos.yml'
-      - 'Makefile'
-      - 'assets/**'
   pull_request:
     branches: [main]
-    paths:
-      - '**/*.c'
-      - '**/*.h'
-      - '.github/workflows/macos.yml'
-      - 'Makefile'
-      - 'assets/**'
   release:
     types: [published]
 
@@ -27,13 +15,13 @@ permissions:
 jobs:
   build:
     permissions:
-      contents: write       # for actions/upload-release-asset to upload release asset
+      contents: write # for actions/upload-release-asset to upload release asset
     runs-on: macos-latest
 
     env:
       PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_macos
-      RAYLIB_VERSION: 5.5
-      RAYLIB_PATH: raylib-5.5_macos
+      RAYLIB_VERSION: '6.0'
+      RAYLIB_PATH: raylib-6.0_macos
 
     steps:
     - name: Checkout this repo
@@ -45,36 +33,34 @@ jobs:
 
     - name: Setup Environment
       run: |
-        brew install just
+        brew install meson
         curl -OL "https://github.com/raysan5/raylib/releases/download/$RAYLIB_VERSION/$RAYLIB_PATH.tar.gz"
         tar xvf "$RAYLIB_PATH.tar.gz"
-        # force macOS use static linked raylib when linking
-        rm "$RAYLIB_PATH/lib"/*.dylib
-        echo RAYLIB_CFLAGS="-I$RAYLIB_PATH/include" >> "$GITHUB_ENV"
-        echo RAYLIB_LDFLAGS="-framework IOKit -framework Cocoa -framework OpenGL -L$RAYLIB_PATH/lib -lraylib" >> "$GITHUB_ENV"
 
     - name: Build Product
-      run: make -j3
+      run: |
+        meson setup build -D raylib_path=${{ env.RAYLIB_PATH }} -D prefix=/
+        meson compile -C build -v --ninja-args '-k 0'
 
     - name: Run tests
-      run: ./bin/test
+      run: meson test -C build -v
 
     - name: Generate Artifacts
       run: |
-        mkdir -p ${{ env.PROJECT_RELEASE_PATH }}
-        make PREFIX=${{ env.PROJECT_RELEASE_PATH }} install
-        7z a ./${{ env.PROJECT_RELEASE_PATH }}.zip ./${{ env.PROJECT_RELEASE_PATH }}
+        meson install -C build --destdir ../${{ env.PROJECT_RELEASE_PATH }}
+        tar cavf ${{ env.PROJECT_RELEASE_PATH }}.tar.xz ${{ env.PROJECT_RELEASE_PATH }}
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
-        name: ${{ env.PROJECT_RELEASE_PATH }}.zip
-        path: ./${{ env.PROJECT_RELEASE_PATH }}.zip
+        name: ${{ env.PROJECT_RELEASE_PATH }}.tar.xz
+        path: ${{ env.PROJECT_RELEASE_PATH }}.tar.xz
+        archive: false
 
     - name: Upload Artifact to Release
       uses: softprops/action-gh-release@v2
       with:
-        files: ${{ env.PROJECT_RELEASE_PATH }}.zip
+        files: ${{ env.PROJECT_RELEASE_PATH }}.tar.xz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       if: github.event_name == 'release' && github.event.action == 'published'

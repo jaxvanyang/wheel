@@ -96,9 +96,7 @@ void print_progress(usize passed, usize failed, usize total) {
 		status = "Testing...";
 	}
 
-	printf(
-		"[%" USIZE_FMT "/%" USIZE_FMT "/%" USIZE_FMT "] %s [", passed, failed, total, status
-	);
+	printf("[%" USIZE_FMT "/%" USIZE_FMT "/%" USIZE_FMT "] %s [", passed, failed, total, status);
 
 	usize cnt = (usize)(progress / 5.0);
 	for (usize i = 0; i < cnt; ++i) {

@@ -29,16 +29,13 @@ void hit_and_correct(Game *game) {
 		f32 width = hit.width, height = hit.height;
 
 		if (game->player.v.y > 0) {
-			height = game->player.entity.hitbox.y + game->player.entity.hitbox.height -
-				p->value.hitbox.y;
+			height = game->player.entity.hitbox.y + game->player.entity.hitbox.height - p->value.hitbox.y;
 		} else if (game->player.v.y < 0) {
-			height =
-				p->value.hitbox.y + p->value.hitbox.height - game->player.entity.hitbox.y;
+			height = p->value.hitbox.y + p->value.hitbox.height - game->player.entity.hitbox.y;
 		}
 
 		if (game->player.v.x > 0) {
-			width = game->player.entity.hitbox.x + game->player.entity.hitbox.width -
-				p->value.hitbox.x;
+			width = game->player.entity.hitbox.x + game->player.entity.hitbox.width - p->value.hitbox.x;
 		} else if (game->player.v.x < 0) {
 			width = p->value.hitbox.x + p->value.hitbox.width - game->player.entity.hitbox.x;
 		}
@@ -139,8 +136,7 @@ void update(Game *game) {
 		}
 	}
 
-	if (game->player.entity.hitbox.y + game->player.entity.hitbox.height >
-			game->deadline) {
+	if (game->player.entity.hitbox.y + game->player.entity.hitbox.height > game->deadline) {
 		game->player.state = DEATH;
 		PlaySound(game->manager->hurt);
 	}
@@ -165,19 +161,15 @@ void reset(Game *game) {
 
 	for (usize i = 0; i < (WIDTH + 63) / 64; ++i) {
 		elist_push_back(
-			game->tiles,
-			new_platform(game->manager->platform, i * 64, 0, .size = PLATFORM_LARGE)
+			game->tiles, new_platform(game->manager->platform, i * 64, 0, .size = PLATFORM_LARGE)
 		);
 	}
 
 	for (isize i = 1; i <= (WIDTH + 63) / 64; ++i) {
 		elist_push_back(
-			game->tiles,
-			new_platform(game->manager->platform, 100 * i, -80 * i, .color = PLATFORM_BLUE)
+			game->tiles, new_platform(game->manager->platform, 100 * i, -80 * i, .color = PLATFORM_BLUE)
 		);
 	}
 }
 
-i32 get_screen_start_y(const Player *player) {
-	return (i32)player->entity.hitbox.y - HEIGHT / 2;
-}
+i32 get_screen_start_y(const Player *player) { return (i32)player->entity.hitbox.y - HEIGHT / 2; }

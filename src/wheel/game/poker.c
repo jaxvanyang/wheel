@@ -151,16 +151,16 @@ isize get_next_player(const Game *game, usize seat) {
 			return -1;
 		}
 
-		if (!game->players[ret].is_valid || game->players[ret].state == STATE_STANDBY ||
-				game->players[ret].state == STATE_ALLIN ||
-				game->players[ret].state == STATE_FOLD) {
+		if (
+			!game->players[ret].is_valid || game->players[ret].state == STATE_STANDBY ||
+			game->players[ret].state == STATE_ALLIN || game->players[ret].state == STATE_FOLD
+		) {
 			continue;
 		}
 
 		assert(game->players[ret].state != STATE_THINKING);
 
-		if (game->players[ret].state == STATE_WAITING ||
-				game->players[ret].bet < game->bet) {
+		if (game->players[ret].state == STATE_WAITING || game->players[ret].bet < game->bet) {
 			return ret;
 		}
 	}
@@ -239,8 +239,10 @@ Selection new_selection(const Card cards[5]) {
 
 		// special case: A 5 4 3 2
 		// if A is in the middle, is_straight would be set before
-		if ((cards[i].rank != ACE || cards[i + 1].rank != FIVE) &&
-				cmp_rank(cards[i].rank, cards[i + 1].rank) != 1) {
+		if (
+			(cards[i].rank != ACE || cards[i + 1].rank != FIVE) &&
+			cmp_rank(cards[i].rank, cards[i + 1].rank) != 1
+		) {
 			is_straight = false;
 		}
 	}
@@ -425,9 +427,7 @@ ResManager new_res_manager() {
 		.minicards = load_texture("assets/poker/minicards.png"),
 		.chips = load_texture("assets/poker/fiches_addon.png"),
 		.button = load_texture("assets/poker/button.png"),
-		.bgm = load_music_stream(
-			"assets/brackeys_platformer_assets/music/time_for_adventure.mp3"
-		),
+		.bgm = load_music_stream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3"),
 		.sound_win = load_sound("assets/brackeys_platformer_assets/sounds/coin.wav"),
 		.sound_lose = load_sound("assets/brackeys_platformer_assets/sounds/hurt.wav"),
 	};
@@ -758,8 +758,7 @@ void update(Game *game) {
 
 	// refresh players' states because we need to start a new round
 	for (usize i = 0; i < SEAT_CNT; ++i) {
-		if (game->players[i].state != STATE_ALLIN &&
-				is_player_on_table(game->players + i)) {
+		if (game->players[i].state != STATE_ALLIN && is_player_on_table(game->players + i)) {
 			game->players[i].state = STATE_WAITING;
 		}
 	}
@@ -854,16 +853,12 @@ Rectangle get_player_widget(usize seat) {
 }
 
 void draw_card(const ResManager *manager, Card card, Vector2 pos) {
-	Rectangle source = {
-		.x = card.rank * 48, .y = card.suit * 64, .width = 48, .height = 64
-	};
+	Rectangle source = {.x = card.rank * 48, .y = card.suit * 64, .width = 48, .height = 64};
 	draw_texture_rec_scale(manager->cards, source, pos, WHITE, CARD_SCALE);
 }
 
 void draw_minicard(const ResManager *manager, Card card, Vector2 pos) {
-	Rectangle source = {
-		.x = 17 + card.rank * 32, .y = 7 + card.suit * 32, .width = 15, .height = 22
-	};
+	Rectangle source = {.x = 17 + card.rank * 32, .y = 7 + card.suit * 32, .width = 15, .height = 22};
 	draw_texture_rec_scale(manager->minicards, source, pos, WHITE, CARD_SCALE);
 }
 
@@ -871,9 +866,7 @@ void draw_back(const ResManager *manager, u8 color, u8 style, Vector2 pos) {
 	assert(color < 4);
 	assert(style < 2);
 
-	Rectangle source = {
-		.x = (color * 2 + style) * 48, .y = 4 * 64, .width = 48, .height = 64
-	};
+	Rectangle source = {.x = (color * 2 + style) * 48, .y = 4 * 64, .width = 48, .height = 64};
 	draw_texture_rec_scale(manager->cards, source, pos, WHITE, CARD_SCALE);
 }
 
@@ -896,9 +889,7 @@ void draw_chip(const ResManager *manager, u8 color, u8 amount, Vector2 pos) {
 	i32 col = (color / 4) * 4 + amount;
 	i32 row = color % 4;
 
-	Rectangle source = {
-		.x = col * 48, .y = 4 + row * 48, .width = CHIP_WIDTH, .height = CHIP_HEIGHT
-	};
+	Rectangle source = {.x = col * 48, .y = 4 + row * 48, .width = CHIP_WIDTH, .height = CHIP_HEIGHT};
 	DrawTextureRec(manager->chips, source, pos, WHITE);
 }
 
@@ -979,8 +970,7 @@ void draw_pub_cards(const ResManager *manager, const PubCards *cards) {
 		draw_card(
 			manager,
 			cards->cards[i],
-			(Vector2){widget.x + 3 * margin + i * (CARD_WIDTH + 3 * margin),
-								widget.y + 3 * margin}
+			(Vector2){widget.x + 3 * margin + i * (CARD_WIDTH + 3 * margin), widget.y + 3 * margin}
 		);
 	}
 }
@@ -999,8 +989,7 @@ void draw_hand(const ResManager *manager, const Hand *hand, Vector2 pos) {
 }
 
 void draw_player(
-	const ResManager *manager, const Player *player, usize seat, bool card_on_left,
-	bool is_dealer
+	const ResManager *manager, const Player *player, usize seat, bool card_on_left, bool is_dealer
 ) {
 	if (!player->is_valid) {
 		return;
@@ -1086,9 +1075,7 @@ void draw_selection(const ResManager *manager, const Selection *selection) {
 	draw_kind(selection->kind, x, y, font_size);
 	for (usize i = 0; i < 5; ++i) {
 		draw_minicard(
-			manager,
-			selection->cards[i],
-			(Vector2){x + i * (MINICARD_WIDTH + 5), y + font_size + margin}
+			manager, selection->cards[i], (Vector2){x + i * (MINICARD_WIDTH + 5), y + font_size + margin}
 		);
 	}
 }
@@ -1108,9 +1095,7 @@ void draw_slider(usize slider) {
 	f32 slider_x = pub.x + (f32)slider / 100 * line_width;
 	f32 slider_y = line_y - slider_height / 2;
 
-	DrawLineEx(
-		(Vector2){pub.x, line_y}, (Vector2){pub.x + line_width, line_y}, line_thick, BLACK
-	);
+	DrawLineEx((Vector2){pub.x, line_y}, (Vector2){pub.x + line_width, line_y}, line_thick, BLACK);
 	DrawRectangle(slider_x, slider_y, slider_width, slider_height, RAYWHITE);
 	draw_text_center(
 		TextFormat("%" USIZE_FMT, slider), number_x + number_width / 2, line_y, 15, RAYWHITE
@@ -1134,8 +1119,7 @@ void draw(const Game *game) {
 	draw_pot(&m, game->pot);
 
 	if (game->pub_cards.len == 5) {
-		Selection sel =
-			get_best_selection(&game->pub_cards, &game->players[game->my_seat].hand);
+		Selection sel = get_best_selection(&game->pub_cards, &game->players[game->my_seat].hand);
 		draw_selection(&m, &sel);
 	}
 

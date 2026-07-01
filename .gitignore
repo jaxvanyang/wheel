@@ -3,4 +3,6 @@
 *.db
 *.o
 *.so
+.cache
 compile_commands.json
+raylib-*

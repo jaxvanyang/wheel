@@ -172,8 +172,7 @@ void str_insert(Str *s, const usize i, const char c) {
 	}
 
 	if (s->size <= s->len + 1) {
-		usize new_size =
-			s->size + (s->size < LIST_MAX_INCREASE ? s->size : LIST_MAX_INCREASE);
+		usize new_size = s->size + (s->size < LIST_MAX_INCREASE ? s->size : LIST_MAX_INCREASE);
 		char *new_data = malloc(new_size * sizeof(char));
 		memcpy(new_data, s->data, s->size * sizeof(char));
 		free(s->data);

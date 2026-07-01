@@ -56,9 +56,7 @@ typedef struct {
 } Game;
 
 Vector2 pendulum_end(Pendulum pendulum) {
-	Vector2 diff = {
-		pendulum.length * sinf(pendulum.theta), pendulum.length * cosf(pendulum.theta)
-	};
+	Vector2 diff = {pendulum.length * sinf(pendulum.theta), pendulum.length * cosf(pendulum.theta)};
 	Vector2 end = Vector2Add(pendulum.position, diff);
 
 	return end;
@@ -90,21 +88,13 @@ Pendulum _new_pendulum(f32 x, f32 y, f32 length, Color color, PendulumArg arg) {
 		(DoublePendulumArg){.a_mass = 1.0, .b_mass = 1.0, __VA_ARGS__} \
 	)
 DoublePendulum _new_double_pendulum(
-	f32 x, f32 y, f32 a_length, Color a_color, f32 b_length, Color b_color,
-	DoublePendulumArg arg
+	f32 x, f32 y, f32 a_length, Color a_color, f32 b_length, Color b_color, DoublePendulumArg arg
 ) {
-	Pendulum a = new_pendulum(
-		x, y, a_length, a_color, .theta = arg.a_theta, .w = arg.a_w, .mass = arg.a_mass
-	);
+	Pendulum a =
+		new_pendulum(x, y, a_length, a_color, .theta = arg.a_theta, .w = arg.a_w, .mass = arg.a_mass);
 	Vector2 end = pendulum_end(a);
 	Pendulum b = new_pendulum(
-		end.x,
-		end.y,
-		b_length,
-		b_color,
-		.theta = arg.b_theta,
-		.w = arg.b_w,
-		.mass = arg.b_mass
+		end.x, end.y, b_length, b_color, .theta = arg.b_theta, .w = arg.b_w, .mass = arg.b_mass
 	);
 
 	return (DoublePendulum){.a = a, .b = b};
@@ -124,12 +114,11 @@ void handle_input(Game *game) {
 		a->theta = b->theta = atan2f(diff.x, diff.y);
 		b->position = pendulum_end(*a);
 	} else {
-		f32 cos_alpha =
-			(a->length * a->length + d * d - b->length * b->length) / 2 / a->length / d;
+		f32 cos_alpha = (a->length * a->length + d * d - b->length * b->length) / 2 / a->length / d;
 		f32 alpha = acosf(cos_alpha);
 		f32 beta = atan2f(-diff.y, diff.x) + PI / 2;
-		f32 cos_gamma = (a->length * a->length + b->length * b->length - d * d) / 2 /
-			a->length / b->length;
+		f32 cos_gamma =
+			(a->length * a->length + b->length * b->length - d * d) / 2 / a->length / b->length;
 		f32 gamma = acosf(cos_gamma);
 
 		a->theta = beta - alpha;
