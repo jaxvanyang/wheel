@@ -1,7 +1,7 @@
 #pragma once
 
-// this module needs sqlite, we don't want to build sqlite for Web
-#ifndef PLATFORM_WEB
+// this module needs SQLite, we don't want to build SQLite for Web
+#ifndef __EMSCRIPTEN__
 
 #include <pthread.h>
 #include <sqlite3.h>
@@ -35,4 +35,4 @@ bool create_user(sqlite3 *db, int id, SockAddr addr);
 // Return an unused ID for new user. Return -1 on error.
 int get_new_user_id(sqlite3 *db);
 
-#endif // ifndef PLATFORM_WEB
+#endif // ifndef __EMSCRIPTEN__

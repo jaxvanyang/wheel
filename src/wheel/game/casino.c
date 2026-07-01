@@ -1,4 +1,4 @@
-#ifndef PLATFORM_WEB
+#ifndef __EMSCRIPTEN__
 
 #include <string.h>
 
@@ -177,4 +177,4 @@ int get_new_user_id(sqlite3 *db) {
 	return ret;
 }
 
-#endif // ifndef PLATFORM_WEB
+#endif // ifndef __EMSCRIPTEN__

@@ -3,7 +3,7 @@ project(
   'c',
   version: '0.1.0',
   default_options: ['default_library=static', 'prefer_static=true'],
-  meson_version: '>=1.1',
+  meson_version: '>=1.4',
 )
 
 add_project_arguments(
@@ -20,19 +20,28 @@ raylib_src_path = get_option('raylib_src_path')
 raylib_path = get_option('raylib_path')
 
 # Dependencies
-sqlite = dependency('sqlite3', version: '>=3')
+if system == 'emscripten'
+  # SQLite depends on pthread which causes problems on Web, see #24
+  sqlite = dependency('', required: false)
+else
+  sqlite = dependency('sqlite3', version: '>=3')
+endif
 
-# TODO: simplify this
+# handle custom Raylib
 if raylib_src_path != ''
   raylib_inc = include_directories(raylib_src_path)
   if not fs.is_absolute(raylib_src_path)
     raylib_src_path = meson.current_source_dir() / raylib_src_path
   endif
-  if prefer_static
+  if system == 'emscripten'
+    link_args = [raylib_src_path / 'libraylib.web.a']
+  elif prefer_static
+    # force to use the static library on macOS
     link_args = [raylib_src_path / 'libraylib.a']
   else
     link_args = ['-L' + raylib_src_path, '-lraylib']
   endif
+
   raylib = declare_dependency(
     include_directories: raylib_inc,
     link_args: link_args,
@@ -47,6 +56,7 @@ elif raylib_path != ''
   else
     link_args = ['-L' + (raylib_path / 'lib'), '-lraylib']
   endif
+
   raylib = declare_dependency(
     include_directories: raylib_inc,
     link_args: link_args,
@@ -81,6 +91,8 @@ wheel = library(
   install: true,
 )
 
-subdir('bin')
+if system != 'emscripten'
+  subdir('bin')
+  subdir('tests')
+endif
 subdir('game')
-subdir('tests')
