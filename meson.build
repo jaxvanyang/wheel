@@ -71,12 +71,12 @@ if system == 'linux' and (raylib_src_path != '' or raylib_path != '')
   x11 = dependency('x11')
   raylib_and_deps += x11
 endif
+if system == 'darwin' and prefer_static
+  raylib_and_deps += dependency('appleframeworks', modules: ['CoreVideo', 'IOKit', 'Cocoa', 'GLUT', 'OpenGL'])
+endif
 
 deps = [raylib, sqlite]
 # TODO: limit the scope of this config
-if system == 'darwin' and prefer_static
-  deps += dependency('appleframeworks', modules: ['CoreVideo', 'IOKit', 'Cocoa', 'GLUT', 'OpenGL'])
-endif
 if system == 'windows'
   add_project_link_arguments('-lgdi32', '-lwinmm', '-lws2_32', language: 'c')
 endif
