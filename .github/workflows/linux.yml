@@ -56,7 +56,7 @@ jobs:
         meson compile -C build -v --ninja-args '-k 0'
 
     - name: Run tests
-      run: meson test -C build
+      run: meson test -C build -v
 
     - name: Generate Artifacts
       run: |
