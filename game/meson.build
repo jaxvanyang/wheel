@@ -10,7 +10,6 @@ names = [
   'double-pendulum',
   'palette',
   'pendulum',
-  'snake',
 ]
 foreach name: names
   executable(
@@ -33,6 +32,7 @@ endif
 names = [
   'jump',
   'poker',
+  'snake',
 ]
 foreach name: names
   executable(
