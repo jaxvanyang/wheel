@@ -150,7 +150,7 @@ build/compile_commands.json:
 
 .PHONY: clean
 clean:
-	rm -f $(LIBA) $(LIBSO) $(BINS) $(TESTS) $(OBJS)
+	rm -f $(LIBA) $(LIBSO) $(GAMES) $(BINS) $(TESTS) $(OBJS)
 	-rm -f **/*.o **/*.a **/*.so **/*.exe
 	-rm -rf **/*.dSYM
 	-rm -rf game/*.html **/*.wasm game/*.js **/*.data game/*.dSYM
