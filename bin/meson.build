@@ -1,5 +1,4 @@
 names = [
-  'echo',
   'hex2double',
   'hex2float',
   'hilb',
@@ -7,7 +6,6 @@ names = [
   'nproc',
   'runtest',
   'sort',
-  'udpnet',
   'uniq',
 ]
 foreach name: names
@@ -15,6 +13,25 @@ foreach name: names
     name,
     name + '.c',
     include_directories: includes,
+    link_with: wheel,
+    install: true,
+  )
+endforeach
+
+names = [
+  'echo',
+  'udpnet',
+]
+bin_deps = []
+if system == 'windows'
+  bin_deps += ws2_32
+endif
+foreach name: names
+  executable(
+    name,
+    name + '.c',
+    include_directories: includes,
+    dependencies: bin_deps,
     link_with: wheel,
     install: true,
   )

@@ -47,11 +47,15 @@ foreach name: names
   )
 endforeach
 
+game_deps = raylib_and_deps + sqlite
+if system == 'windows'
+  game_deps += ws2_32
+endif
 executable(
   'poker2',
   'poker2.c',
   include_directories: includes,
-  dependencies: raylib_and_deps + sqlite,
+  dependencies: game_deps,
   link_with: wheel,
   link_args: link_args,
   name_suffix: name_suffix,

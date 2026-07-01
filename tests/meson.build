@@ -9,7 +9,6 @@ names = [
   'list',
   'lol',
   'math',
-  'net',
   'path',
   'sort',
   'str',
@@ -25,6 +24,19 @@ foreach name: names
   )
   test(name, exe)
 endforeach
+
+test_deps = []
+if system == 'windows'
+  test_deps += ws2_32
+endif
+exe = executable(
+  'net',
+  'net.c',
+  include_directories: includes,
+  dependencies: test_deps,
+  link_with: wheel,
+)
+test(name, exe)
 
 names = [
   'poker',

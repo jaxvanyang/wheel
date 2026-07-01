@@ -18,6 +18,7 @@ system = host_machine.system()
 prefer_static = get_option('prefer_static')
 raylib_src_path = get_option('raylib_src_path')
 raylib_path = get_option('raylib_path')
+cc = meson.get_compiler('c')
 
 # Dependencies
 if system == 'emscripten'
@@ -74,20 +75,19 @@ endif
 if system == 'darwin' and prefer_static
   raylib_and_deps += dependency('appleframeworks', modules: ['CoreVideo', 'IOKit', 'Cocoa', 'GLUT', 'OpenGL'])
 endif
-
-deps = [raylib, sqlite]
-# TODO: limit the scope of this config
 if system == 'windows'
-  add_project_link_arguments('-lgdi32', '-lwinmm', '-lws2_32', language: 'c')
+  ws2_32 = cc.find_library('ws2_32')
+  raylib_and_deps += cc.find_library('winmm')
 endif
 
+# Targets
 subdir('src/wheel')
 includes = include_directories('src')
 wheel = library(
   'wheel',
   sources,
   include_directories: includes,
-  dependencies: deps,
+  dependencies: [raylib, sqlite],
   install: true,
 )
 
