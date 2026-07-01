@@ -39,7 +39,7 @@ executable(
   'poker-prob',
   'poker-prob.c',
   include_directories: includes,
-  dependencies: raylib,
+  dependencies: raylib_and_deps,
   link_with: wheel,
   install: true,
 )

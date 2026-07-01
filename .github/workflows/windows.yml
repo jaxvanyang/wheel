@@ -54,7 +54,7 @@ jobs:
       - name: Build Product
         run: |
           meson setup build -D raylib_path=${{ env.RAYLIB_PATH }}
-          meson compile -C build -v
+          meson compile -C build -v --ninja-args '-k 0'
 
       - name: Run tests
         run: meson test -C build

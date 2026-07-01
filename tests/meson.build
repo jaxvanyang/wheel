@@ -35,7 +35,7 @@ foreach name: names
     name,
     name + '.c',
     include_directories: includes,
-    dependencies: raylib,
+    dependencies: raylib_and_deps,
     link_with: wheel,
   )
   test(name, exe)
