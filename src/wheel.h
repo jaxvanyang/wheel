@@ -14,5 +14,3 @@
 #include "wheel/sys.h"
 #include "wheel/term.h"
 #include "wheel/tree.h"
-
-const char BASICS_VERSION[] = "0.1.0";

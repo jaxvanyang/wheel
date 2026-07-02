@@ -1,12 +1,12 @@
 sources = files(
   'bigint.c',
+  'core.c',
   'core/types.c',
   'core/utils.c',
   'deque.c',
   'float.c',
   'game/casino.c',
   'game/command.c',
-  'game/consts.c',
   'game/poker.c',
   'list.c',
   'lol.c',
