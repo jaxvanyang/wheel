@@ -1,4 +1,4 @@
 Diagnostics:
-  Suppress: [unused-includes, initializer-overrides]
+  Suppress: [unused-includes, initializer-overrides, c23-extensions]
 CompileFlags:
   Add: [-xc]

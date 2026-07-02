@@ -11,3 +11,6 @@ Str *get_home_dir();
 Str *get_config_dir();
 Str *get_cache_dir();
 Str *get_data_dir();
+
+// Get the path of current executable, return `NULL` if failed.
+Str *get_exe_path();

@@ -1,6 +1,15 @@
+#include "lol.h"
 #include "path.h"
 #include "sys.h"
+#include <limits.h>
 #include <string.h>
+#include <unistd.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#elifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
 
 char *os_path(const char *path) {
 #ifdef _WIN32
@@ -90,6 +99,42 @@ Str *get_data_dir() {
 	} else {
 		path_join(ret, ".local/share");
 	}
+
+	return ret;
+}
+
+Str *get_exe_path() {
+	Str *ret = str_new_with_size(PATH_MAX);
+
+#ifdef _WIN32
+	if (GetModuleFileNameA(NULL, ret->data, PATH_MAX) == 0) {
+		str_free(ret);
+		return NULL;
+	}
+#elifdef __linux__
+	ssize_t len = readlink("/proc/self/exe", ret->data, ret->size - 1);
+	if (len == -1) {
+		str_free(ret);
+		return NULL;
+	}
+	ret->data[len] = '\0';
+	ret->len = len;
+#elifdef __APPLE__
+	char path[PATH_MAX];
+	uint32_t size = PATH_MAX;
+	if (_NSGetExecutablePath(path, &size) != 0) {
+		str_free(ret);
+		return NULL;
+	}
+	if (realpath(path, ret->data) == NULL) {
+		str_free(ret);
+		return NULL;
+	}
+#else
+	lol_error("get_exe_path: unknown platform, not supported");
+	str_free(ret);
+	return NULL;
+#endif
 
 	return ret;
 }

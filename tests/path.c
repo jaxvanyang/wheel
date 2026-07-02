@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
 #include <wheel/path.h>
 
 int main() {
@@ -43,4 +44,21 @@ int main() {
 		str_free(data_dir);
 	}
 #endif // _WIN32
+
+	{
+		Str *exe_path = get_exe_path();
+		const size_t buf_size = 1024;
+		char cwd[buf_size];
+		getcwd(cwd, buf_size);
+		Str *path = str_from(cwd);
+		path_join(path, "tests");
+		path_join(path, "path");
+#ifdef _WIN32
+		str_push_str(path, ".exe");
+#endif
+		assert(strcmp(exe_path->data, path->data) == 0);
+
+		str_free(exe_path);
+		str_free(path);
+	}
 }
