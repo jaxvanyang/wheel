@@ -19,6 +19,7 @@ void str_remove_postfix(char *s, const char *pattern);
 Str *str_new_with_size(usize size);
 Str *str_new();
 Str *str_from(const char *s);
+Str *str_clone(const Str *s);
 void str_free(Str *s);
 
 void str_insert_char(Str *s, const usize i, const char c);

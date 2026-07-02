@@ -37,7 +37,7 @@ void path_join(Str *path, const char *relative_path) {
 	free(tmp);
 }
 
-void path_strip(char *path, size_t n) {
+size_t os_path_strip(char *path, size_t n) {
 	size_t len = strlen(path);
 	while (len > 0 && path[len - 1] == PATH_SEP) {
 		path[--len] = '\0';
@@ -49,7 +49,19 @@ void path_strip(char *path, size_t n) {
 		}
 		path[--len] = '\0';
 	}
+
+	return len;
 }
+
+Str *path_new(const char *path) {
+	char *tmp = os_path(path);
+	Str *ret = str_from(tmp);
+	free(tmp);
+
+	return ret;
+}
+
+void path_strip(Str *path, size_t n) { path->len = os_path_strip(path->data, n); }
 
 Str *get_home_dir() {
 	OSType os = get_os();
@@ -156,7 +168,7 @@ Str *get_exe_dir() {
 	if (ret == NULL) {
 		return NULL;
 	}
-	path_strip(ret->data, 1);
+	os_path_strip(ret->data, 1);
 	ret->len = strlen(ret->data);
 
 	return ret;

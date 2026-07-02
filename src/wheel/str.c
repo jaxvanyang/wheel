@@ -158,6 +158,14 @@ Str *str_from(const char *s) {
 	return str;
 }
 
+Str *str_clone(const Str *s) {
+	Str *ret = str_new_with_size(s->size);
+	strcpy(ret->data, s->data);
+	ret->len = s->len;
+
+	return ret;
+}
+
 void str_free(Str *s) {
 	free(s->data);
 	s->data = NULL;

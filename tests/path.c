@@ -71,13 +71,13 @@ int main() {
 
 	{
 		char *path = os_path("/a/b/c///");
-		path_strip(path, 1);
+		os_path_strip(path, 1);
 		assert(strcmp(path, os_path("/a/b")) == 0);
-		path_strip(path, 1);
+		os_path_strip(path, 1);
 		assert(strcmp(path, os_path("/a")) == 0);
-		path_strip(path, 1);
+		os_path_strip(path, 1);
 		assert(strcmp(path, os_path("")) == 0);
-		path_strip(path, 1);
+		os_path_strip(path, 1);
 		assert(strcmp(path, os_path("")) == 0);
 	}
 }

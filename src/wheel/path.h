@@ -11,8 +11,12 @@
 
 // create a new system path string from Unix-style path
 char *os_path(const char *path);
-// Strip `n` components from `path`.
-void path_strip(char *path, size_t n);
+// Strip `n` components from `path` (C string), return the new string's length.
+size_t os_path_strip(char *path, size_t n);
+
+Str *path_new(const char *path);
+// Strip `n` components from `path` (`Str`).
+void path_strip(Str *path, size_t n);
 void path_join(Str *path, const char *relative_path);
 
 Str *get_home_dir();

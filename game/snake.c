@@ -233,9 +233,21 @@ Game *new_game() {
 	game->paused = false;
 	game->fastforward = false;
 
-	game->sounds.die = load_sound("assets/brackeys_platformer_assets/sounds/explosion.wav");
-	game->sounds.eat = load_sound("assets/brackeys_platformer_assets/sounds/coin.wav");
-	game->bgm = load_music_stream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
+	Str *path = path_new("assets/brackeys_platformer_assets");
+	if (!is_dir(path->data)) {
+		str_free(path);
+		path = get_assets_dir();
+		path_join(path, "brackeys_platformer_assets");
+	}
+	path_join(path, "sounds/explosion.wav");
+	game->sounds.die = load_sound(path->data);
+	path_strip(path, 1);
+	path_join(path, "coin.wav");
+	game->sounds.eat = load_sound(path->data);
+	path_strip(path, 2);
+	path_join(path, "music/time_for_adventure.mp3");
+	game->bgm = load_music_stream(path->data);
+	str_free(path);
 
 	return game;
 }
