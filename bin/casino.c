@@ -1,8 +1,3 @@
-// cannot build with sqlite on MSYS2, see #20
-#ifdef _WIN32
-int main() {}
-#else
-
 #include <pthread.h>
 #include <sqlite3.h>
 #include <string.h>
@@ -29,5 +24,3 @@ int main(int argc, const char **argv) {
 
 	close_casino(&casino);
 }
-
-#endif // _WIN32

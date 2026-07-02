@@ -36,21 +36,23 @@ foreach name: names
     install: true,
   )
 endforeach
-
-names = [
+executable(
   'casino',
+  'casino.c',
+  include_directories: includes,
+  dependencies: bin_deps + sqlite,
+  link_with: wheel,
+  install: true,
+)
+
+executable(
   'insert-words',
-]
-foreach name: names
-  executable(
-    name,
-    name + '.c',
-    include_directories: includes,
-    dependencies: sqlite,
-    link_with: wheel,
-    install: true,
-  )
-endforeach
+  'insert-words.c',
+  include_directories: includes,
+  dependencies: sqlite,
+  link_with: wheel,
+  install: true,
+)
 
 executable(
   'poker-prob',

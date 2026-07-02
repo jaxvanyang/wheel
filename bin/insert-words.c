@@ -2,11 +2,6 @@
 //
 // Usage: insert-words <sqlite3.db>
 
-// cannot build with sqlite on MSYS2, see #20
-#ifdef _WIN32
-int main() {}
-#else
-
 #include <assert.h>
 #include <sqlite3.h>
 #include <stdio.h>
@@ -176,5 +171,3 @@ void delete_word(sqlite3 *db, const char *word) {
 
 	sqlite3_finalize(stmt);
 }
-
-#endif // _WIN32
