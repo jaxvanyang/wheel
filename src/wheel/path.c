@@ -148,3 +148,26 @@ Str *get_exe_path() {
 
 	return ret;
 }
+
+Str *get_exe_dir() {
+	Str *ret = get_exe_path();
+	if (ret == NULL) {
+		return NULL;
+	}
+	path_strip(ret->data, 1);
+	ret->len = strlen(ret->data);
+
+	return ret;
+}
+
+Str *get_assets_dir() {
+	Str *ret = get_exe_dir();
+	if (ret == NULL) {
+		return NULL;
+	}
+	char *relative_path = os_path("../share/wheel/assets");
+	path_join(ret, relative_path);
+	free(relative_path);
+
+	return ret;
+}

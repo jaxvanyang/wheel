@@ -57,9 +57,16 @@ int main() {
 		str_push_str(path, ".exe");
 #endif
 		assert(strcmp(exe_path->data, path->data) == 0);
+	}
 
-		str_free(exe_path);
-		str_free(path);
+	{
+		Str *dir = get_exe_dir();
+		const size_t buf_size = 1024;
+		char cwd[buf_size];
+		getcwd(cwd, buf_size);
+		Str *path = str_from(cwd);
+		path_join(path, "tests");
+		assert(strcmp(dir->data, path->data) == 0);
 	}
 
 	{
