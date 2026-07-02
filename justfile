@@ -32,8 +32,11 @@ test *tests:
 	fi
 
 check:
-	typos --exclude 'raylib*'
+	typos --exclude 'raylib*' --exclude subprojects --exclude 'build*'
+
+format:
+	find src bin game tests -type f -name "*.[ch]" | xargs clang-format -style=file:.clang-format -i
 
 fix:
-	typos -w --exclude 'raylib*'
-	make format
+	typos -w --exclude 'raylib*' --exclude subprojects --exclude 'build*'
+	just format

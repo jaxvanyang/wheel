@@ -1,5 +1,5 @@
-#include "lol.h"
 #include "path.h"
+#include "lol.h"
 #include "sys.h"
 #include <limits.h>
 #include <string.h>
@@ -31,12 +31,22 @@ char *os_path(const char *path) {
 }
 
 void path_join(Str *path, const char *component) {
-#ifdef _WIN32
-	str_push(path, '\\');
-#else
-	str_push(path, '/');
-#endif
+	str_push(path, PATH_SEP);
 	str_push_str(path, component);
+}
+
+void path_strip(char *path, size_t n) {
+	size_t len = strlen(path);
+	while (len > 0 && path[len - 1] == PATH_SEP) {
+		path[--len] = '\0';
+	}
+
+	while (len > 0 && n > 0) {
+		if (path[len - 1] == PATH_SEP) {
+			--n;
+		}
+		path[--len] = '\0';
+	}
 }
 
 Str *get_home_dir() {
