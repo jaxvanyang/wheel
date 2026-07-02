@@ -30,9 +30,11 @@ char *os_path(const char *path) {
 	return s;
 }
 
-void path_join(Str *path, const char *component) {
+void path_join(Str *path, const char *relative_path) {
 	str_push(path, PATH_SEP);
-	str_push_str(path, component);
+	char *tmp = os_path(relative_path);
+	str_push_str(path, tmp);
+	free(tmp);
 }
 
 void path_strip(char *path, size_t n) {

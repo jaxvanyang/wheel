@@ -13,7 +13,7 @@
 char *os_path(const char *path);
 // Strip `n` components from `path`.
 void path_strip(char *path, size_t n);
-void path_join(Str *path, const char *component);
+void path_join(Str *path, const char *relative_path);
 
 Str *get_home_dir();
 Str *get_config_dir();
