@@ -3,7 +3,9 @@
 #include <unistd.h>
 
 #include "../../wheel/lol.h"
+#include "../../wheel/path.h"
 #include "../../wheel/str.h"
+#include "../../wheel/sys.h"
 #include "poker.h"
 
 const f32 CARD_SCALE = 2;
@@ -422,15 +424,28 @@ void print_selection(const Selection *selection) {
 }
 
 ResManager new_res_manager() {
-	ResManager manager = {
-		.cards = load_texture("assets/poker/poker_cards.png"),
-		.minicards = load_texture("assets/poker/minicards.png"),
-		.chips = load_texture("assets/poker/fiches_addon.png"),
-		.button = load_texture("assets/poker/button.png"),
-		.bgm = load_music_stream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3"),
-		.sound_win = load_sound("assets/brackeys_platformer_assets/sounds/coin.wav"),
-		.sound_lose = load_sound("assets/brackeys_platformer_assets/sounds/hurt.wav"),
-	};
+	ResManager manager;
+	Str *path = path_new("assets/poker");
+	if (!is_dir(path->data)) {
+		str_free(path);
+		path = get_assets_dir();
+		path_join(path, "poker");
+	}
+	path_join(path, "poker_cards.png");
+	manager.cards = load_texture(path->data);
+	path_strip_and_join(path, 1, "minicards.png");
+	manager.minicards = load_texture(path->data);
+	path_strip_and_join(path, 1, "fiches_addon.png");
+	manager.chips = load_texture(path->data);
+	path_strip_and_join(path, 1, "button.png");
+	manager.button = load_texture(path->data);
+	path_strip_and_join(path, 2, "brackeys_platformer_assets/music/time_for_adventure.mp3");
+	manager.bgm = load_music_stream(path->data);
+	path_strip_and_join(path, 2, "sounds/coin.wav");
+	manager.sound_win = load_sound(path->data);
+	path_strip_and_join(path, 1, "hurt.wav");
+	manager.sound_lose = load_sound(path->data);
+	str_free(path);
 
 	return manager;
 }

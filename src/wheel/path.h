@@ -18,6 +18,7 @@ Str *path_new(const char *path);
 // Strip `n` components from `path` (`Str`).
 void path_strip(Str *path, size_t n);
 void path_join(Str *path, const char *relative_path);
+void path_strip_and_join(Str *path, size_t n, const char *relative_path);
 
 Str *get_home_dir();
 Str *get_config_dir();

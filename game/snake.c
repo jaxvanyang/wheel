@@ -241,11 +241,9 @@ Game *new_game() {
 	}
 	path_join(path, "sounds/explosion.wav");
 	game->sounds.die = load_sound(path->data);
-	path_strip(path, 1);
-	path_join(path, "coin.wav");
+	path_strip_and_join(path, 1, "coin.wav");
 	game->sounds.eat = load_sound(path->data);
-	path_strip(path, 2);
-	path_join(path, "music/time_for_adventure.mp3");
+	path_strip_and_join(path, 2, "music/time_for_adventure.mp3");
 	game->bgm = load_music_stream(path->data);
 	str_free(path);
 

@@ -63,6 +63,11 @@ Str *path_new(const char *path) {
 
 void path_strip(Str *path, size_t n) { path->len = os_path_strip(path->data, n); }
 
+void path_strip_and_join(Str *path, size_t n, const char *relative_path) {
+	path_strip(path, n);
+	path_join(path, relative_path);
+}
+
 Str *get_home_dir() {
 	OSType os = get_os();
 

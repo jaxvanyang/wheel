@@ -60,7 +60,15 @@ Poker new_poker(u32 server_ip, u16 server_port, int id) {
 
 void init_poker(Poker *poker) {
 	// load resources
-	poker->bgm = load_music_stream("assets/brackeys_platformer_assets/music/time_for_adventure.mp3");
+	Str *path = path_new("assets/brackeys_platformer_assets");
+	if (!is_dir(path->data)) {
+		str_free(path);
+		path = get_assets_dir();
+		path_join(path, "brackeys_platformer_assets");
+	}
+	path_join(path, "music/time_for_adventure.mp3");
+	poker->bgm = load_music_stream(path->data);
+	str_free(path);
 
 	poker->socket = new_udp_socket();
 	if (poker->socket == -1) {
